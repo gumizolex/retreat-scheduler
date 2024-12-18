@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, MapPin } from "lucide-react";
+import { Calendar, Clock, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
 import { Program, TranslatedProgram, Currency } from "@/types/program";
 import { formatCurrency } from "@/utils/currency";
 import { motion, useAnimation } from "framer-motion";
@@ -191,6 +191,7 @@ export function ProgramCard({
           className="absolute -bottom-8 left-0 right-0 text-center text-xs font-medium tracking-wide text-primary/70 pointer-events-none"
         >
           <motion.div
+            className="flex items-center justify-center gap-2"
             animate={{
               scale: [1, 1.1, 1],
               transition: {
@@ -200,7 +201,17 @@ export function ProgramCard({
               }
             }}
           >
-            Húzd jobbra vagy balra a további programokért
+            <div className="flex gap-1">
+              <ChevronLeft className="w-4 h-4 text-primary/40 animate-[pulse_2s_ease-in-out_infinite]" />
+              <ChevronLeft className="w-4 h-4 text-primary/60 animate-[pulse_2s_ease-in-out_infinite_0.3s]" />
+              <ChevronLeft className="w-4 h-4 text-primary/80 animate-[pulse_2s_ease-in-out_infinite_0.6s]" />
+            </div>
+            <span>Húzd jobbra vagy balra</span>
+            <div className="flex gap-1">
+              <ChevronRight className="w-4 h-4 text-primary/40 animate-[pulse_2s_ease-in-out_infinite]" />
+              <ChevronRight className="w-4 h-4 text-primary/60 animate-[pulse_2s_ease-in-out_infinite_0.3s]" />
+              <ChevronRight className="w-4 h-4 text-primary/80 animate-[pulse_2s_ease-in-out_infinite_0.6s]" />
+            </div>
           </motion.div>
         </motion.div>
       )}

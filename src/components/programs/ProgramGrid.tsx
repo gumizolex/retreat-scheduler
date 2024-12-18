@@ -9,7 +9,6 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface ProgramGridProps {
   programs: Program[];
@@ -62,16 +61,6 @@ export function ProgramGrid({
               );
             })}
           </CarouselContent>
-          <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-white/95 via-white/50 to-transparent pointer-events-none z-10 flex flex-col items-start justify-center gap-2 pl-4">
-            <ChevronLeft className="w-5 h-5 text-primary/40 animate-[pulse_2s_ease-in-out_infinite]" />
-            <ChevronLeft className="w-5 h-5 text-primary/60 animate-[pulse_2s_ease-in-out_infinite_0.3s]" />
-            <ChevronLeft className="w-5 h-5 text-primary/80 animate-[pulse_2s_ease-in-out_infinite_0.6s]" />
-          </div>
-          <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-white/95 via-white/50 to-transparent pointer-events-none z-10 flex flex-col items-end justify-center gap-2 pr-4">
-            <ChevronRight className="w-5 h-5 text-primary/40 animate-[pulse_2s_ease-in-out_infinite]" />
-            <ChevronRight className="w-5 h-5 text-primary/60 animate-[pulse_2s_ease-in-out_infinite_0.3s]" />
-            <ChevronRight className="w-5 h-5 text-primary/80 animate-[pulse_2s_ease-in-out_infinite_0.6s]" />
-          </div>
           <CarouselPrevious className="hidden" />
           <CarouselNext className="hidden" />
         </Carousel>
