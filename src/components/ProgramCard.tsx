@@ -34,62 +34,65 @@ export function ProgramCard({
   }, [controls]);
 
   return (
-    <motion.div
-      animate={controls}
-      whileHover={!isMobile ? { y: -5 } : {}}
-      transition={{ duration: 0.3 }}
-      drag={isMobile ? "x" : false}
-      dragConstraints={{ left: 0, right: 0 }}
-      onDragStart={() => setDragStarted(true)}
-      onDragEnd={(e, info) => {
-        setDragStarted(false);
-        if (Math.abs(info.offset.x) > 100) {
-          const element = e.target as HTMLElement;
-          const carousel = element.closest('.embla');
-          if (carousel) {
-            controls.start({
-              x: info.offset.x > 0 ? 300 : -300,
-              opacity: 0,
-              rotateY: info.offset.x > 0 ? 30 : -30,
-              transition: { duration: 0.3 }
-            }).then(() => {
-              if (info.offset.x > 0) {
-                carousel.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
-              } else {
-                carousel.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
-              }
-            });
+    <div className="relative">
+      <motion.div
+        animate={controls}
+        whileHover={!isMobile ? { y: -5 } : {}}
+        transition={{ duration: 0.3 }}
+        drag={isMobile ? "x" : false}
+        dragConstraints={{ left: 0, right: 0 }}
+        onDragStart={() => setDragStarted(true)}
+        onDragEnd={(e, info) => {
+          setDragStarted(false);
+          if (Math.abs(info.offset.x) > 100) {
+            const element = e.target as HTMLElement;
+            const carousel = element.closest('.embla');
+            if (carousel) {
+              controls.start({
+                x: info.offset.x > 0 ? 300 : -300,
+                opacity: 0,
+                rotateY: info.offset.x > 0 ? 45 : -45,
+                z: -100,
+                transition: { duration: 0.3 }
+              }).then(() => {
+                if (info.offset.x > 0) {
+                  carousel.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
+                } else {
+                  carousel.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
+                }
+              });
+            }
+          } else {
+            controls.start({ x: 0, opacity: 1, rotateY: 0, z: 0 });
           }
-        } else {
-          controls.start({ x: 0, opacity: 1, rotateY: 0 });
-        }
-      }}
-      style={{ 
-        perspective: "1000px",
-        transformStyle: "preserve-3d"
-      }}
-      whileDrag={{
-        scale: 0.95,
-        rotateY: dragStarted ? 0 : 0
-      }}
-    >
-      <Card className="group relative overflow-hidden bg-white/80 backdrop-blur-sm border border-gray-100 hover:border-primary/20 transition-all duration-300 hover:shadow-xl">
-        {isMobile && !dragStarted && (
-          <motion.div 
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent"
-            initial={{ x: "-100%" }}
-            animate={{ 
-              x: "100%",
-              transition: {
-                repeat: Infinity,
-                duration: 1.5,
-                ease: "linear",
-                repeatDelay: 1
-              }
-            }}
-          />
-        )}
-        
+        }}
+        style={{ 
+          perspective: "1000px",
+          transformStyle: "preserve-3d"
+        }}
+        whileDrag={{
+          scale: 0.95,
+          rotateY: dragStarted ? 0 : 0,
+          z: -50
+        }}
+      >
+        <Card className="group relative overflow-hidden bg-white/80 backdrop-blur-sm border border-gray-100 hover:border-primary/20 transition-all duration-300 hover:shadow-xl">
+          {isMobile && !dragStarted && (
+            <motion.div 
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent"
+              initial={{ x: "-100%" }}
+              animate={{ 
+                x: "100%",
+                transition: {
+                  repeat: Infinity,
+                  duration: 1.5,
+                  ease: "linear",
+                  repeatDelay: 1
+                }
+              }}
+            />
+          )}
+          
         <CardHeader className="p-0">
           <div className="relative overflow-hidden aspect-video">
             <img
@@ -146,7 +149,18 @@ export function ProgramCard({
             {bookButtonText}
           </Button>
         </CardFooter>
-      </Card>
-    </motion.div>
+        </Card>
+      </motion.div>
+      
+      {isMobile && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: dragStarted ? 0 : 0.6 }}
+          className="absolute -bottom-6 left-0 right-0 text-center text-sm text-primary/60 pointer-events-none"
+        >
+          ← húzd jobbra vagy balra →
+        </motion.div>
+      )}
+    </div>
   );
 }
