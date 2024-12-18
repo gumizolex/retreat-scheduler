@@ -1,21 +1,25 @@
 import { ProgramList } from "@/components/ProgramList";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { Language } from "@/types/program";
 
 const translations = {
   en: {
-    subtitle: "Discover our unique programs and experiences in the heart of Transylvania"
+    subtitle: "Discover our unique programs and experiences in the heart of Transylvania",
+    copyright: "© 2024 Abod Retreat. All rights reserved."
   },
   hu: {
-    subtitle: "Fedezze fel egyedülálló programjainkat és élményeinket Erdély szívében"
+    subtitle: "Fedezze fel egyedülálló programjainkat és élményeinket Erdély szívében",
+    copyright: "© 2024 Abod Retreat. Minden jog fenntartva."
   },
   ro: {
-    subtitle: "Descoperiți programele și experiențele noastre unice în inima Transilvaniei"
+    subtitle: "Descoperiți programele și experiențele noastre unice în inima Transilvaniei",
+    copyright: "© 2024 Abod Retreat. Toate drepturile rezervate."
   }
 };
 
 const Index = () => {
-  const [language, setLanguage] = useState("hu");
+  const [language, setLanguage] = useState<Language>("hu");
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-secondary/20">
@@ -82,7 +86,7 @@ const Index = () => {
               e.currentTarget.parentNode?.insertBefore(text, e.currentTarget);
             }}
           />
-          <p className="text-accent-foreground/80 text-sm">© 2024 Abod Retreat. Minden jog fenntartva.</p>
+          <p className="text-accent-foreground/80 text-sm">{translations[language].copyright}</p>
         </motion.div>
       </footer>
     </div>
