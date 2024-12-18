@@ -14,6 +14,15 @@ import { BookingSummaryDetails } from "./booking/BookingSummaryDetails";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
+interface BookingFormProps {
+  isOpen: boolean;
+  onClose: () => void;
+  programTitle: string;
+  pricePerPerson: number;
+  currency: Currency;
+  language: Language;
+}
+
 const translations = {
   hu: {
     steps: {
@@ -149,6 +158,15 @@ export function BookingForm({
       const bookingDateTime = new Date(values.date);
       const [hours, minutes] = values.time.split(':');
       bookingDateTime.setHours(parseInt(hours), parseInt(minutes));
+
+      console.log('Submitting booking with data:', {
+        guest_name: values.name,
+        guest_phone: values.phone,
+        booking_date: bookingDateTime.toISOString(),
+        number_of_people: values.numberOfPeople,
+        program_id: 1,
+        guest_email: 'test@example.com'
+      });
 
       const { error } = await supabase
         .from('bookings')
