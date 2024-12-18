@@ -161,12 +161,6 @@ export function ProgramCard({
           </CardFooter>
         </Card>
       </motion.div>
-      
-      {isMobile && (
-        <div className="mt-4">
-          <SwipeIndicator language={language} />
-        </div>
-      )}
     </div>
   );
 }

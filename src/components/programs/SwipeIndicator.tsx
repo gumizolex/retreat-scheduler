@@ -13,30 +13,32 @@ export function SwipeIndicator({ language }: SwipeIndicatorProps) {
   }[language];
 
   return (
-    <motion.div
-      className="flex items-center justify-center gap-2 text-xs font-medium tracking-wide text-primary pointer-events-none bg-white/80 py-2 rounded-full mt-4 px-6 shadow-app"
-      initial={{ opacity: 0 }}
-      animate={{
-        opacity: 1,
-        scale: [1, 1.05, 1],
-        transition: {
-          repeat: Infinity,
-          duration: 2,
-          ease: "easeInOut"
-        }
-      }}
-    >
-      <div className="flex gap-1">
-        <ChevronLeft className="w-4 h-4 text-primary" />
-        <ChevronLeft className="w-4 h-4 text-primary" />
-        <ChevronLeft className="w-4 h-4 text-primary" />
-      </div>
-      <span className="font-semibold">{text}</span>
-      <div className="flex gap-1">
-        <ChevronRight className="w-4 h-4 text-primary" />
-        <ChevronRight className="w-4 h-4 text-primary" />
-        <ChevronRight className="w-4 h-4 text-primary" />
-      </div>
-    </motion.div>
+    <div className="absolute left-0 right-0 bottom-0 flex justify-center">
+      <motion.div
+        className="flex items-center justify-center gap-2 text-xs font-medium tracking-wide text-primary pointer-events-none bg-white/80 py-2 rounded-full mt-4 px-6 shadow-app"
+        initial={{ opacity: 0 }}
+        animate={{
+          opacity: 1,
+          scale: [1, 1.05, 1],
+          transition: {
+            repeat: Infinity,
+            duration: 2,
+            ease: "easeInOut"
+          }
+        }}
+      >
+        <div className="flex gap-1">
+          <ChevronLeft className="w-4 h-4 text-primary" />
+          <ChevronLeft className="w-4 h-4 text-primary" />
+          <ChevronLeft className="w-4 h-4 text-primary" />
+        </div>
+        <span className="font-semibold">{text}</span>
+        <div className="flex gap-1">
+          <ChevronRight className="w-4 h-4 text-primary" />
+          <ChevronRight className="w-4 h-4 text-primary" />
+          <ChevronRight className="w-4 h-4 text-primary" />
+        </div>
+      </motion.div>
+    </div>
   );
 }

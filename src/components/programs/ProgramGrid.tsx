@@ -8,6 +8,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { SwipeIndicator } from "./SwipeIndicator";
 
 interface ProgramGridProps {
   programs: Program[];
@@ -29,24 +30,24 @@ export function ProgramGrid({
   if (isMobile) {
     return (
       <div className="w-screen -mx-8 sm:-mx-12 lg:-mx-16">
-        <Carousel
-          opts={{
-            align: "center",
-            loop: true,
-          }}
-          className="w-full relative overflow-visible px-4"
-        >
-          <CarouselContent className="-ml-4">
-            {programs.map((program) => {
-              const translatedProgram = translations[language].programs.find(
-                (p) => p.id === program.id
-              )!;
-              return (
-                <CarouselItem
-                  key={program.id}
-                  className="pl-4 basis-[75%] md:basis-[70%] first:pl-0"
-                >
-                  <div className="relative">
+        <div className="relative">
+          <Carousel
+            opts={{
+              align: "center",
+              loop: true,
+            }}
+            className="w-full relative overflow-visible px-4"
+          >
+            <CarouselContent className="-ml-4">
+              {programs.map((program) => {
+                const translatedProgram = translations[language].programs.find(
+                  (p) => p.id === program.id
+                )!;
+                return (
+                  <CarouselItem
+                    key={program.id}
+                    className="pl-4 basis-[75%] md:basis-[70%] first:pl-0"
+                  >
                     <ProgramCard
                       program={program}
                       translatedProgram={translatedProgram}
@@ -56,14 +57,15 @@ export function ProgramGrid({
                       currency={currency}
                       language={language}
                     />
-                  </div>
-                </CarouselItem>
-              );
-            })}
-          </CarouselContent>
-          <CarouselPrevious className="hidden" />
-          <CarouselNext className="hidden" />
-        </Carousel>
+                  </CarouselItem>
+                );
+              })}
+            </CarouselContent>
+            <CarouselPrevious className="hidden" />
+            <CarouselNext className="hidden" />
+          </Carousel>
+          {isMobile && <SwipeIndicator language={language} />}
+        </div>
       </div>
     );
   }
