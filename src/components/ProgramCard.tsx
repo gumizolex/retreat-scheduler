@@ -62,9 +62,9 @@ export function ProgramCard({
       y: -5,
       transition: {
         type: "spring",
-        stiffness: 200,
-        damping: 25,
-        duration: 0.6
+        stiffness: 400,
+        damping: 20,
+        duration: 0.2
       }
     },
     tap: { 
@@ -72,9 +72,9 @@ export function ProgramCard({
       opacity: 0.9,
       transition: {
         type: "spring",
-        stiffness: 200,
-        damping: 25,
-        duration: 0.6
+        stiffness: 400,
+        damping: 20,
+        duration: 0.2
       }
     }
   };
@@ -97,13 +97,13 @@ export function ProgramCard({
           style={{ transformStyle: "preserve-3d" }}
           className={`
             rounded-2xl overflow-hidden touch-pan-y transform-gpu
-            transition-all duration-600
+            transition-all duration-300
           `}
         >
           <Card className={`
             group relative overflow-hidden bg-white/90 backdrop-blur-sm 
             border border-gray-100
-            transition-all duration-600
+            transition-all duration-300
             min-h-[480px] sm:min-h-[520px] flex flex-col
             ${isCentered && isMobile ? 'shadow-xl border-primary/30' : 'hover:shadow-lg hover:border-primary/20'}
           `}>
@@ -128,7 +128,7 @@ export function ProgramCard({
               </div>
             </CardHeader>
             <CardContent className="p-4 sm:p-6 flex-grow">
-              <CardTitle className="text-lg sm:text-xl mb-2 sm:mb-3 font-display text-accent group-hover:text-primary transition-colors duration-600">
+              <CardTitle className="text-lg sm:text-xl mb-2 sm:mb-3 font-display text-accent group-hover:text-primary transition-colors duration-300">
                 {translatedProgram.title}
               </CardTitle>
               <CardDescription className="mb-3 sm:mb-4 line-clamp-3 text-accent/80 text-sm sm:text-base">
@@ -147,7 +147,7 @@ export function ProgramCard({
               <Button 
                 variant="default"
                 onClick={() => onBook(program.id)}
-                className="w-full bg-primary hover:bg-primary/90 text-white transition-all duration-600 hover:shadow-lg text-sm sm:text-base py-2 sm:py-3"
+                className="w-full bg-primary hover:bg-primary/90 text-white transition-all duration-300 hover:shadow-lg text-sm sm:text-base py-2 sm:py-3"
               >
                 {bookButtonText}
               </Button>
