@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Users, Activity, DollarSign } from "lucide-react";
-import { BookingsTable } from "./admin/BookingsTable";
+import { BookingsTable, type BookingStatus } from "./admin/BookingsTable";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -14,7 +14,12 @@ export function AdminDashboard() {
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      return data;
+      
+      // Ensure the status is of type BookingStatus
+      return (data || []).map(booking => ({
+        ...booking,
+        status: booking.status as BookingStatus
+      }));
     },
   });
 

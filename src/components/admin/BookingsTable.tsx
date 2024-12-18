@@ -14,15 +14,19 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-interface Booking {
+export type BookingStatus = 'pending' | 'confirmed' | 'cancelled';
+
+export interface Booking {
   id: number;
   guest_name: string;
   guest_email: string;
   guest_phone: string | null;
   booking_date: string;
   number_of_people: number;
-  status: 'pending' | 'confirmed' | 'cancelled';
+  status: BookingStatus;
   program_id: number;
+  user_id: string | null;
+  created_at: string;
 }
 
 interface BookingsTableProps {
@@ -33,7 +37,7 @@ export function BookingsTable({ bookings }: BookingsTableProps) {
   const queryClient = useQueryClient();
 
   const updateBookingStatus = useMutation({
-    mutationFn: async ({ id, status }: { id: number; status: string }) => {
+    mutationFn: async ({ id, status }: { id: number; status: BookingStatus }) => {
       const { error } = await supabase
         .from('bookings')
         .update({ status })
@@ -50,7 +54,7 @@ export function BookingsTable({ bookings }: BookingsTableProps) {
     },
   });
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: BookingStatus) => {
     switch (status) {
       case 'confirmed':
         return <Badge className="bg-green-500">Elfogadva</Badge>;
