@@ -30,7 +30,7 @@ export function ProgramGrid({
   if (isMobile) {
     return (
       <div className="w-screen -mx-8 sm:-mx-12 lg:-mx-16">
-        <div className="relative">
+        <div className="relative pb-16">
           <Carousel
             opts={{
               align: "center",
