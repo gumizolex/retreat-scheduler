@@ -38,14 +38,16 @@ export function ProgramCard({
     normal: {
       scale: 1,
       y: 0,
+      rotateY: 0,
       zIndex: 0,
-      transition: { duration: 0 }
+      transition: { duration: 0.3, type: "spring", stiffness: 300, damping: 30 }
     },
     centered: {
       scale: 1.15,
       y: -20,
+      rotateY: 0,
       zIndex: 10,
-      transition: { duration: 0 }
+      transition: { duration: 0.3, type: "spring", stiffness: 300, damping: 30 }
     }
   };
 
@@ -64,9 +66,9 @@ export function ProgramCard({
       boxShadow: "0px 10px 20px rgba(0,0,0,0.15)",
       transition: {
         type: "spring",
-        stiffness: 200, // Reduced for smoother lift
-        damping: 25,    // Increased for more controlled movement
-        duration: 0.3   // Added duration for smoother transition
+        stiffness: 200,
+        damping: 25,
+        duration: 0.3
       }
     },
     tap: { 
@@ -92,19 +94,29 @@ export function ProgramCard({
           whileHover={!isMobile ? "hover" : undefined}
           whileTap={!isMobile ? "tap" : undefined}
           drag={isMobile ? "x" : false}
-          dragConstraints={{ left: -100, right: 100 }}
+          dragConstraints={{ left: -50, right: 50 }}
           dragElastic={0.1}
           onDragStart={handleDragStart}
           onDrag={handleDrag}
           onDragEnd={handleDragEnd}
-          style={{ transformStyle: "preserve-3d" }}
-          className="rounded-2xl overflow-hidden touch-pan-y transform-gpu"
+          style={{ 
+            transformStyle: "preserve-3d",
+            perspective: "1200px"
+          }}
+          className="rounded-2xl overflow-hidden touch-pan-y transform-gpu backface-hidden"
+          whileDrag={{
+            rotateY: isMobile ? "-15deg",
+            scale: 1.1,
+            zIndex: 20,
+            transition: { duration: 0 }
+          }}
         >
           <Card className={`
             group relative overflow-hidden bg-white/90 backdrop-blur-sm 
             border border-gray-100
             min-h-[480px] sm:min-h-[520px] flex flex-col
             ${isCentered && isMobile ? 'shadow-xl border-primary/30' : 'hover:shadow-lg hover:border-primary/20'}
+            preserve-3d backface-hidden
           `}>
             <CardHeader className="p-0">
               <div className="relative overflow-hidden aspect-video rounded-t-2xl">

@@ -133,15 +133,23 @@ html {
 .embla__slide {
   @apply flex-[0_0_100%] min-w-0;
   transform-style: preserve-3d;
+  transition: transform 0.3s ease-out;
+}
+
+.embla__slide.is-dragging {
+  @apply z-20;
+  transform: scale(1.1) rotateY(-15deg);
 }
 
 /* Enhanced Swipe Hint Animation */
 @keyframes swipeHint {
   0%, 100% {
     opacity: 0.4;
+    transform: translateX(0);
   }
   50% {
     opacity: 0.8;
+    transform: translateX(10px);
   }
 }
 
