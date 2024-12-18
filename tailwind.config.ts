@@ -12,7 +12,7 @@ export default {
   theme: {
     container: {
       center: true,
-      padding: "2rem",
+      padding: "1rem",
       screens: {
         "2xl": "1400px",
       },
@@ -25,7 +25,7 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#6B8E76",  // The green color from the logo
+          DEFAULT: "#6B8E76",
           foreground: "#FFFFFF",
         },
         secondary: {
@@ -51,12 +51,16 @@ export default {
       },
       borderRadius: {
         lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        md: "calc(var(--radius) - 0.25rem)",
+        sm: "calc(var(--radius) - 0.5rem)",
       },
       fontFamily: {
         display: ["Playfair Display", "serif"],
         sans: ["Inter", "sans-serif"],
+      },
+      boxShadow: {
+        'app': '0 2px 8px rgba(0, 0, 0, 0.1)',
+        'app-lg': '0 4px 12px rgba(0, 0, 0, 0.1)',
       },
       keyframes: {
         "accordion-down": {

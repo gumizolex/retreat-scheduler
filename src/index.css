@@ -34,7 +34,7 @@
     --input: 20 5.9% 90%;
     --ring: 20 14.3% 4.1%;
 
-    --radius: 0.5rem;
+    --radius: 1rem;
   }
 }
 
@@ -43,7 +43,8 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground font-sans antialiased;
+    -webkit-tap-highlight-color: transparent;
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-display;
@@ -51,7 +52,7 @@
 }
 
 .program-card {
-  @apply relative overflow-hidden rounded-lg transition-all duration-300;
+  @apply relative overflow-hidden rounded-2xl transition-all duration-300 hover:shadow-lg;
 }
 
 .program-card img {
@@ -60,4 +61,45 @@
 
 .program-card:hover img {
   @apply scale-105;
+}
+
+/* Mobile-friendly scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-primary/20 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-primary/40;
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Better touch feedback */
+@layer utilities {
+  .tap-highlight-transparent {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* Mobile-friendly focus styles */
+@layer base {
+  :focus {
+    @apply outline-none ring-2 ring-primary/50 ring-offset-2 ring-offset-background;
+  }
+  
+  :focus:not(:focus-visible) {
+    @apply ring-0 ring-offset-0;
+  }
 }
