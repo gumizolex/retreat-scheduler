@@ -55,7 +55,7 @@ export function ProgramCard({
       opacity: 0.8,
       y: 10,
       boxShadow: "0px 0px 0px rgba(0,0,0,0)",
-      transition: { duration: 0.15, ease: "easeOut" }
+      transition: { duration: 0.08, ease: "easeOut" }
     },
     hover: { 
       scale: 1.02,
@@ -64,9 +64,9 @@ export function ProgramCard({
       boxShadow: "0px 10px 20px rgba(0,0,0,0.15)",
       transition: {
         type: "spring",
-        stiffness: 500,
-        damping: 15,
-        duration: 0.1
+        stiffness: 700,
+        damping: 12,
+        duration: 0.05
       }
     },
     tap: { 
@@ -75,9 +75,9 @@ export function ProgramCard({
       boxShadow: "0px 5px 10px rgba(0,0,0,0.1)",
       transition: {
         type: "spring",
-        stiffness: 500,
-        damping: 15,
-        duration: 0.1
+        stiffness: 700,
+        damping: 12,
+        duration: 0.05
       }
     }
   };
