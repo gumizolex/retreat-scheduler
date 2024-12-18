@@ -12,11 +12,11 @@ export function SwipeIndicator({ language }: SwipeIndicatorProps) {
     ro: "Glisați"
   }[language];
 
-  const leftChevrons = [0, 1, 2];
+  const leftChevrons = [2, 1, 0];  // Reversed order for left chevrons
   const rightChevrons = [0, 1, 2];
 
   return (
-    <div className="absolute -bottom-12 left-0 right-0 flex justify-center">
+    <div className="absolute bottom-0 left-0 right-0 flex justify-center">
       <div className="flex items-center justify-center gap-2 text-xs font-medium tracking-wide text-primary bg-white/80 py-2 rounded-full px-6 shadow-app">
         <div className="flex">
           {leftChevrons.map((index) => (
@@ -28,7 +28,7 @@ export function SwipeIndicator({ language }: SwipeIndicatorProps) {
               transition={{
                 duration: 1.5,
                 repeat: Infinity,
-                delay: index * 0.2,
+                delay: (2 - index) * 0.2, // Reversed delay calculation
               }}
             >
               <ChevronLeft className="w-4 h-4 text-primary" />
