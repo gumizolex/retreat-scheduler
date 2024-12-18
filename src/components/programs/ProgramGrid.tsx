@@ -45,7 +45,7 @@ export function ProgramGrid({
               return (
                 <CarouselItem
                   key={program.id}
-                  className="pl-4 basis-[85%] md:basis-[80%] first:pl-0"
+                  className="pl-4 basis-[75%] md:basis-[70%] first:pl-0"
                 >
                   <div className="relative">
                     <ProgramCard
