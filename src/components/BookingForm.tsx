@@ -10,6 +10,15 @@ import { Currency, Language } from "@/types/program";
 import { formatCurrency } from "@/utils/currency";
 import { motion } from "framer-motion";
 
+interface BookingFormProps {
+  isOpen: boolean;
+  onClose: () => void;
+  programTitle: string;
+  pricePerPerson: number;
+  currency: Currency;
+  language: Language;
+}
+
 const translations = {
   hu: {
     booking: "foglalás",
