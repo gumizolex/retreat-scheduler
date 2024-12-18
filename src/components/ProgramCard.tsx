@@ -105,7 +105,7 @@ export function ProgramCard({
           }}
           className="rounded-2xl overflow-hidden touch-pan-y transform-gpu backface-hidden"
           whileDrag={{
-            rotateY: isMobile ? "-15deg",
+            rotateY: isMobile ? -15 : 0,
             scale: 1.1,
             zIndex: 20,
             transition: { duration: 0 }
