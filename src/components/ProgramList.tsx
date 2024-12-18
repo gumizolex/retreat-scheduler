@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, MapPin, Bike, Horseshoe, Mountain, Wine } from "lucide-react";
+import { Calendar, Clock, MapPin, Bike, Compass, Mountain, Wine } from "lucide-react";
 
 const programs = [
   {
