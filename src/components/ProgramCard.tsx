@@ -36,7 +36,8 @@ export function ProgramCard({
       onDragEnd={(e, info) => {
         if (Math.abs(info.offset.x) > 100) {
           // Trigger next/previous slide
-          const carousel = e.currentTarget.closest('.embla');
+          const element = e.target as HTMLElement;
+          const carousel = element.closest('.embla');
           if (carousel) {
             if (info.offset.x > 0) {
               carousel.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
