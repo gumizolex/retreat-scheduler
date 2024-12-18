@@ -49,13 +49,42 @@ export function ProgramCard({
     }
   };
 
+  const desktopCardVariants = {
+    initial: { 
+      scale: 0.95,
+      opacity: 0.8,
+      y: 10
+    },
+    hover: { 
+      scale: 1.02,
+      opacity: 1,
+      y: -5,
+      transition: {
+        type: "spring",
+        stiffness: 400,
+        damping: 25
+      }
+    },
+    tap: { 
+      scale: 0.98,
+      opacity: 0.9,
+      transition: {
+        type: "spring",
+        stiffness: 400,
+        damping: 25
+      }
+    }
+  };
+
   return (
     <div className="relative perspective-1200" ref={cardRef}>
       <AnimatePresence>
         <motion.div
-          initial="normal"
-          animate={isCentered ? "centered" : "normal"}
-          variants={mobileCardVariants}
+          initial={isMobile ? "normal" : "initial"}
+          animate={isMobile ? (isCentered ? "centered" : "normal") : "initial"}
+          variants={isMobile ? mobileCardVariants : desktopCardVariants}
+          whileHover={!isMobile ? "hover" : undefined}
+          whileTap={!isMobile ? "tap" : undefined}
           drag={isMobile ? "x" : false}
           dragConstraints={{ left: -100, right: 100 }}
           dragElastic={0.1}
@@ -73,7 +102,7 @@ export function ProgramCard({
             border border-gray-100
             transition-all duration-300
             min-h-[480px] sm:min-h-[520px] flex flex-col
-            ${isCentered ? 'shadow-xl border-primary/30' : 'hover:shadow-lg hover:border-primary/20'}
+            ${isCentered && isMobile ? 'shadow-xl border-primary/30' : 'hover:shadow-lg hover:border-primary/20'}
           `}>
             <CardHeader className="p-0">
               <div className="relative overflow-hidden aspect-video rounded-t-2xl">
@@ -82,14 +111,14 @@ export function ProgramCard({
                   alt={translatedProgram.title}
                   className="w-full h-full object-cover"
                   animate={{
-                    scale: isCentered ? 1.05 : 1,
+                    scale: (isMobile && isCentered) ? 1.05 : 1,
                     transition: { duration: 0.3 }
                   }}
                 />
                 <motion.div 
                   className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"
                   animate={{
-                    opacity: isCentered ? 0.6 : 0,
+                    opacity: (isMobile && isCentered) ? 0.6 : 0,
                     transition: { duration: 0.3 }
                   }}
                 />
