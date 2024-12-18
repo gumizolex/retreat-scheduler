@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 export function SwipeIndicator() {
   return (
     <motion.div
-      className="flex items-center justify-center gap-2"
+      className="flex items-center justify-center gap-2 absolute -bottom-4 left-0 right-0 text-xs font-medium tracking-wide text-primary/70 pointer-events-none"
       animate={{
         scale: [1, 1.1, 1],
         transition: {

@@ -34,7 +34,7 @@ export function ProgramCard({
   }, [controls]);
 
   return (
-    <div className="relative perspective-1200">
+    <div className="relative perspective-1200 pb-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={controls}
@@ -161,17 +161,7 @@ export function ProgramCard({
       </motion.div>
       
       {isMobile && (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ 
-            opacity: dragStarted ? 0 : 0.8,
-            y: dragStarted ? 10 : 0
-          }}
-          transition={{ duration: 0.2 }}
-          className="absolute -bottom-8 left-0 right-0 text-center text-xs font-medium tracking-wide text-primary/70 pointer-events-none"
-        >
-          <SwipeIndicator />
-        </motion.div>
+        <SwipeIndicator />
       )}
     </div>
   );
