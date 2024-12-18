@@ -1,4 +1,10 @@
-import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Currency } from "@/types/program";
 
 interface CurrencySelectorProps {
@@ -7,23 +13,26 @@ interface CurrencySelectorProps {
 }
 
 export function CurrencySelector({ selectedCurrency, onCurrencyChange }: CurrencySelectorProps) {
+  const currencies: Currency[] = ['HUF', 'RON', 'EUR'];
+
   return (
-    <div className="flex gap-2 p-1 bg-secondary/80 rounded-lg shadow-sm">
-      {(['HUF', 'RON', 'EUR'] as Currency[]).map((currency) => (
-        <Button
-          key={currency}
-          variant={selectedCurrency === currency ? "default" : "ghost"}
-          size="sm"
-          onClick={() => onCurrencyChange(currency)}
-          className={`transition-all duration-200 font-medium ${
-            selectedCurrency === currency 
-              ? "text-primary-foreground" 
-              : "text-accent hover:text-accent-foreground"
-          }`}
-        >
-          {currency}
-        </Button>
-      ))}
-    </div>
+    <Select value={selectedCurrency} onValueChange={(value: Currency) => onCurrencyChange(value)}>
+      <SelectTrigger className="w-[140px] bg-white">
+        <SelectValue placeholder="Select currency">
+          {selectedCurrency}
+        </SelectValue>
+      </SelectTrigger>
+      <SelectContent className="bg-white">
+        {currencies.map((currency) => (
+          <SelectItem
+            key={currency}
+            value={currency}
+            className="cursor-pointer hover:bg-gray-100"
+          >
+            {currency}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }

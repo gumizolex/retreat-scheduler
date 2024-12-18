@@ -1,4 +1,10 @@
-import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Language } from "@/types/program";
 
 interface LanguageSelectorProps {
@@ -14,22 +20,23 @@ export function LanguageSelector({ currentLanguage, onLanguageChange }: Language
   };
 
   return (
-    <div className="flex gap-2 p-1 bg-secondary/80 rounded-lg shadow-sm">
-      {(Object.keys(languages) as Language[]).map((lang) => (
-        <Button
-          key={lang}
-          variant={currentLanguage === lang ? "default" : "ghost"}
-          size="sm"
-          onClick={() => onLanguageChange(lang)}
-          className={`transition-all duration-200 font-medium ${
-            currentLanguage === lang 
-              ? "text-primary-foreground" 
-              : "text-accent hover:text-accent-foreground"
-          }`}
-        >
-          {languages[lang]}
-        </Button>
-      ))}
-    </div>
+    <Select value={currentLanguage} onValueChange={(value: Language) => onLanguageChange(value)}>
+      <SelectTrigger className="w-[140px] bg-white">
+        <SelectValue placeholder="Select language">
+          {languages[currentLanguage]}
+        </SelectValue>
+      </SelectTrigger>
+      <SelectContent className="bg-white">
+        {(Object.keys(languages) as Language[]).map((lang) => (
+          <SelectItem
+            key={lang}
+            value={lang}
+            className="cursor-pointer hover:bg-gray-100"
+          >
+            {languages[lang]}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }
