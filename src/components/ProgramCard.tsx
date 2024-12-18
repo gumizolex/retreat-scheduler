@@ -50,7 +50,7 @@ export function ProgramCard({
         } : {}}
         transition={{ duration: 0.3 }}
         drag={isMobile ? "x" : false}
-        dragConstraints={{ left: -100, right: 100 }}
+        dragConstraints={{ left: -150, right: 150 }}
         onDragStart={() => setDragStarted(true)}
         onDragEnd={(e, info) => {
           setDragStarted(false);
@@ -104,7 +104,7 @@ export function ProgramCard({
         }}
         className="rounded-2xl overflow-hidden"
       >
-        <Card className="group relative overflow-hidden bg-white/90 backdrop-blur-sm border border-gray-100 hover:border-primary/20 transition-all duration-300 hover:shadow-xl rounded-2xl min-h-[480px]">
+        <Card className="group relative overflow-hidden bg-white/90 backdrop-blur-sm border border-gray-100 hover:border-primary/20 transition-all duration-300 hover:shadow-xl rounded-2xl min-h-[520px]">
           {isMobile && !dragStarted && (
             <motion.div 
               className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent"
