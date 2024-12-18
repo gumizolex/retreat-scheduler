@@ -31,8 +31,8 @@ export function DateTimePicker({ form, language, translations }: DateTimePickerP
         control={form.control}
         name="date"
         render={({ field }) => (
-          <FormItem className="flex flex-col">
-            <FormLabel className="text-accent font-medium mb-1">
+          <FormItem className="flex flex-col items-center">
+            <FormLabel className="text-accent font-medium mb-1 self-start">
               {translations[language].date}
             </FormLabel>
             <Calendar
@@ -41,7 +41,7 @@ export function DateTimePicker({ form, language, translations }: DateTimePickerP
               onSelect={field.onChange}
               disabled={(date) => date < new Date()}
               className={cn(
-                "rounded-lg border shadow-sm w-full scale-90 origin-top -mt-2 -mb-2",
+                "rounded-lg border shadow-sm w-[280px] scale-90 origin-top -mt-2 -mb-2",
                 "bg-white dark:bg-gray-800"
               )}
             />

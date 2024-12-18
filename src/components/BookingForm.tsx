@@ -160,7 +160,7 @@ export function BookingForm({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px] w-[90vw] mx-auto p-0 overflow-hidden bg-white rounded-xl fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+      <DialogContent className="sm:max-w-[400px] w-[90vw] mx-auto p-0 overflow-hidden bg-white rounded-xl">
         <div className="relative w-full">
           <button
             onClick={onClose}
