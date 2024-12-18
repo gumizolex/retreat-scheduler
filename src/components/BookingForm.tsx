@@ -1,10 +1,12 @@
 import { Form } from "@/components/ui/form";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Currency, Language } from "@/types/program";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import { X, Music, FileText, User } from "lucide-react";
 import { BookingFormFields } from "./booking/BookingFormFields";
 import { BookingPriceSummary } from "./booking/BookingPriceSummary";
 
@@ -19,6 +21,11 @@ interface BookingFormProps {
 
 const translations = {
   hu: {
+    steps: {
+      selectDate: "Időpont választása",
+      details: "Személyes adatok",
+      summary: "Összegzés"
+    },
     booking: "foglalás",
     name: "Név",
     namePlaceholder: "Az Ön neve",
@@ -35,9 +42,16 @@ const translations = {
     total: "Összesen",
     submit: "Foglalás véglegesítése",
     time: "Időpont",
-    selectTime: "Válasszon időpontot"
+    selectTime: "Válasszon időpontot",
+    next: "Következő",
+    back: "Vissza"
   },
   en: {
+    steps: {
+      selectDate: "Select Date",
+      details: "Personal Details",
+      summary: "Summary"
+    },
     booking: "booking",
     name: "Name",
     namePlaceholder: "Your name",
@@ -54,9 +68,16 @@ const translations = {
     total: "Total",
     submit: "Confirm Booking",
     time: "Time",
-    selectTime: "Select time"
+    selectTime: "Select time",
+    next: "Next",
+    back: "Back"
   },
   ro: {
+    steps: {
+      selectDate: "Selectează data",
+      details: "Date personale",
+      summary: "Sumar"
+    },
     booking: "rezervare",
     name: "Nume",
     namePlaceholder: "Numele dumneavoastră",
@@ -73,7 +94,9 @@ const translations = {
     total: "Total",
     submit: "Confirmă Rezervarea",
     time: "Ora",
-    selectTime: "Selectați ora"
+    selectTime: "Selectați ora",
+    next: "Următorul",
+    back: "Înapoi"
   }
 };
 
@@ -91,6 +114,7 @@ const getFormSchema = (t: typeof translations.hu) => z.object({
 });
 
 export function BookingForm({ isOpen, onClose, programTitle, pricePerPerson, currency, language }: BookingFormProps) {
+  const [step, setStep] = useState(0);
   const t = translations[language];
   const formSchema = getFormSchema(t);
 
@@ -105,6 +129,12 @@ export function BookingForm({ isOpen, onClose, programTitle, pricePerPerson, cur
     },
   });
 
+  const steps = [
+    { icon: Music, title: t.steps.selectDate },
+    { icon: FileText, title: t.steps.details },
+    { icon: User, title: t.steps.summary }
+  ];
+
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
     onClose();
@@ -115,38 +145,132 @@ export function BookingForm({ isOpen, onClose, programTitle, pricePerPerson, cur
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[400px] p-0 overflow-hidden bg-white rounded-xl">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="p-4"
-        >
-          <DialogHeader className="space-y-2 pb-4 border-b">
-            <DialogTitle className="text-xl font-display text-accent">
-              {programTitle} {t.booking}
-            </DialogTitle>
-          </DialogHeader>
+      <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden bg-white rounded-xl">
+        <div className="relative">
+          <button
+            onClick={onClose}
+            className="absolute right-4 top-4 p-2 rounded-full hover:bg-gray-100 transition-colors"
+          >
+            <X className="h-4 w-4 text-gray-500" />
+          </button>
           
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-4">
-              <BookingFormFields 
-                form={form}
-                t={t}
-                language={language}
-                translations={translations}
-              />
+          <div className="border-b">
+            <div className="container py-4">
+              <div className="flex justify-between items-center max-w-[80%] mx-auto">
+                {steps.map((s, idx) => (
+                  <div key={idx} className="flex flex-col items-center relative">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${idx === step ? 'bg-primary text-white' : 'bg-gray-100'}`}>
+                      <s.icon className="w-5 h-5" />
+                    </div>
+                    <span className={`text-sm mt-1 ${idx === step ? 'text-primary font-medium' : 'text-gray-500'}`}>
+                      {s.title}
+                    </span>
+                    {idx < steps.length - 1 && (
+                      <div className="absolute left-[50px] top-5 w-[100px] h-[2px] bg-gray-200" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
 
-              <BookingPriceSummary
-                totalPrice={totalPrice}
-                pricePerPerson={pricePerPerson}
-                currency={currency}
-                t={t}
-                onSubmit={form.handleSubmit(onSubmit)}
-              />
-            </form>
-          </Form>
-        </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="p-6"
+          >
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <AnimatePresence mode="wait">
+                  {step === 0 && (
+                    <motion.div
+                      key="step1"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      className="space-y-4"
+                    >
+                      <h2 className="text-2xl font-display text-accent mb-6">
+                        {programTitle} {t.booking}
+                      </h2>
+                      <BookingFormFields 
+                        form={form}
+                        t={t}
+                        language={language}
+                        translations={translations}
+                        showDateOnly
+                      />
+                      <div className="flex justify-end">
+                        <button
+                          type="button"
+                          onClick={() => setStep(1)}
+                          className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary/90 transition-colors"
+                        >
+                          {t.next}
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {step === 1 && (
+                    <motion.div
+                      key="step2"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      className="space-y-4"
+                    >
+                      <BookingFormFields 
+                        form={form}
+                        t={t}
+                        language={language}
+                        translations={translations}
+                        showPersonalInfo
+                      />
+                      <div className="flex justify-between">
+                        <button
+                          type="button"
+                          onClick={() => setStep(0)}
+                          className="text-gray-600 px-6 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+                        >
+                          {t.back}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setStep(2)}
+                          className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary/90 transition-colors"
+                        >
+                          {t.next}
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {step === 2 && (
+                    <motion.div
+                      key="step3"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      className="space-y-4"
+                    >
+                      <BookingPriceSummary
+                        totalPrice={totalPrice}
+                        pricePerPerson={pricePerPerson}
+                        currency={currency}
+                        t={t}
+                        onSubmit={form.handleSubmit(onSubmit)}
+                        showBackButton
+                        onBack={() => setStep(1)}
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </form>
+            </Form>
+          </motion.div>
+        </div>
       </DialogContent>
     </Dialog>
   );
