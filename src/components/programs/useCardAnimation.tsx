@@ -1,4 +1,4 @@
-import { useAnimation } from "framer-motion";
+import { useAnimation, PanInfo } from "framer-motion";
 import { useState, useEffect, RefObject } from "react";
 
 export const useCardAnimation = (cardRef: RefObject<HTMLDivElement>) => {
@@ -28,7 +28,6 @@ export const useCardAnimation = (cardRef: RefObject<HTMLDivElement>) => {
         rect1.top > rect2.bottom
       );
       
-      // Add extra margin to prevent cards from getting too close
       const margin = 20;
       const tooClose = Math.abs(rect1.left - rect2.left) < margin;
       
@@ -61,18 +60,18 @@ export const useCardAnimation = (cardRef: RefObject<HTMLDivElement>) => {
     }
   };
 
-  const handleDragEnd = (e: HTMLElement | null, info: { offset: { x: number } }) => {
+  const handleDragEnd = (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     setDragStarted(false);
     
-    if (!e) return;
+    if (!cardRef.current) return;
     
-    if (cardRef.current && checkCollision(cardRef.current)) {
+    if (checkCollision(cardRef.current)) {
       resetPosition();
       return;
     }
 
     if (Math.abs(info.offset.x) > 50) {
-      const carousel = e.closest('.embla');
+      const carousel = cardRef.current.closest('.embla');
       if (carousel) {
         controls.start({
           x: info.offset.x > 0 ? 200 : -200,
