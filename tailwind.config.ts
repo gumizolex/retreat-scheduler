@@ -41,7 +41,7 @@ export default {
           foreground: "hsl(var(--muted-foreground))",
         },
         accent: {
-          DEFAULT: "#654321",
+          DEFAULT: "#2D3748",  // Darker shade for better contrast
           foreground: "#FFFFFF",
         },
         card: {
