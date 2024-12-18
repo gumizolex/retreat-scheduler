@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, MapPin, Bike, Compass, Mountain, Wine } from "lucide-react";
 import { useState } from "react";
+import { BookingForm } from "./BookingForm";
 
 interface ProgramListProps {
   onLanguageChange?: (language: string) => void;
@@ -168,6 +169,7 @@ const programs = [
 
 export function ProgramList({ onLanguageChange }: ProgramListProps) {
   const [language, setLanguage] = useState("hu");
+  const [selectedProgram, setSelectedProgram] = useState<number | null>(null);
 
   const handleLanguageChange = (newLanguage: string) => {
     setLanguage(newLanguage);
@@ -233,9 +235,12 @@ export function ProgramList({ onLanguageChange }: ProgramListProps) {
               </CardContent>
               <CardFooter className="p-6 pt-0 flex justify-between items-center">
                 <span className="text-lg font-semibold">
-                  {program.price.toLocaleString()} Ft
+                  {program.price.toLocaleString()} Ft/fő
                 </span>
-                <Button variant="default">
+                <Button 
+                  variant="default"
+                  onClick={() => setSelectedProgram(program.id)}
+                >
                   {translations[language].bookButton}
                 </Button>
               </CardFooter>
@@ -243,6 +248,21 @@ export function ProgramList({ onLanguageChange }: ProgramListProps) {
           );
         })}
       </div>
+
+      {selectedProgram && (
+        <BookingForm
+          isOpen={selectedProgram !== null}
+          onClose={() => setSelectedProgram(null)}
+          programTitle={
+            translations[language].programs.find(
+              (p) => p.id === selectedProgram
+            )?.title || ""
+          }
+          pricePerPerson={
+            programs.find((p) => p.id === selectedProgram)?.price || 0
+          }
+        />
+      )}
     </div>
   );
 }
