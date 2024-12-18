@@ -53,7 +53,7 @@ export function DateTimePicker({ form, language, translations }: DateTimePickerP
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className="absolute right-0 top-0 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg border"
+                      className="absolute right-0 top-0 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-app-lg border border-gray-200"
                     >
                       <FormField
                         control={form.control}
@@ -65,13 +65,17 @@ export function DateTimePicker({ form, language, translations }: DateTimePickerP
                             </FormLabel>
                             <Select onValueChange={timeField.onChange} value={timeField.value}>
                               <FormControl>
-                                <SelectTrigger className="w-[140px]">
+                                <SelectTrigger className="w-[140px] bg-white dark:bg-gray-800">
                                   <SelectValue placeholder={translations[language].selectTime} />
                                 </SelectTrigger>
                               </FormControl>
-                              <SelectContent>
+                              <SelectContent className="bg-white dark:bg-gray-800 shadow-app-lg border-gray-200 z-50">
                                 {timeSlots.map((time) => (
-                                  <SelectItem key={time} value={time}>
+                                  <SelectItem 
+                                    key={time} 
+                                    value={time}
+                                    className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                                  >
                                     {time}
                                   </SelectItem>
                                 ))}
