@@ -15,6 +15,7 @@ interface ProgramCardProps {
   bookButtonText: string;
   onBook: (programId: number) => void;
   currency: Currency;
+  language: string;
 }
 
 export function ProgramCard({
@@ -23,7 +24,8 @@ export function ProgramCard({
   timesAvailableText,
   bookButtonText,
   onBook,
-  currency
+  currency,
+  language
 }: ProgramCardProps) {
   const isMobile = useIsMobile();
   const controls = useAnimation();
@@ -34,7 +36,7 @@ export function ProgramCard({
   }, [controls]);
 
   return (
-    <div className="relative perspective-1200 pb-6">
+    <div className="relative perspective-1200 pb-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={controls}
@@ -161,7 +163,7 @@ export function ProgramCard({
       </motion.div>
       
       {isMobile && (
-        <SwipeIndicator />
+        <SwipeIndicator language={language} />
       )}
     </div>
   );

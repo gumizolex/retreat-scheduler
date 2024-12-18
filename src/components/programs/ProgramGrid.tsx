@@ -8,7 +8,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { cn } from "@/lib/utils";
 
 interface ProgramGridProps {
   programs: Program[];
@@ -55,6 +54,7 @@ export function ProgramGrid({
                       bookButtonText={translations[language].bookButton}
                       onBook={onBookProgram}
                       currency={currency}
+                      language={language}
                     />
                   </div>
                 </CarouselItem>
@@ -83,6 +83,7 @@ export function ProgramGrid({
             bookButtonText={translations[language].bookButton}
             onBook={onBookProgram}
             currency={currency}
+            language={language}
           />
         );
       })}
