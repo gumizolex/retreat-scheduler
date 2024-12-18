@@ -103,3 +103,31 @@ html {
     @apply ring-0 ring-offset-0;
   }
 }
+
+/* 3D Transform Utilities */
+@layer utilities {
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+  
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+}
+
+/* Carousel Custom Styles */
+.embla {
+  @apply overflow-hidden;
+}
+
+.embla__container {
+  @apply flex touch-pan-y;
+}
+
+.embla__slide {
+  @apply flex-[0_0_100%] min-w-0;
+}

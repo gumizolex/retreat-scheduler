@@ -4,6 +4,7 @@ import { Calendar, Clock, MapPin } from "lucide-react";
 import { Program, TranslatedProgram, Currency } from "@/types/program";
 import { formatCurrency } from "@/utils/currency";
 import { motion } from "framer-motion";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ProgramCardProps {
   program: Program;
@@ -22,12 +23,29 @@ export function ProgramCard({
   onBook,
   currency
 }: ProgramCardProps) {
+  const isMobile = useIsMobile();
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -5 }}
+      whileHover={!isMobile ? { y: -5 } : {}}
       transition={{ duration: 0.3 }}
+      drag={isMobile ? "x" : false}
+      dragConstraints={{ left: 0, right: 0 }}
+      onDragEnd={(e, info) => {
+        if (Math.abs(info.offset.x) > 100) {
+          // Trigger next/previous slide
+          const carousel = e.currentTarget.closest('.embla');
+          if (carousel) {
+            if (info.offset.x > 0) {
+              carousel.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
+            } else {
+              carousel.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
+            }
+          }
+        }
+      }}
     >
       <Card className="group overflow-hidden bg-white/80 backdrop-blur-sm border border-gray-100 hover:border-primary/20 transition-all duration-300 hover:shadow-xl">
         <CardHeader className="p-0">
