@@ -62,16 +62,15 @@ export function ProgramGrid({
               );
             })}
           </CarouselContent>
-          <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-white/95 via-white/50 to-transparent pointer-events-none z-10 flex items-center justify-start pl-4">
-            <ChevronLeft className="w-6 h-6 text-primary/70 animate-pulse" />
+          <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-white/95 via-white/50 to-transparent pointer-events-none z-10 flex flex-col items-start justify-center gap-2 pl-4">
+            <ChevronLeft className="w-5 h-5 text-primary/40 animate-[pulse_2s_ease-in-out_infinite]" />
+            <ChevronLeft className="w-5 h-5 text-primary/60 animate-[pulse_2s_ease-in-out_infinite_0.3s]" />
+            <ChevronLeft className="w-5 h-5 text-primary/80 animate-[pulse_2s_ease-in-out_infinite_0.6s]" />
           </div>
-          <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-white/95 via-white/50 to-transparent pointer-events-none z-10 flex items-center justify-end pr-4">
-            <ChevronRight className="w-6 h-6 text-primary/70 animate-pulse" />
-          </div>
-          <div className="absolute -bottom-8 left-0 right-0 text-center text-xs font-medium tracking-wide text-primary/70 pointer-events-none flex items-center justify-center gap-2">
-            <ChevronLeft className="w-4 h-4" />
-            <span>Húzd jobbra vagy balra</span>
-            <ChevronRight className="w-4 h-4" />
+          <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-white/95 via-white/50 to-transparent pointer-events-none z-10 flex flex-col items-end justify-center gap-2 pr-4">
+            <ChevronRight className="w-5 h-5 text-primary/40 animate-[pulse_2s_ease-in-out_infinite]" />
+            <ChevronRight className="w-5 h-5 text-primary/60 animate-[pulse_2s_ease-in-out_infinite_0.3s]" />
+            <ChevronRight className="w-5 h-5 text-primary/80 animate-[pulse_2s_ease-in-out_infinite_0.6s]" />
           </div>
           <CarouselPrevious className="hidden" />
           <CarouselNext className="hidden" />
