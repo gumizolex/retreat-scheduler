@@ -19,7 +19,6 @@ const Index = () => {
 
         if (profile?.role === 'admin') {
           navigate('/admin');
-          return;
         }
       }
     };
