@@ -6,9 +6,11 @@ import * as z from "zod";
 import { Currency, Language } from "@/types/program";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import { X, Music, FileText, User } from "lucide-react";
+import { X, CalendarDays, FileText, User } from "lucide-react";
 import { BookingFormFields } from "./booking/BookingFormFields";
 import { BookingPriceSummary } from "./booking/BookingPriceSummary";
+import { BookingProgressSteps } from "./booking/BookingProgressSteps";
+import { BookingSummaryDetails } from "./booking/BookingSummaryDetails";
 
 interface BookingFormProps {
   isOpen: boolean;
@@ -44,7 +46,9 @@ const translations = {
     time: "Időpont",
     selectTime: "Válasszon időpontot",
     next: "Következő",
-    back: "Vissza"
+    back: "Vissza",
+    program: "Program",
+    bookingDetails: "Foglalás részletei"
   },
   en: {
     steps: {
@@ -70,7 +74,9 @@ const translations = {
     time: "Time",
     selectTime: "Select time",
     next: "Next",
-    back: "Back"
+    back: "Back",
+    program: "Program",
+    bookingDetails: "Booking Details"
   },
   ro: {
     steps: {
@@ -96,7 +102,9 @@ const translations = {
     time: "Ora",
     selectTime: "Selectați ora",
     next: "Următorul",
-    back: "Înapoi"
+    back: "Înapoi",
+    program: "Program",
+    bookingDetails: "Detalii Rezervare"
   }
 };
 
@@ -113,7 +121,14 @@ const getFormSchema = (t: typeof translations.hu) => z.object({
   }),
 });
 
-export function BookingForm({ isOpen, onClose, programTitle, pricePerPerson, currency, language }: BookingFormProps) {
+export function BookingForm({ 
+  isOpen, 
+  onClose, 
+  programTitle, 
+  pricePerPerson, 
+  currency, 
+  language 
+}: BookingFormProps) {
   const [step, setStep] = useState(0);
   const t = translations[language];
   const formSchema = getFormSchema(t);
@@ -130,7 +145,7 @@ export function BookingForm({ isOpen, onClose, programTitle, pricePerPerson, cur
   });
 
   const steps = [
-    { icon: Music, title: t.steps.selectDate },
+    { icon: CalendarDays, title: t.steps.selectDate },
     { icon: FileText, title: t.steps.details },
     { icon: User, title: t.steps.summary }
   ];
@@ -155,23 +170,7 @@ export function BookingForm({ isOpen, onClose, programTitle, pricePerPerson, cur
           </button>
           
           <div className="border-b">
-            <div className="container py-4">
-              <div className="flex justify-between items-center max-w-[80%] mx-auto">
-                {steps.map((s, idx) => (
-                  <div key={idx} className="flex flex-col items-center relative">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${idx === step ? 'bg-primary text-white' : 'bg-gray-100'}`}>
-                      <s.icon className="w-5 h-5" />
-                    </div>
-                    <span className={`text-sm mt-1 ${idx === step ? 'text-primary font-medium' : 'text-gray-500'}`}>
-                      {s.title}
-                    </span>
-                    {idx < steps.length - 1 && (
-                      <div className="absolute left-[50px] top-5 w-[100px] h-[2px] bg-gray-200" />
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
+            <BookingProgressSteps steps={steps} currentStep={step} />
           </div>
 
           <motion.div
@@ -255,6 +254,17 @@ export function BookingForm({ isOpen, onClose, programTitle, pricePerPerson, cur
                       exit={{ opacity: 0, x: -20 }}
                       className="space-y-4"
                     >
+                      <BookingSummaryDetails
+                        formData={{
+                          name: form.watch("name"),
+                          date: form.watch("date"),
+                          time: form.watch("time"),
+                          numberOfPeople: form.watch("numberOfPeople")
+                        }}
+                        programTitle={programTitle}
+                        language={language}
+                        t={t}
+                      />
                       <BookingPriceSummary
                         totalPrice={totalPrice}
                         pricePerPerson={pricePerPerson}
