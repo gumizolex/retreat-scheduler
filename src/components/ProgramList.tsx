@@ -4,6 +4,7 @@ import { LanguageSelector } from "./LanguageSelector";
 import { ProgramCard } from "./ProgramCard";
 import { Button } from "./ui/button";
 import { Language, Currency, Program, Translations } from "@/types/program";
+import { CurrencySelector } from "./CurrencySelector";
 
 const translations: Record<Language, Translations> = {
   en: {
@@ -164,7 +165,7 @@ const programs: Program[] = [
   },
 ];
 
-export function ProgramList({ onLanguageChange }: ProgramListProps) {
+export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: Language) => void }) {
   const [language, setLanguage] = useState<Language>("hu");
   const [selectedProgram, setSelectedProgram] = useState<number | null>(null);
   const [currency, setCurrency] = useState<Currency>("HUF");
@@ -175,35 +176,19 @@ export function ProgramList({ onLanguageChange }: ProgramListProps) {
   };
 
   return (
-    <div className="container mx-auto py-12">
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex gap-2">
-          <Button
-            variant={currency === "HUF" ? "default" : "outline"}
-            onClick={() => setCurrency("HUF")}
-          >
-            HUF
-          </Button>
-          <Button
-            variant={currency === "RON" ? "default" : "outline"}
-            onClick={() => setCurrency("RON")}
-          >
-            RON
-          </Button>
-          <Button
-            variant={currency === "EUR" ? "default" : "outline"}
-            onClick={() => setCurrency("EUR")}
-          >
-            EUR
-          </Button>
-        </div>
+    <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
+        <CurrencySelector 
+          selectedCurrency={currency} 
+          onCurrencyChange={setCurrency} 
+        />
         <LanguageSelector 
           currentLanguage={language}
           onLanguageChange={handleLanguageChange}
         />
       </div>
 
-      <h1 className="text-4xl font-display font-bold text-accent mb-8 text-center">
+      <h1 className="text-4xl font-display font-bold text-accent mb-12 text-center">
         {translations[language].pageTitle}
       </h1>
 

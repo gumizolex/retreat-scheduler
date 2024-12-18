@@ -7,26 +7,25 @@ interface LanguageSelectorProps {
 }
 
 export function LanguageSelector({ currentLanguage, onLanguageChange }: LanguageSelectorProps) {
+  const languages = {
+    hu: "Magyar",
+    en: "English",
+    ro: "Română"
+  };
+
   return (
-    <div className="flex justify-end mb-4 gap-2">
-      <Button
-        variant={currentLanguage === "hu" ? "default" : "outline"}
-        onClick={() => onLanguageChange("hu")}
-      >
-        Magyar
-      </Button>
-      <Button
-        variant={currentLanguage === "en" ? "default" : "outline"}
-        onClick={() => onLanguageChange("en")}
-      >
-        English
-      </Button>
-      <Button
-        variant={currentLanguage === "ro" ? "default" : "outline"}
-        onClick={() => onLanguageChange("ro")}
-      >
-        Română
-      </Button>
+    <div className="flex gap-2 p-1 bg-secondary/50 rounded-lg">
+      {(Object.keys(languages) as Language[]).map((lang) => (
+        <Button
+          key={lang}
+          variant={currentLanguage === lang ? "default" : "ghost"}
+          size="sm"
+          onClick={() => onLanguageChange(lang)}
+          className="transition-all duration-200"
+        >
+          {languages[lang]}
+        </Button>
+      ))}
     </div>
   );
 }

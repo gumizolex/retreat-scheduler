@@ -22,27 +22,30 @@ export function ProgramCard({
   currency
 }: ProgramCardProps) {
   return (
-    <Card className="program-card">
+    <Card className="program-card group hover:shadow-xl transition-all duration-300">
       <CardHeader className="p-0">
-        <img
-          src={program.image}
-          alt={translatedProgram.title}
-          className="w-full h-48 object-cover"
-        />
+        <div className="relative overflow-hidden aspect-video">
+          <img
+            src={program.image}
+            alt={translatedProgram.title}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        </div>
       </CardHeader>
       <CardContent className="p-6">
-        <CardTitle className="text-xl mb-2">{translatedProgram.title}</CardTitle>
-        <CardDescription className="mb-4">{translatedProgram.description}</CardDescription>
+        <CardTitle className="text-xl mb-3">{translatedProgram.title}</CardTitle>
+        <CardDescription className="mb-4 line-clamp-3">{translatedProgram.description}</CardDescription>
         <div className="space-y-2 text-sm">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 text-muted-foreground">
             <Clock className="w-4 h-4" />
             <span>{program.duration}</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 text-muted-foreground">
             <MapPin className="w-4 h-4" />
             <span>{program.location}</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 text-muted-foreground">
             <Calendar className="w-4 h-4" />
             <span>{timesAvailableText}</span>
           </div>
@@ -55,6 +58,7 @@ export function ProgramCard({
         <Button 
           variant="default"
           onClick={() => onBook(program.id)}
+          className="transition-all duration-200"
         >
           {bookButtonText}
         </Button>
