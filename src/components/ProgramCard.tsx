@@ -4,7 +4,7 @@ import { Program, TranslatedProgram, Currency } from "@/types/program";
 import { formatCurrency } from "@/utils/currency";
 import { motion, useAnimation } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ProgramDetails } from "./programs/ProgramDetails";
 import { SwipeIndicator } from "./programs/SwipeIndicator";
 
@@ -30,13 +30,48 @@ export function ProgramCard({
   const isMobile = useIsMobile();
   const controls = useAnimation();
   const [dragStarted, setDragStarted] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [initialPosition, setInitialPosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     controls.start({ opacity: 1, y: 0, x: 0 });
+    if (cardRef.current) {
+      const rect = cardRef.current.getBoundingClientRect();
+      setInitialPosition({ x: rect.left, y: rect.top });
+    }
   }, [controls]);
 
+  const checkCollision = (element: HTMLElement) => {
+    const rect1 = element.getBoundingClientRect();
+    const siblings = Array.from(element.parentElement?.children || [])
+      .filter(child => child !== element && child instanceof HTMLElement) as HTMLElement[];
+    
+    return siblings.some(sibling => {
+      const rect2 = sibling.getBoundingClientRect();
+      return !(
+        rect1.right < rect2.left || 
+        rect1.left > rect2.right || 
+        rect1.bottom < rect2.top || 
+        rect1.top > rect2.bottom
+      );
+    });
+  };
+
+  const resetPosition = () => {
+    controls.start({ 
+      x: 0,
+      opacity: 1,
+      transition: { 
+        type: "spring",
+        stiffness: 500,
+        damping: 30,
+        mass: 1
+      }
+    });
+  };
+
   return (
-    <div className="relative perspective-1200">
+    <div className="relative perspective-1200" ref={cardRef}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={controls}
@@ -61,10 +96,21 @@ export function ProgramCard({
         dragConstraints={{ left: -100, right: 100 }}
         dragElastic={0.1}
         onDragStart={() => setDragStarted(true)}
+        onDrag={(event, info) => {
+          if (cardRef.current && checkCollision(cardRef.current)) {
+            resetPosition();
+          }
+        }}
         onDragEnd={(e, info) => {
           setDragStarted(false);
+          const element = e.target as HTMLElement;
+          
+          if (cardRef.current && checkCollision(cardRef.current)) {
+            resetPosition();
+            return;
+          }
+
           if (Math.abs(info.offset.x) > 50) {
-            const element = e.target as HTMLElement;
             const carousel = element.closest('.embla');
             if (carousel) {
               controls.start({
@@ -91,15 +137,7 @@ export function ProgramCard({
               });
             }
           } else {
-            controls.start({ 
-              x: 0, 
-              opacity: 1,
-              transition: { 
-                type: "spring",
-                stiffness: 500,
-                damping: 30
-              }
-            });
+            resetPosition();
           }
         }}
         style={{ 
