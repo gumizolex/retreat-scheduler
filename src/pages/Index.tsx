@@ -1,8 +1,8 @@
-import { ProgramList } from "@/components/ProgramList";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { ProgramList } from "@/components/ProgramList";
 
 const Index = () => {
   const navigate = useNavigate();
