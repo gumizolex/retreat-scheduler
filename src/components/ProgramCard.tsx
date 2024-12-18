@@ -43,8 +43,8 @@ export function ProgramCard({
       transition: { duration: 0.3, type: "spring", stiffness: 300, damping: 30 }
     },
     centered: {
-      scale: 1.15,
-      y: -20,
+      scale: 1.05,
+      y: -10,
       rotateY: 0,
       zIndex: 10,
       transition: { duration: 0.3, type: "spring", stiffness: 300, damping: 30 }
@@ -106,7 +106,7 @@ export function ProgramCard({
           className="rounded-2xl overflow-hidden touch-pan-y transform-gpu backface-hidden"
           whileDrag={{
             rotateY: -15,
-            scale: 1.1,
+            scale: 1.05,
             zIndex: 20,
             transition: { duration: 0.1 }
           }}
