@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Language } from "@/types/program";
-import { LanguageSelector } from "@/components/LanguageSelector";
 
 const translations = {
   en: {
@@ -24,7 +23,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-secondary/20">
       <header className="sticky top-0 z-50 backdrop-blur-lg bg-white/80 shadow-sm">
-        <div className="container mx-auto px-4 py-2 sm:py-3 flex items-center justify-between">
+        <div className="container mx-auto px-4 py-2 sm:py-3 flex items-center justify-center">
           <motion.img 
             src="/abod-logo-dark.png" 
             alt="Abod Retreat"
@@ -32,10 +31,11 @@ const Index = () => {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-          />
-          <LanguageSelector 
-            currentLanguage={language} 
-            onLanguageChange={setLanguage}
+            onError={(e) => {
+              const text = document.createTextNode('Abod Retreat');
+              e.currentTarget.style.display = 'none';
+              e.currentTarget.parentNode?.insertBefore(text, e.currentTarget);
+            }}
           />
         </div>
       </header>
@@ -54,6 +54,23 @@ const Index = () => {
               <p className="text-xl sm:text-2xl text-gray-600 mb-8">
                 {translations[language].subtitle}
               </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="flex justify-center gap-4"
+            >
+              <select
+                value={language}
+                onChange={(e) => setLanguage(e.target.value as Language)}
+                className="px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-accent"
+              >
+                <option value="hu">Magyar</option>
+                <option value="en">English</option>
+                <option value="ro">Română</option>
+              </select>
             </motion.div>
           </div>
         </div>
