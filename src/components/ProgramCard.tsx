@@ -80,11 +80,11 @@ export function ProgramCard({
           perspective: "1200px",
           transformStyle: "preserve-3d"
         }}
-        whileDrag={(_, info) => ({
+        whileDrag={{
           scale: 0.95,
-          rotateY: (info?.offset?.x || 0) * 0.1,
+          rotateY: 0,
           transition: { duration: 0.1 }
-        })}
+        }}
       >
         <Card className="group relative overflow-hidden bg-white/90 backdrop-blur-sm border border-gray-100 hover:border-primary/20 transition-all duration-300 hover:shadow-xl">
           {isMobile && !dragStarted && (
