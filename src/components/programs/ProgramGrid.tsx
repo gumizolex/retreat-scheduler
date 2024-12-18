@@ -39,7 +39,6 @@ export function ProgramGrid({
               dragFree: false,
               containScroll: "trimSnaps",
               startIndex: 0,
-              spacing: 24, // Add fixed spacing between slides
             }}
             className="w-full relative overflow-visible px-4"
           >
