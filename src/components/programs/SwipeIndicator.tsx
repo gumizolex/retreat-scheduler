@@ -14,9 +14,11 @@ export function SwipeIndicator({ language }: SwipeIndicatorProps) {
 
   return (
     <motion.div
-      className="flex items-center justify-center gap-2 absolute -bottom-8 left-0 right-0 text-xs font-medium tracking-wide text-primary pointer-events-none"
+      className="flex items-center justify-center gap-2 absolute bottom-4 left-0 right-0 text-xs font-medium tracking-wide text-primary pointer-events-none bg-white/80 py-2 rounded-full mx-4"
+      initial={{ opacity: 0 }}
       animate={{
-        scale: [1, 1.1, 1],
+        opacity: 1,
+        scale: [1, 1.05, 1],
         transition: {
           repeat: Infinity,
           duration: 2,
@@ -25,15 +27,15 @@ export function SwipeIndicator({ language }: SwipeIndicatorProps) {
       }}
     >
       <div className="flex gap-1">
-        <ChevronLeft className="w-4 h-4 text-primary animate-[pulse_2s_ease-in-out_infinite]" />
-        <ChevronLeft className="w-4 h-4 text-primary animate-[pulse_2s_ease-in-out_infinite_0.3s]" />
-        <ChevronLeft className="w-4 h-4 text-primary animate-[pulse_2s_ease-in-out_infinite_0.6s]" />
+        <ChevronLeft className="w-4 h-4 text-primary" />
+        <ChevronLeft className="w-4 h-4 text-primary" />
+        <ChevronLeft className="w-4 h-4 text-primary" />
       </div>
-      <span>{text}</span>
+      <span className="font-semibold">{text}</span>
       <div className="flex gap-1">
-        <ChevronRight className="w-4 h-4 text-primary animate-[pulse_2s_ease-in-out_infinite]" />
-        <ChevronRight className="w-4 h-4 text-primary animate-[pulse_2s_ease-in-out_infinite_0.3s]" />
-        <ChevronRight className="w-4 h-4 text-primary animate-[pulse_2s_ease-in-out_infinite_0.6s]" />
+        <ChevronRight className="w-4 h-4 text-primary" />
+        <ChevronRight className="w-4 h-4 text-primary" />
+        <ChevronRight className="w-4 h-4 text-primary" />
       </div>
     </motion.div>
   );

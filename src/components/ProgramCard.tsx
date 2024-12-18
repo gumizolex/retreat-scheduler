@@ -36,7 +36,7 @@ export function ProgramCard({
   }, [controls]);
 
   return (
-    <div className="relative perspective-1200 pb-8">
+    <div className="relative perspective-1200">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={controls}
@@ -159,12 +159,12 @@ export function ProgramCard({
               {bookButtonText}
             </Button>
           </CardFooter>
+          
+          {isMobile && (
+            <SwipeIndicator language={language} />
+          )}
         </Card>
       </motion.div>
-      
-      {isMobile && (
-        <SwipeIndicator language={language} />
-      )}
     </div>
   );
 }
