@@ -24,6 +24,13 @@ const Index = () => {
             src="/abod-logo-white.png" 
             alt="Abod Retreat"
             className="h-32 mx-auto mb-6"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+              const text = document.createElement('h1');
+              text.className = 'text-4xl font-display font-bold mb-6';
+              text.textContent = 'Abod Retreat';
+              e.currentTarget.parentNode?.insertBefore(text, e.currentTarget);
+            }}
           />
           <p className="text-xl max-w-2xl mx-auto opacity-90">
             {translations[language].subtitle}
@@ -39,6 +46,13 @@ const Index = () => {
             src="/abod-logo-dark.png" 
             alt="Abod Retreat"
             className="h-16 mx-auto mb-4 opacity-80"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+              const text = document.createElement('h2');
+              text.className = 'text-2xl font-display font-bold mb-4';
+              text.textContent = 'Abod Retreat';
+              e.currentTarget.parentNode?.insertBefore(text, e.currentTarget);
+            }}
           />
           <p>© 2024 Abod Retreat. Minden jog fenntartva.</p>
         </div>
