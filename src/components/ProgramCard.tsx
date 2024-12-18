@@ -43,8 +43,8 @@ export function ProgramCard({
       transition: { duration: 0.3, type: "spring", stiffness: 300, damping: 30 }
     },
     centered: {
-      scale: 1.05,
-      y: -10,
+      scale: 1.02,
+      y: -5,
       rotateY: 0,
       zIndex: 10,
       transition: { duration: 0.3, type: "spring", stiffness: 300, damping: 30 }
@@ -106,7 +106,7 @@ export function ProgramCard({
           className="rounded-2xl overflow-hidden touch-pan-y transform-gpu backface-hidden"
           whileDrag={{
             rotateY: -15,
-            scale: 1.05,
+            scale: 1.02,
             zIndex: 20,
             transition: { duration: 0.1 }
           }}
@@ -115,7 +115,7 @@ export function ProgramCard({
             group relative overflow-hidden bg-white/90 backdrop-blur-sm 
             border border-gray-100
             min-h-[480px] sm:min-h-[520px] flex flex-col
-            ${isCentered && isMobile ? 'shadow-xl border-primary/30' : 'hover:shadow-lg hover:border-primary/20'}
+            ${isCentered && isMobile ? 'shadow-lg border-primary/20' : 'hover:shadow-lg hover:border-primary/20'}
             preserve-3d backface-hidden
           `}>
             <CardHeader className="p-0">
