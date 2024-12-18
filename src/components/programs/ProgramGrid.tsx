@@ -42,7 +42,7 @@ export function ProgramGrid({
             }}
             className="w-full relative overflow-visible px-4"
           >
-            <CarouselContent className="-ml-4">
+            <CarouselContent className="-ml-8">
               {programs.map((program) => {
                 const translatedProgram = translations[language].programs.find(
                   (p) => p.id === program.id
@@ -50,17 +50,19 @@ export function ProgramGrid({
                 return (
                   <CarouselItem
                     key={program.id}
-                    className="pl-4 min-w-[280px] max-w-[340px] md:min-w-[320px] md:max-w-[380px]"
+                    className="pl-8 min-w-[280px] max-w-[340px] md:min-w-[320px] md:max-w-[380px] flex-shrink-0"
                   >
-                    <ProgramCard
-                      program={program}
-                      translatedProgram={translatedProgram}
-                      timesAvailableText={translations[language].timesAvailable}
-                      bookButtonText={translations[language].bookButton}
-                      onBook={onBookProgram}
-                      currency={currency}
-                      language={language}
-                    />
+                    <div className="w-full">
+                      <ProgramCard
+                        program={program}
+                        translatedProgram={translatedProgram}
+                        timesAvailableText={translations[language].timesAvailable}
+                        bookButtonText={translations[language].bookButton}
+                        onBook={onBookProgram}
+                        currency={currency}
+                        language={language}
+                      />
+                    </div>
                   </CarouselItem>
                 );
               })}
