@@ -10,6 +10,7 @@ const Index = () => {
   useEffect(() => {
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
+      
       if (session) {
         const { data: profile } = await supabase
           .from('profiles')
@@ -19,6 +20,7 @@ const Index = () => {
 
         if (profile?.role === 'admin') {
           navigate('/admin');
+          return;
         }
       }
     };
