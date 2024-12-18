@@ -160,8 +160,8 @@ export function BookingForm({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden bg-white rounded-xl">
-        <div className="relative">
+      <DialogContent className="sm:max-w-[600px] w-[95vw] mx-auto p-0 overflow-hidden bg-white rounded-xl fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+        <div className="relative w-full">
           <button
             onClick={onClose}
             className="absolute right-4 top-4 p-2 rounded-full hover:bg-gray-100 transition-colors"
@@ -169,7 +169,7 @@ export function BookingForm({
             <X className="h-4 w-4 text-gray-500" />
           </button>
           
-          <div className="border-b">
+          <div className="border-b w-full">
             <BookingProgressSteps steps={steps} currentStep={step} />
           </div>
 
@@ -177,10 +177,10 @@ export function BookingForm({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="p-6"
+            className="p-4 sm:p-6 w-full"
           >
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full">
                 <AnimatePresence mode="wait">
                   {step === 0 && (
                     <motion.div
@@ -188,9 +188,9 @@ export function BookingForm({
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -20 }}
-                      className="space-y-4"
+                      className="space-y-4 w-full"
                     >
-                      <h2 className="text-2xl font-display text-accent mb-6">
+                      <h2 className="text-xl sm:text-2xl font-display text-accent mb-6">
                         {programTitle} {t.booking}
                       </h2>
                       <BookingFormFields 
@@ -218,7 +218,7 @@ export function BookingForm({
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -20 }}
-                      className="space-y-4"
+                      className="space-y-4 w-full"
                     >
                       <BookingFormFields 
                         form={form}
@@ -252,7 +252,7 @@ export function BookingForm({
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -20 }}
-                      className="space-y-4"
+                      className="space-y-4 w-full"
                     >
                       <BookingSummaryDetails
                         formData={{
