@@ -1,33 +1,42 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, MapPin } from "lucide-react";
+import { Calendar, Clock, MapPin, Hiking, Ski, Wine, Bread } from "lucide-react";
 
 const programs = [
   {
     id: 1,
-    title: "Lovaglás",
-    description: "Fedezze fel Abod gyönyörű tájait lóháton képzett oktatóinkkal.",
-    price: 15000,
-    duration: "2 óra",
-    location: "Abod Lovasközpont",
+    title: "Wildlife Walks",
+    description: "Explore and discover local wildlife on guided walks through the natural beauty surrounding our village.",
+    price: 12000,
+    duration: "3 óra",
+    location: "Abod környéke",
     image: "/placeholder.svg",
   },
   {
     id: 2,
-    title: "Parajdi sóbánya látogatás",
-    description: "Látogasson el Európa egyik legnagyobb sóbányájába szakértő vezetéssel.",
-    price: 12000,
+    title: "Skiing",
+    description: "Experience the thrill of skiing on nearby slopes, suitable for both beginners and your young ones during the winter.",
+    price: 18000,
     duration: "4 óra",
-    location: "Parajd",
+    location: "Abod Sípálya",
     image: "/placeholder.svg",
   },
   {
     id: 3,
-    title: "Kenyérsütés",
-    description: "Tanuljon hagyományos erdélyi kenyérsütést helyi mesterektől.",
+    title: "Bread-Baking",
+    description: "Engage in traditional bread-baking, learning age-old techniques from local experts in a home setting.",
     price: 8000,
     duration: "3 óra",
     location: "Abod Pékség",
+    image: "/placeholder.svg",
+  },
+  {
+    id: 4,
+    title: "Wine Tasting",
+    description: "Delight in a selection of fine regional wines, carefully chosen to represent the best of Transylvania's vineyards.",
+    price: 15000,
+    duration: "2 óra",
+    location: "Abod Borpince",
     image: "/placeholder.svg",
   },
 ];
