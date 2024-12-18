@@ -9,6 +9,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface ProgramGridProps {
   programs: Program[];
@@ -61,8 +62,17 @@ export function ProgramGrid({
               );
             })}
           </CarouselContent>
-          <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-white/95 via-white/50 to-transparent pointer-events-none z-10" />
-          <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-white/95 via-white/50 to-transparent pointer-events-none z-10" />
+          <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-white/95 via-white/50 to-transparent pointer-events-none z-10 flex items-center justify-start pl-4">
+            <ChevronLeft className="w-6 h-6 text-primary/70 animate-pulse" />
+          </div>
+          <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-white/95 via-white/50 to-transparent pointer-events-none z-10 flex items-center justify-end pr-4">
+            <ChevronRight className="w-6 h-6 text-primary/70 animate-pulse" />
+          </div>
+          <div className="absolute -bottom-8 left-0 right-0 text-center text-xs font-medium tracking-wide text-primary/70 pointer-events-none flex items-center justify-center gap-2">
+            <ChevronLeft className="w-4 h-4" />
+            <span>Húzd jobbra vagy balra</span>
+            <ChevronRight className="w-4 h-4" />
+          </div>
           <CarouselPrevious className="hidden" />
           <CarouselNext className="hidden" />
         </Carousel>
