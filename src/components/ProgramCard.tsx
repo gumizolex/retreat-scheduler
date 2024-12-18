@@ -39,13 +39,13 @@ export function ProgramCard({
       scale: 1,
       y: 0,
       zIndex: 0,
-      transition: { duration: 0.3, ease: "easeOut" }
+      transition: { duration: 0.6, ease: "easeInOut" }
     },
     centered: {
       scale: 1.15,
       y: -20,
       zIndex: 10,
-      transition: { duration: 0.3, ease: "easeOut" }
+      transition: { duration: 0.6, ease: "easeInOut" }
     }
   };
 
@@ -53,7 +53,8 @@ export function ProgramCard({
     initial: { 
       scale: 0.95,
       opacity: 0.8,
-      y: 10
+      y: 10,
+      transition: { duration: 0.6, ease: "easeInOut" }
     },
     hover: { 
       scale: 1.02,
@@ -61,8 +62,9 @@ export function ProgramCard({
       y: -5,
       transition: {
         type: "spring",
-        stiffness: 400,
-        damping: 25
+        stiffness: 200,
+        damping: 25,
+        duration: 0.6
       }
     },
     tap: { 
@@ -70,8 +72,9 @@ export function ProgramCard({
       opacity: 0.9,
       transition: {
         type: "spring",
-        stiffness: 400,
-        damping: 25
+        stiffness: 200,
+        damping: 25,
+        duration: 0.6
       }
     }
   };
@@ -94,13 +97,13 @@ export function ProgramCard({
           style={{ transformStyle: "preserve-3d" }}
           className={`
             rounded-2xl overflow-hidden touch-pan-y transform-gpu
-            transition-all duration-300
+            transition-all duration-600
           `}
         >
           <Card className={`
             group relative overflow-hidden bg-white/90 backdrop-blur-sm 
             border border-gray-100
-            transition-all duration-300
+            transition-all duration-600
             min-h-[480px] sm:min-h-[520px] flex flex-col
             ${isCentered && isMobile ? 'shadow-xl border-primary/30' : 'hover:shadow-lg hover:border-primary/20'}
           `}>
@@ -112,20 +115,20 @@ export function ProgramCard({
                   className="w-full h-full object-cover"
                   animate={{
                     scale: (isMobile && isCentered) ? 1.05 : 1,
-                    transition: { duration: 0.3 }
+                    transition: { duration: 0.6, ease: "easeInOut" }
                   }}
                 />
                 <motion.div 
                   className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"
                   animate={{
                     opacity: (isMobile && isCentered) ? 0.6 : 0,
-                    transition: { duration: 0.3 }
+                    transition: { duration: 0.6, ease: "easeInOut" }
                   }}
                 />
               </div>
             </CardHeader>
             <CardContent className="p-4 sm:p-6 flex-grow">
-              <CardTitle className="text-lg sm:text-xl mb-2 sm:mb-3 font-display text-accent group-hover:text-primary transition-colors duration-300">
+              <CardTitle className="text-lg sm:text-xl mb-2 sm:mb-3 font-display text-accent group-hover:text-primary transition-colors duration-600">
                 {translatedProgram.title}
               </CardTitle>
               <CardDescription className="mb-3 sm:mb-4 line-clamp-3 text-accent/80 text-sm sm:text-base">
@@ -144,7 +147,7 @@ export function ProgramCard({
               <Button 
                 variant="default"
                 onClick={() => onBook(program.id)}
-                className="w-full bg-primary hover:bg-primary/90 text-white transition-all duration-300 hover:shadow-lg text-sm sm:text-base py-2 sm:py-3"
+                className="w-full bg-primary hover:bg-primary/90 text-white transition-all duration-600 hover:shadow-lg text-sm sm:text-base py-2 sm:py-3"
               >
                 {bookButtonText}
               </Button>
