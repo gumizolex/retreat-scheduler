@@ -108,7 +108,7 @@ export function BookingForm({ isOpen, onClose, programTitle, pricePerPerson, cur
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent className="overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>{programTitle} {t.booking}</SheetTitle>
+          <SheetTitle className="text-accent font-semibold">{programTitle} {t.booking}</SheetTitle>
         </SheetHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-6">
@@ -117,11 +117,11 @@ export function BookingForm({ isOpen, onClose, programTitle, pricePerPerson, cur
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t.name}</FormLabel>
+                  <FormLabel className="text-accent font-medium">{t.name}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t.namePlaceholder} {...field} />
+                    <Input placeholder={t.namePlaceholder} {...field} className="text-accent" />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-destructive" />
                 </FormItem>
               )}
             />
@@ -131,11 +131,11 @@ export function BookingForm({ isOpen, onClose, programTitle, pricePerPerson, cur
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t.phone}</FormLabel>
+                  <FormLabel className="text-accent font-medium">{t.phone}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t.phonePlaceholder} {...field} />
+                    <Input placeholder={t.phonePlaceholder} {...field} className="text-accent" />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-destructive" />
                 </FormItem>
               )}
             />
@@ -145,11 +145,11 @@ export function BookingForm({ isOpen, onClose, programTitle, pricePerPerson, cur
               name="bookingNumber"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t.bookingNumber}</FormLabel>
+                  <FormLabel className="text-accent font-medium">{t.bookingNumber}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t.bookingNumberPlaceholder} {...field} />
+                    <Input placeholder={t.bookingNumberPlaceholder} {...field} className="text-accent" />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-destructive" />
                 </FormItem>
               )}
             />
@@ -159,16 +159,17 @@ export function BookingForm({ isOpen, onClose, programTitle, pricePerPerson, cur
               name="numberOfPeople"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t.numberOfPeople}</FormLabel>
+                  <FormLabel className="text-accent font-medium">{t.numberOfPeople}</FormLabel>
                   <FormControl>
                     <Input 
                       type="number" 
                       min={1}
                       {...field}
                       onChange={e => field.onChange(parseInt(e.target.value))}
+                      className="text-accent"
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-destructive" />
                 </FormItem>
               )}
             />
@@ -178,7 +179,7 @@ export function BookingForm({ isOpen, onClose, programTitle, pricePerPerson, cur
               name="date"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>{t.date}</FormLabel>
+                  <FormLabel className="text-accent font-medium">{t.date}</FormLabel>
                   <Calendar
                     mode="single"
                     selected={field.value}
@@ -186,14 +187,14 @@ export function BookingForm({ isOpen, onClose, programTitle, pricePerPerson, cur
                     disabled={(date) => date < new Date()}
                     className="rounded-md border"
                   />
-                  <FormMessage />
+                  <FormMessage className="text-destructive" />
                 </FormItem>
               )}
             />
 
-            <div className="text-lg font-semibold">
+            <div className="text-lg font-semibold text-accent">
               {t.total}: {formatCurrency(totalPrice, currency)}
-              <span className="text-sm font-normal ml-2">({formatCurrency(pricePerPerson, currency)}{t.perPerson})</span>
+              <span className="text-sm font-normal ml-2 text-accent">({formatCurrency(pricePerPerson, currency)}{t.perPerson})</span>
             </div>
 
             <Button type="submit" className="w-full">
