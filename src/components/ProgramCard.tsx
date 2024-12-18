@@ -5,7 +5,7 @@ import { Program, TranslatedProgram, Currency } from "@/types/program";
 import { formatCurrency } from "@/utils/currency";
 import { motion, useAnimation } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface ProgramCardProps {
   program: Program;
@@ -28,9 +28,10 @@ export function ProgramCard({
   const controls = useAnimation();
   const [dragStarted, setDragStarted] = useState(false);
 
-  // Set initial animation state
-  controls.set({ opacity: 0, y: 20 });
-  controls.start({ opacity: 1, y: 0 });
+  useEffect(() => {
+    controls.set({ opacity: 0, y: 20 });
+    controls.start({ opacity: 1, y: 0 });
+  }, [controls]);
 
   return (
     <motion.div
