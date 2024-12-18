@@ -33,11 +33,21 @@ export function ProgramCard({
   }, [controls]);
 
   return (
-    <div className="relative">
+    <div className="relative perspective-1200">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={controls}
-        whileHover={!isMobile ? { y: -5 } : {}}
+        whileHover={!isMobile ? { 
+          y: -5,
+          rotateY: [-1, 1],
+          transition: {
+            rotateY: {
+              repeat: Infinity,
+              repeatType: "reverse",
+              duration: 2
+            }
+          }
+        } : {}}
         transition={{ duration: 0.3 }}
         drag={isMobile ? "x" : false}
         dragConstraints={{ left: 0, right: 0 }}
@@ -51,7 +61,8 @@ export function ProgramCard({
               controls.start({
                 x: info.offset.x > 0 ? 300 : -300,
                 opacity: 0,
-                scale: 0.8,
+                rotateY: info.offset.x > 0 ? 15 : -15,
+                scale: 0.9,
                 transition: { duration: 0.4, ease: "easeOut" }
               }).then(() => {
                 if (info.offset.x > 0) {
@@ -65,6 +76,7 @@ export function ProgramCard({
             controls.start({ 
               x: 0, 
               opacity: 1,
+              rotateY: 0,
               scale: 1,
               transition: { 
                 type: "spring",
@@ -79,11 +91,19 @@ export function ProgramCard({
         }}
         whileDrag={{
           scale: 0.98,
-          transition: { duration: 0.1 }
+          rotateY: dragStarted ? 0 : [-2, 2],
+          transition: { 
+            duration: 0.2,
+            rotateY: {
+              repeat: Infinity,
+              repeatType: "reverse",
+              duration: 1
+            }
+          }
         }}
         className="rounded-2xl overflow-hidden"
       >
-        <Card className="group relative overflow-hidden bg-white/90 backdrop-blur-sm border border-gray-100 hover:border-primary/20 transition-all duration-300 hover:shadow-xl rounded-2xl">
+        <Card className="group relative overflow-hidden bg-white/90 backdrop-blur-sm border border-gray-100 hover:border-primary/20 transition-all duration-300 hover:shadow-xl rounded-2xl min-h-[480px]">
           {isMobile && !dragStarted && (
             <motion.div 
               className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent"
