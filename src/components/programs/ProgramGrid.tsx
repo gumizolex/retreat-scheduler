@@ -35,7 +35,7 @@ export function ProgramGrid({
             align: "center",
             loop: true,
           }}
-          className="w-full"
+          className="w-full relative"
         >
           <CarouselContent className="-ml-2 md:-ml-4">
             {programs.map((program, index) => {
@@ -47,13 +47,7 @@ export function ProgramGrid({
                   key={program.id}
                   className="pl-2 md:pl-4 basis-full"
                 >
-                  <div
-                    className={cn(
-                      "transform transition-transform duration-300",
-                      "perspective-1000 preserve-3d",
-                      "hover:scale-105"
-                    )}
-                  >
+                  <div className="relative">
                     <ProgramCard
                       program={program}
                       translatedProgram={translatedProgram}
@@ -67,6 +61,8 @@ export function ProgramGrid({
               );
             })}
           </CarouselContent>
+          <div className="absolute inset-y-0 -left-4 w-12 bg-gradient-to-r from-white/80 to-transparent pointer-events-none z-10" />
+          <div className="absolute inset-y-0 -right-4 w-12 bg-gradient-to-l from-white/80 to-transparent pointer-events-none z-10" />
           <CarouselPrevious className="hidden" />
           <CarouselNext className="hidden" />
         </Carousel>

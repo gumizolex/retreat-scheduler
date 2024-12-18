@@ -51,7 +51,6 @@ export function ProgramCard({
               controls.start({
                 x: info.offset.x > 0 ? 300 : -300,
                 opacity: 0,
-                rotateY: info.offset.x > 0 ? 30 : -30,
                 scale: 0.8,
                 transition: { duration: 0.4, ease: "easeOut" }
               }).then(() => {
@@ -65,8 +64,7 @@ export function ProgramCard({
           } else {
             controls.start({ 
               x: 0, 
-              opacity: 1, 
-              rotateY: 0, 
+              opacity: 1,
               scale: 1,
               transition: { 
                 type: "spring",
@@ -77,19 +75,18 @@ export function ProgramCard({
           }
         }}
         style={{ 
-          perspective: "1200px",
           transformStyle: "preserve-3d"
         }}
         whileDrag={{
-          scale: 0.95,
-          rotateY: 0,
+          scale: 0.98,
           transition: { duration: 0.1 }
         }}
+        className="rounded-2xl overflow-hidden"
       >
-        <Card className="group relative overflow-hidden bg-white/90 backdrop-blur-sm border border-gray-100 hover:border-primary/20 transition-all duration-300 hover:shadow-xl">
+        <Card className="group relative overflow-hidden bg-white/90 backdrop-blur-sm border border-gray-100 hover:border-primary/20 transition-all duration-300 hover:shadow-xl rounded-2xl">
           {isMobile && !dragStarted && (
             <motion.div 
-              className="absolute inset-0 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5"
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent"
               initial={{ opacity: 0 }}
               animate={{ 
                 opacity: [0.3, 0, 0.3],
@@ -104,11 +101,11 @@ export function ProgramCard({
           )}
           
           <CardHeader className="p-0">
-            <div className="relative overflow-hidden aspect-video">
+            <div className="relative overflow-hidden aspect-video rounded-t-2xl">
               <img
                 src={program.image}
                 alt={translatedProgram.title}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
