@@ -32,7 +32,7 @@ export function ProgramCard({
   const [dragStarted, setDragStarted] = useState(false);
 
   useEffect(() => {
-    controls.start({ opacity: 1, y: 0 });
+    controls.start({ opacity: 1, y: 0, x: 0 });
   }, [controls]);
 
   return (
@@ -51,40 +51,46 @@ export function ProgramCard({
             }
           }
         } : {}}
-        transition={{ duration: 0.3 }}
+        transition={{ 
+          duration: 0.3,
+          type: "spring",
+          stiffness: 500,
+          damping: 30
+        }}
         drag={isMobile ? "x" : false}
-        dragConstraints={{ left: -150, right: 150 }}
+        dragConstraints={{ left: -100, right: 100 }}
+        dragElastic={0.1}
         onDragStart={() => setDragStarted(true)}
         onDragEnd={(e, info) => {
           setDragStarted(false);
-          if (Math.abs(info.offset.x) > 100) {
+          if (Math.abs(info.offset.x) > 50) {
             const element = e.target as HTMLElement;
             const carousel = element.closest('.embla');
             if (carousel) {
               controls.start({
-                x: info.offset.x > 0 ? 300 : -300,
+                x: info.offset.x > 0 ? 200 : -200,
                 opacity: 0,
-                rotateY: info.offset.x > 0 ? 15 : -15,
-                scale: 0.9,
-                transition: { duration: 0.4, ease: "easeOut" }
+                transition: { 
+                  duration: 0.3,
+                  ease: "easeOut"
+                }
               }).then(() => {
                 if (info.offset.x > 0) {
                   carousel.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
                 } else {
                   carousel.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
                 }
+                controls.start({ x: 0, opacity: 1 });
               });
             }
           } else {
             controls.start({ 
               x: 0, 
               opacity: 1,
-              rotateY: 0,
-              scale: 1,
               transition: { 
                 type: "spring",
-                stiffness: 200,
-                damping: 20
+                stiffness: 500,
+                damping: 30
               }
             });
           }
@@ -95,14 +101,8 @@ export function ProgramCard({
         }}
         whileDrag={{
           scale: 0.98,
-          rotateY: dragStarted ? 0 : [-2, 2],
           transition: { 
-            duration: 0.2,
-            rotateY: {
-              repeat: Infinity,
-              repeatType: "reverse",
-              duration: 1
-            }
+            duration: 0.2
           }
         }}
         className="rounded-2xl overflow-hidden"
