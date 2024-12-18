@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -9,6 +8,7 @@ import * as z from "zod";
 import { Currency, Language } from "@/types/program";
 import { formatCurrency } from "@/utils/currency";
 import { motion } from "framer-motion";
+import { DateTimePicker } from "./DateTimePicker";
 
 interface BookingFormProps {
   isOpen: boolean;
@@ -35,7 +35,9 @@ const translations = {
     dateError: "Kérjük válasszon dátumot",
     perPerson: "/fő",
     total: "Összesen",
-    submit: "Foglalás véglegesítése"
+    submit: "Foglalás véglegesítése",
+    time: "Időpont",
+    selectTime: "Válasszon időpontot"
   },
   en: {
     booking: "booking",
@@ -52,7 +54,9 @@ const translations = {
     dateError: "Please select a date",
     perPerson: "/person",
     total: "Total",
-    submit: "Confirm Booking"
+    submit: "Confirm Booking",
+    time: "Time",
+    selectTime: "Select time"
   },
   ro: {
     booking: "rezervare",
@@ -69,7 +73,9 @@ const translations = {
     dateError: "Vă rugăm să selectați o dată",
     perPerson: "/persoană",
     total: "Total",
-    submit: "Confirmă Rezervarea"
+    submit: "Confirmă Rezervarea",
+    time: "Ora",
+    selectTime: "Selectați ora"
   }
 };
 
@@ -80,6 +86,9 @@ const getFormSchema = (t: typeof translations.hu) => z.object({
   numberOfPeople: z.number().min(1, { message: "1" }),
   date: z.date({
     required_error: t.dateError,
+  }),
+  time: z.string({
+    required_error: "Please select a time",
   }),
 });
 
@@ -94,6 +103,7 @@ export function BookingForm({ isOpen, onClose, programTitle, pricePerPerson, cur
       phone: "",
       bookingNumber: "",
       numberOfPeople: 1,
+      time: "",
     },
   });
 
@@ -198,22 +208,10 @@ export function BookingForm({ isOpen, onClose, programTitle, pricePerPerson, cur
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="date"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel className="text-accent font-medium">{t.date}</FormLabel>
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) => date < new Date()}
-                        className="rounded-lg border shadow-sm hover:shadow-md transition-shadow duration-300"
-                      />
-                      <FormMessage className="text-destructive" />
-                    </FormItem>
-                  )}
+                <DateTimePicker 
+                  form={form}
+                  language={language}
+                  translations={translations}
                 />
               </motion.div>
 
