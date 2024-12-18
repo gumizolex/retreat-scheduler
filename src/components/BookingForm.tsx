@@ -115,21 +115,21 @@ export function BookingForm({ isOpen, onClose, programTitle, pricePerPerson, cur
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden bg-white rounded-xl">
+      <DialogContent className="sm:max-w-[400px] p-0 overflow-hidden bg-white rounded-xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className="p-6"
+          className="p-4"
         >
-          <DialogHeader className="space-y-4 pb-6 border-b">
-            <DialogTitle className="text-2xl font-display text-accent">
+          <DialogHeader className="space-y-2 pb-4 border-b">
+            <DialogTitle className="text-xl font-display text-accent">
               {programTitle} {t.booking}
             </DialogTitle>
           </DialogHeader>
           
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-4">
               <BookingFormFields 
                 form={form}
                 t={t}
