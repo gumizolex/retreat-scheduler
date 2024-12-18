@@ -29,7 +29,7 @@ export function ProgramGrid({
 
   if (isMobile) {
     return (
-      <div className="w-full max-w-4xl mx-auto px-12">
+      <div className="w-full max-w-5xl mx-auto px-4">
         <Carousel
           opts={{
             align: "center",
@@ -37,7 +37,7 @@ export function ProgramGrid({
           }}
           className="w-full relative overflow-visible"
         >
-          <CarouselContent className="-ml-4 md:-ml-6">
+          <CarouselContent className="-ml-2">
             {programs.map((program) => {
               const translatedProgram = translations[language].programs.find(
                 (p) => p.id === program.id
@@ -45,7 +45,7 @@ export function ProgramGrid({
               return (
                 <CarouselItem
                   key={program.id}
-                  className="pl-4 md:pl-6 basis-full"
+                  className="pl-2 basis-[85%] first:ml-[7.5%] last:mr-[7.5%]"
                 >
                   <div className="relative">
                     <ProgramCard
@@ -61,8 +61,8 @@ export function ProgramGrid({
               );
             })}
           </CarouselContent>
-          <div className="absolute inset-y-0 -left-8 w-24 bg-gradient-to-r from-white/90 to-transparent pointer-events-none z-10" />
-          <div className="absolute inset-y-0 -right-8 w-24 bg-gradient-to-l from-white/90 to-transparent pointer-events-none z-10" />
+          <div className="absolute inset-y-0 -left-12 w-32 bg-gradient-to-r from-white/95 to-transparent pointer-events-none z-10" />
+          <div className="absolute inset-y-0 -right-12 w-32 bg-gradient-to-l from-white/95 to-transparent pointer-events-none z-10" />
           <CarouselPrevious className="hidden" />
           <CarouselNext className="hidden" />
         </Carousel>

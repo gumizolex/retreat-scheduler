@@ -50,7 +50,7 @@ export function ProgramCard({
         } : {}}
         transition={{ duration: 0.3 }}
         drag={isMobile ? "x" : false}
-        dragConstraints={{ left: 0, right: 0 }}
+        dragConstraints={{ left: -100, right: 100 }}
         onDragStart={() => setDragStarted(true)}
         onDragEnd={(e, info) => {
           setDragStarted(false);
@@ -87,7 +87,8 @@ export function ProgramCard({
           }
         }}
         style={{ 
-          transformStyle: "preserve-3d"
+          transformStyle: "preserve-3d",
+          perspective: "1200px"
         }}
         whileDrag={{
           scale: 0.98,
