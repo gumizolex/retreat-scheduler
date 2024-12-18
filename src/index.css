@@ -53,6 +53,8 @@
 
 .program-card {
   @apply relative overflow-hidden rounded-2xl transition-all duration-300 hover:shadow-lg;
+  transform-style: preserve-3d;
+  perspective: 1000px;
 }
 
 .program-card img {
@@ -130,4 +132,24 @@ html {
 
 .embla__slide {
   @apply flex-[0_0_100%] min-w-0;
+}
+
+/* Swipe Indicator Animation */
+@keyframes swipeHint {
+  0% {
+    transform: translateX(0);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateX(10px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 0.7;
+  }
+}
+
+.swipe-hint {
+  animation: swipeHint 2s infinite;
 }

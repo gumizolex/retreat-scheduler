@@ -1,10 +1,11 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, MapPin } from "lucide-react";
+import { Calendar, Clock, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
 import { Program, TranslatedProgram, Currency } from "@/types/program";
 import { formatCurrency } from "@/utils/currency";
-import { motion } from "framer-motion";
+import { motion, useAnimation } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useState } from "react";
 
 interface ProgramCardProps {
   program: Program;
@@ -24,6 +25,8 @@ export function ProgramCard({
   currency
 }: ProgramCardProps) {
   const isMobile = useIsMobile();
+  const controls = useAnimation();
+  const [dragStarted, setDragStarted] = useState(false);
 
   return (
     <motion.div
@@ -33,22 +36,54 @@ export function ProgramCard({
       transition={{ duration: 0.3 }}
       drag={isMobile ? "x" : false}
       dragConstraints={{ left: 0, right: 0 }}
+      onDragStart={() => setDragStarted(true)}
       onDragEnd={(e, info) => {
+        setDragStarted(false);
         if (Math.abs(info.offset.x) > 100) {
-          // Trigger next/previous slide
           const element = e.target as HTMLElement;
           const carousel = element.closest('.embla');
           if (carousel) {
-            if (info.offset.x > 0) {
-              carousel.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
-            } else {
-              carousel.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
-            }
+            controls.start({
+              x: info.offset.x > 0 ? 300 : -300,
+              opacity: 0,
+              transition: { duration: 0.3 }
+            }).then(() => {
+              if (info.offset.x > 0) {
+                carousel.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
+              } else {
+                carousel.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
+              }
+            });
           }
+        } else {
+          controls.start({ x: 0, opacity: 1 });
         }
       }}
+      animate={controls}
+      style={{ perspective: "1000px" }}
     >
-      <Card className="group overflow-hidden bg-white/80 backdrop-blur-sm border border-gray-100 hover:border-primary/20 transition-all duration-300 hover:shadow-xl">
+      <Card className="group relative overflow-hidden bg-white/80 backdrop-blur-sm border border-gray-100 hover:border-primary/20 transition-all duration-300 hover:shadow-xl">
+        {isMobile && (
+          <div className={`absolute inset-0 flex items-center justify-between px-4 pointer-events-none transition-opacity duration-300 ${dragStarted ? 'opacity-0' : 'opacity-70'}`}>
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.5, duration: 0.3 }}
+              className="bg-black/50 p-2 rounded-full text-white"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </motion.div>
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.5, duration: 0.3 }}
+              className="bg-black/50 p-2 rounded-full text-white"
+            >
+              <ChevronRight className="w-6 h-6" />
+            </motion.div>
+          </div>
+        )}
+        
         <CardHeader className="p-0">
           <div className="relative overflow-hidden aspect-video">
             <img
