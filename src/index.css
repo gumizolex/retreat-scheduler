@@ -128,25 +128,22 @@ html {
 
 .embla__container {
   @apply flex touch-pan-y;
+  perspective: 1000px;
+  transform-style: preserve-3d;
 }
 
 .embla__slide {
   @apply flex-[0_0_100%] min-w-0;
+  transform-style: preserve-3d;
 }
 
-/* Swipe Indicator Animation */
+/* Swipe Hint Animation */
 @keyframes swipeHint {
-  0% {
-    transform: translateX(0);
-    opacity: 0.7;
+  0%, 100% {
+    opacity: 0;
   }
   50% {
-    transform: translateX(10px);
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(0);
-    opacity: 0.7;
+    opacity: 0.1;
   }
 }
 

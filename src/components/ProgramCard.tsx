@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
+import { Calendar, Clock, MapPin } from "lucide-react";
 import { Program, TranslatedProgram, Currency } from "@/types/program";
 import { formatCurrency } from "@/utils/currency";
 import { motion, useAnimation } from "framer-motion";
@@ -50,6 +50,7 @@ export function ProgramCard({
             controls.start({
               x: info.offset.x > 0 ? 300 : -300,
               opacity: 0,
+              rotateY: info.offset.x > 0 ? 30 : -30,
               transition: { duration: 0.3 }
             }).then(() => {
               if (info.offset.x > 0) {
@@ -60,31 +61,33 @@ export function ProgramCard({
             });
           }
         } else {
-          controls.start({ x: 0, opacity: 1 });
+          controls.start({ x: 0, opacity: 1, rotateY: 0 });
         }
       }}
-      style={{ perspective: "1000px" }}
+      style={{ 
+        perspective: "1000px",
+        transformStyle: "preserve-3d"
+      }}
+      whileDrag={{
+        scale: 0.95,
+        rotateY: dragStarted ? 0 : 0
+      }}
     >
       <Card className="group relative overflow-hidden bg-white/80 backdrop-blur-sm border border-gray-100 hover:border-primary/20 transition-all duration-300 hover:shadow-xl">
-        {isMobile && (
-          <div className={`absolute inset-0 flex items-center justify-between px-4 pointer-events-none transition-opacity duration-300 ${dragStarted ? 'opacity-0' : 'opacity-70'}`}>
-            <motion.div 
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.5, duration: 0.3 }}
-              className="bg-black/50 p-2 rounded-full text-white"
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </motion.div>
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.5, duration: 0.3 }}
-              className="bg-black/50 p-2 rounded-full text-white"
-            >
-              <ChevronRight className="w-6 h-6" />
-            </motion.div>
-          </div>
+        {isMobile && !dragStarted && (
+          <motion.div 
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent"
+            initial={{ x: "-100%" }}
+            animate={{ 
+              x: "100%",
+              transition: {
+                repeat: Infinity,
+                duration: 1.5,
+                ease: "linear",
+                repeatDelay: 1
+              }
+            }}
+          />
         )}
         
         <CardHeader className="p-0">
