@@ -34,93 +34,61 @@ export function ProgramCard({
   const cardRef = useRef<HTMLDivElement>(null);
   const { controls, dragStarted, handleDragStart, handleDrag, handleDragEnd } = useCardAnimation(cardRef);
 
+  const mobileCardVariants = {
+    normal: {
+      scale: 1,
+      y: 0,
+      zIndex: 0,
+      transition: { duration: 0.3, ease: "easeOut" }
+    },
+    centered: {
+      scale: 1.15,
+      y: -20,
+      zIndex: 10,
+      transition: { duration: 0.3, ease: "easeOut" }
+    }
+  };
+
   return (
     <div className="relative perspective-1200" ref={cardRef}>
       <AnimatePresence>
         <motion.div
-          initial={{ opacity: 0, y: 20, scale: 1, z: 0 }}
-          animate={controls}
-          whileHover={!isMobile ? { 
-            y: -5,
-            scale: isCentered ? 1.1 : 1,
-            rotateY: [-1, 1],
-            transition: {
-              rotateY: {
-                repeat: Infinity,
-                repeatType: "reverse",
-                duration: 2
-              }
-            }
-          } : {}}
-          transition={{ 
-            duration: 0.4,
-            type: "spring",
-            stiffness: 300,
-            damping: 25
-          }}
+          initial="normal"
+          animate={isCentered ? "centered" : "normal"}
+          variants={mobileCardVariants}
           drag={isMobile ? "x" : false}
           dragConstraints={{ left: -100, right: 100 }}
           dragElastic={0.1}
           onDragStart={handleDragStart}
           onDrag={handleDrag}
           onDragEnd={handleDragEnd}
-          style={{ 
-            transformStyle: "preserve-3d",
-            perspective: "1200px",
-            scale: isCentered ? 1.1 : 1,
-            zIndex: isCentered ? 10 : 1,
-          }}
-          whileDrag={{
-            scale: 0.95,
-            transition: { 
-              duration: 0.3,
-              ease: "easeOut"
-            }
-          }}
+          style={{ transformStyle: "preserve-3d" }}
           className={`
             rounded-2xl overflow-hidden touch-pan-y transform-gpu
-            ${isCentered ? 'z-10' : 'z-0'}
+            transition-all duration-300
           `}
         >
           <Card className={`
             group relative overflow-hidden bg-white/90 backdrop-blur-sm 
-            border border-gray-100 hover:border-primary/20 
-            transition-all duration-300 hover:shadow-xl rounded-2xl 
+            border border-gray-100
+            transition-all duration-300
             min-h-[480px] sm:min-h-[520px] flex flex-col
-            ${isCentered ? 'shadow-xl border-primary/30 scale-105 sm:scale-110 translate-y-[-10px]' : 'translate-y-0'}
+            ${isCentered ? 'shadow-xl border-primary/30' : 'hover:shadow-lg hover:border-primary/20'}
           `}>
-            {isMobile && !dragStarted && (
-              <motion.div 
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent"
-                initial={{ opacity: 0 }}
-                animate={{ 
-                  opacity: [0.3, 0, 0.3],
-                  x: ["-100%", "100%", "-100%"],
-                  transition: {
-                    repeat: Infinity,
-                    duration: 3,
-                    ease: "easeInOut"
-                  }
-                }}
-              />
-            )}
-            
             <CardHeader className="p-0">
               <div className="relative overflow-hidden aspect-video rounded-t-2xl">
                 <motion.img
                   src={program.image}
                   alt={translatedProgram.title}
                   className="w-full h-full object-cover"
-                  initial={{ scale: 1 }}
-                  animate={{ 
+                  animate={{
                     scale: isCentered ? 1.05 : 1,
                     transition: { duration: 0.3 }
                   }}
                 />
                 <motion.div 
                   className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"
-                  initial={{ opacity: 0 }}
-                  animate={{ 
+                  animate={{
                     opacity: isCentered ? 0.6 : 0,
                     transition: { duration: 0.3 }
                   }}

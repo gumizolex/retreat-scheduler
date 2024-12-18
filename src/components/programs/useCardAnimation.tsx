@@ -7,7 +7,7 @@ export const useCardAnimation = (cardRef: RefObject<HTMLDivElement>) => {
   const [initialPosition, setInitialPosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
-    controls.start({ opacity: 1, y: 0, x: 0, scale: 1 });
+    controls.start({ opacity: 1, y: 0, x: 0 });
     if (cardRef.current) {
       const rect = cardRef.current.getBoundingClientRect();
       setInitialPosition({ x: rect.left, y: rect.top });
@@ -21,31 +21,12 @@ export const useCardAnimation = (cardRef: RefObject<HTMLDivElement>) => {
     
     return siblings.some(sibling => {
       const rect2 = sibling.getBoundingClientRect();
-      const overlap = !(
+      return !(
         rect1.right < rect2.left || 
         rect1.left > rect2.right || 
         rect1.bottom < rect2.top || 
         rect1.top > rect2.bottom
       );
-      
-      const margin = 20;
-      const tooClose = Math.abs(rect1.left - rect2.left) < margin;
-      
-      return overlap || tooClose;
-    });
-  };
-
-  const resetPosition = () => {
-    controls.start({ 
-      x: 0,
-      opacity: 1,
-      scale: 1,
-      transition: { 
-        type: "spring",
-        stiffness: 500,
-        damping: 30,
-        mass: 1
-      }
     });
   };
 
@@ -56,7 +37,15 @@ export const useCardAnimation = (cardRef: RefObject<HTMLDivElement>) => {
 
   const handleDrag = () => {
     if (cardRef.current && checkCollision(cardRef.current)) {
-      resetPosition();
+      controls.start({ 
+        x: 0,
+        scale: 1,
+        transition: { 
+          type: "spring",
+          stiffness: 500,
+          damping: 30
+        }
+      });
     }
   };
 
@@ -65,11 +54,6 @@ export const useCardAnimation = (cardRef: RefObject<HTMLDivElement>) => {
     
     if (!cardRef.current) return;
     
-    if (checkCollision(cardRef.current)) {
-      resetPosition();
-      return;
-    }
-
     if (Math.abs(info.offset.x) > 50) {
       const carousel = cardRef.current.closest('.embla');
       if (carousel) {
@@ -77,21 +61,35 @@ export const useCardAnimation = (cardRef: RefObject<HTMLDivElement>) => {
           x: info.offset.x > 0 ? 200 : -200,
           opacity: 0.5,
           scale: 0.9,
-          transition: { 
-            duration: 0.3,
-            ease: "easeOut"
-          }
+          transition: { duration: 0.3 }
         }).then(() => {
           if (info.offset.x > 0) {
             carousel.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
           } else {
             carousel.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
           }
-          resetPosition();
+          controls.start({
+            x: 0,
+            opacity: 1,
+            scale: 1,
+            transition: {
+              type: "spring",
+              stiffness: 500,
+              damping: 30
+            }
+          });
         });
       }
     } else {
-      resetPosition();
+      controls.start({
+        x: 0,
+        scale: 1,
+        transition: {
+          type: "spring",
+          stiffness: 500,
+          damping: 30
+        }
+      });
     }
   };
 
