@@ -41,7 +41,7 @@ export function ProgramCard({
         animate={controls}
         whileHover={!isMobile ? { 
           y: -5,
-          scale: isCentered ? 1.05 : 1,
+          scale: isCentered ? 1.1 : 1,
           rotateY: [-1, 1],
           transition: {
             rotateY: {
@@ -60,17 +60,17 @@ export function ProgramCard({
         drag={isMobile ? "x" : false}
         dragConstraints={{ left: -100, right: 100 }}
         dragElastic={0.1}
-        onDragStart={() => handleDragStart()}
-        onDrag={(event, info) => handleDrag()}
-        onDragEnd={(e, info) => handleDragEnd(e.target as HTMLElement, info)}
+        onDragStart={handleDragStart}
+        onDrag={handleDrag}
+        onDragEnd={handleDragEnd}
         style={{ 
           transformStyle: "preserve-3d",
           perspective: "1200px",
-          scale: isCentered ? 1.05 : 1,
+          scale: isCentered ? 1.1 : 1,
           zIndex: isCentered ? 10 : 1,
         }}
         whileDrag={{
-          scale: 0.98,
+          scale: 0.95,
           transition: { 
             duration: 0.3,
             ease: "easeOut"
@@ -82,8 +82,8 @@ export function ProgramCard({
           group relative overflow-hidden bg-white/90 backdrop-blur-sm 
           border border-gray-100 hover:border-primary/20 
           transition-all duration-300 hover:shadow-xl rounded-2xl 
-          min-h-[520px] flex flex-col
-          ${isCentered ? 'shadow-xl border-primary/30' : ''}
+          min-h-[480px] sm:min-h-[520px] flex flex-col
+          ${isCentered ? 'shadow-xl border-primary/30 scale-105 sm:scale-110' : ''}
         `}>
           {isMobile && !dragStarted && (
             <motion.div 
@@ -111,11 +111,11 @@ export function ProgramCard({
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
           </CardHeader>
-          <CardContent className="p-6 flex-grow">
-            <CardTitle className="text-xl mb-3 font-display text-accent group-hover:text-primary transition-colors duration-300">
+          <CardContent className="p-4 sm:p-6 flex-grow">
+            <CardTitle className="text-lg sm:text-xl mb-2 sm:mb-3 font-display text-accent group-hover:text-primary transition-colors duration-300">
               {translatedProgram.title}
             </CardTitle>
-            <CardDescription className="mb-4 line-clamp-3 text-accent/80">
+            <CardDescription className="mb-3 sm:mb-4 line-clamp-3 text-accent/80 text-sm sm:text-base">
               {translatedProgram.description}
             </CardDescription>
             <ProgramDetails
@@ -124,14 +124,14 @@ export function ProgramCard({
               timesAvailableText={timesAvailableText}
             />
           </CardContent>
-          <CardFooter className="p-6 flex flex-col items-center gap-3 border-t border-gray-100">
-            <span className="text-lg font-semibold text-primary">
+          <CardFooter className="p-4 sm:p-6 flex flex-col items-center gap-2 sm:gap-3 border-t border-gray-100">
+            <span className="text-base sm:text-lg font-semibold text-primary">
               {formatCurrency(program.price, currency)}/fő
             </span>
             <Button 
               variant="default"
               onClick={() => onBook(program.id)}
-              className="w-full bg-primary hover:bg-primary/90 text-white transition-all duration-300 hover:shadow-lg"
+              className="w-full bg-primary hover:bg-primary/90 text-white transition-all duration-300 hover:shadow-lg text-sm sm:text-base py-2 sm:py-3"
             >
               {bookButtonText}
             </Button>

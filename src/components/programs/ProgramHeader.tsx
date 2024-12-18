@@ -19,7 +19,7 @@ export function ProgramHeader({
 }: ProgramHeaderProps) {
   return (
     <div className="max-w-7xl mx-auto">
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
+      <div className="flex flex-row justify-center items-center gap-4 mb-12">
         <CurrencySelector 
           selectedCurrency={currency} 
           onCurrencyChange={onCurrencyChange} 
@@ -30,7 +30,7 @@ export function ProgramHeader({
         />
       </div>
 
-      <h1 className="text-4xl font-display font-bold text-accent mb-12 text-center">
+      <h1 className="text-3xl md:text-4xl font-display font-bold text-accent mb-8 md:mb-12 text-center px-4">
         {pageTitle}
       </h1>
     </div>
