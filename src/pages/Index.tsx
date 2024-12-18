@@ -2,29 +2,45 @@ import { ProgramList } from "@/components/ProgramList";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Language } from "@/types/program";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { Auth } from '@supabase/auth-ui-react';
+import { ThemeSupa } from '@supabase/auth-ui-shared';
 
 const translations = {
   en: {
     subtitle: "Discover our unique programs and experiences in the heart of Transylvania",
-    copyright: "© 2024 Abod Retreat. All rights reserved."
+    copyright: "© 2024 Abod Retreat. All rights reserved.",
+    login: "Login / Register"
   },
   hu: {
     subtitle: "Fedezze fel egyedülálló programjainkat és élményeinket Erdély szívében",
-    copyright: "© 2024 Abod Retreat. Minden jog fenntartva."
+    copyright: "© 2024 Abod Retreat. Minden jog fenntartva.",
+    login: "Bejelentkezés / Regisztráció"
   },
   ro: {
     subtitle: "Descoperiți programele și experiențele noastre unice în inima Transilvaniei",
-    copyright: "© 2024 Abod Retreat. Toate drepturile rezervate."
+    copyright: "© 2024 Abod Retreat. Toate drepturile rezervate.",
+    login: "Autentificare / Înregistrare"
   }
 };
 
 const Index = () => {
   const [language, setLanguage] = useState<Language>("hu");
+  const [showAuth, setShowAuth] = useState(false);
+  const navigate = useNavigate();
+
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (session) {
+      setShowAuth(false);
+    }
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-secondary/20">
       <header className="sticky top-0 z-50 backdrop-blur-lg bg-white/80 shadow-sm">
-        <div className="container mx-auto px-4 py-2 sm:py-3 flex items-center justify-center">
+        <div className="container mx-auto px-4 py-2 sm:py-3 flex items-center justify-between">
           <motion.img 
             src="/abod-logo-dark.png" 
             alt="Abod Retreat"
@@ -40,8 +56,49 @@ const Index = () => {
               e.currentTarget.parentNode?.insertBefore(text, e.currentTarget);
             }}
           />
+          <Button 
+            variant="outline"
+            onClick={() => setShowAuth(true)}
+            className="ml-4"
+          >
+            {translations[language].login}
+          </Button>
         </div>
       </header>
+      
+      {showAuth && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4">
+            <Auth
+              supabaseClient={supabase}
+              appearance={{ theme: ThemeSupa }}
+              theme="light"
+              providers={[]}
+              localization={{
+                variables: {
+                  sign_in: {
+                    email_label: language === "hu" ? "Email cím" : "Email address",
+                    password_label: language === "hu" ? "Jelszó" : "Password",
+                    button_label: language === "hu" ? "Bejelentkezés" : "Sign in",
+                  },
+                  sign_up: {
+                    email_label: language === "hu" ? "Email cím" : "Email address",
+                    password_label: language === "hu" ? "Jelszó" : "Password",
+                    button_label: language === "hu" ? "Regisztráció" : "Sign up",
+                  },
+                },
+              }}
+            />
+            <Button 
+              variant="ghost" 
+              onClick={() => setShowAuth(false)}
+              className="mt-4 w-full"
+            >
+              {language === "hu" ? "Bezárás" : "Close"}
+            </Button>
+          </div>
+        </div>
+      )}
       
       <main className="relative">
         <div className="bg-gradient-to-br from-primary to-primary/80 py-8 sm:py-12 px-4 mb-6 sm:mb-8">
