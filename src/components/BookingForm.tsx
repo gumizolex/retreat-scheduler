@@ -6,7 +6,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Currency } from "@/types/program";
+import { Currency, Language } from "@/types/program";
 import { formatCurrency } from "@/utils/currency";
 
 interface BookingFormProps {
@@ -15,19 +15,77 @@ interface BookingFormProps {
   programTitle: string;
   pricePerPerson: number;
   currency: Currency;
+  language: Language;
 }
 
-const formSchema = z.object({
-  name: z.string().min(2, { message: "A név legalább 2 karakter hosszú kell legyen" }),
-  phone: z.string().min(6, { message: "Érvényes telefonszámot adjon meg" }),
+const translations = {
+  hu: {
+    booking: "foglalás",
+    name: "Név",
+    namePlaceholder: "Az Ön neve",
+    nameError: "A név legalább 2 karakter hosszú kell legyen",
+    phone: "Telefonszám",
+    phonePlaceholder: "Telefonszám",
+    phoneError: "Érvényes telefonszámot adjon meg",
+    bookingNumber: "Abod Retreat foglalási szám (opcionális)",
+    bookingNumberPlaceholder: "Foglalási szám",
+    numberOfPeople: "Létszám",
+    date: "Dátum",
+    dateError: "Kérjük válasszon dátumot",
+    perPerson: "/fő",
+    total: "Összesen",
+    submit: "Foglalás véglegesítése"
+  },
+  en: {
+    booking: "booking",
+    name: "Name",
+    namePlaceholder: "Your name",
+    nameError: "Name must be at least 2 characters long",
+    phone: "Phone number",
+    phonePlaceholder: "Phone number",
+    phoneError: "Please provide a valid phone number",
+    bookingNumber: "Abod Retreat booking number (optional)",
+    bookingNumberPlaceholder: "Booking number",
+    numberOfPeople: "Number of people",
+    date: "Date",
+    dateError: "Please select a date",
+    perPerson: "/person",
+    total: "Total",
+    submit: "Confirm Booking"
+  },
+  ro: {
+    booking: "rezervare",
+    name: "Nume",
+    namePlaceholder: "Numele dumneavoastră",
+    nameError: "Numele trebuie să aibă cel puțin 2 caractere",
+    phone: "Număr de telefon",
+    phonePlaceholder: "Număr de telefon",
+    phoneError: "Vă rugăm să furnizați un număr de telefon valid",
+    bookingNumber: "Număr de rezervare Abod Retreat (opțional)",
+    bookingNumberPlaceholder: "Număr de rezervare",
+    numberOfPeople: "Număr de persoane",
+    date: "Data",
+    dateError: "Vă rugăm să selectați o dată",
+    perPerson: "/persoană",
+    total: "Total",
+    submit: "Confirmă Rezervarea"
+  }
+};
+
+const getFormSchema = (t: typeof translations.hu) => z.object({
+  name: z.string().min(2, { message: t.nameError }),
+  phone: z.string().min(6, { message: t.phoneError }),
   bookingNumber: z.string().optional(),
-  numberOfPeople: z.number().min(1, { message: "Legalább 1 fő szükséges" }),
+  numberOfPeople: z.number().min(1, { message: "1" }),
   date: z.date({
-    required_error: "Kérjük válasszon dátumot",
+    required_error: t.dateError,
   }),
 });
 
-export function BookingForm({ isOpen, onClose, programTitle, pricePerPerson, currency }: BookingFormProps) {
+export function BookingForm({ isOpen, onClose, programTitle, pricePerPerson, currency, language }: BookingFormProps) {
+  const t = translations[language];
+  const formSchema = getFormSchema(t);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -40,7 +98,6 @@ export function BookingForm({ isOpen, onClose, programTitle, pricePerPerson, cur
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
-    // Here you would typically send the booking data to your backend
     onClose();
   }
 
@@ -51,7 +108,7 @@ export function BookingForm({ isOpen, onClose, programTitle, pricePerPerson, cur
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent className="overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>{programTitle} foglalás</SheetTitle>
+          <SheetTitle>{programTitle} {t.booking}</SheetTitle>
         </SheetHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-6">
@@ -60,9 +117,9 @@ export function BookingForm({ isOpen, onClose, programTitle, pricePerPerson, cur
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Név</FormLabel>
+                  <FormLabel>{t.name}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Az Ön neve" {...field} />
+                    <Input placeholder={t.namePlaceholder} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -74,9 +131,9 @@ export function BookingForm({ isOpen, onClose, programTitle, pricePerPerson, cur
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Telefonszám</FormLabel>
+                  <FormLabel>{t.phone}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Telefonszám" {...field} />
+                    <Input placeholder={t.phonePlaceholder} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -88,9 +145,9 @@ export function BookingForm({ isOpen, onClose, programTitle, pricePerPerson, cur
               name="bookingNumber"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Abod Retreat foglalási szám (opcionális)</FormLabel>
+                  <FormLabel>{t.bookingNumber}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Foglalási szám" {...field} />
+                    <Input placeholder={t.bookingNumberPlaceholder} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -102,7 +159,7 @@ export function BookingForm({ isOpen, onClose, programTitle, pricePerPerson, cur
               name="numberOfPeople"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Létszám</FormLabel>
+                  <FormLabel>{t.numberOfPeople}</FormLabel>
                   <FormControl>
                     <Input 
                       type="number" 
@@ -121,7 +178,7 @@ export function BookingForm({ isOpen, onClose, programTitle, pricePerPerson, cur
               name="date"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Dátum</FormLabel>
+                  <FormLabel>{t.date}</FormLabel>
                   <Calendar
                     mode="single"
                     selected={field.value}
@@ -135,12 +192,12 @@ export function BookingForm({ isOpen, onClose, programTitle, pricePerPerson, cur
             />
 
             <div className="text-lg font-semibold">
-              Összesen: {formatCurrency(totalPrice, currency)}
-              <span className="text-sm font-normal ml-2">({formatCurrency(pricePerPerson, currency)}/fő)</span>
+              {t.total}: {formatCurrency(totalPrice, currency)}
+              <span className="text-sm font-normal ml-2">({formatCurrency(pricePerPerson, currency)}{t.perPerson})</span>
             </div>
 
             <Button type="submit" className="w-full">
-              Foglalás véglegesítése
+              {t.submit}
             </Button>
           </form>
         </Form>

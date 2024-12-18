@@ -2,7 +2,6 @@ import { useState } from "react";
 import { BookingForm } from "./BookingForm";
 import { LanguageSelector } from "./LanguageSelector";
 import { ProgramCard } from "./ProgramCard";
-import { Button } from "./ui/button";
 import { Language, Currency, Program, Translations } from "@/types/program";
 import { CurrencySelector } from "./CurrencySelector";
 
@@ -224,6 +223,7 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
             programs.find((p) => p.id === selectedProgram)?.price || 0
           }
           currency={currency}
+          language={language}
         />
       )}
     </div>
