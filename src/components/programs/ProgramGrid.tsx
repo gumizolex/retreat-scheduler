@@ -39,6 +39,7 @@ export function ProgramGrid({
               dragFree: false,
               containScroll: "trimSnaps",
               startIndex: 0,
+              spacing: 24, // Add fixed spacing between slides
             }}
             className="w-full relative overflow-visible px-4"
           >
@@ -50,7 +51,7 @@ export function ProgramGrid({
                 return (
                   <CarouselItem
                     key={program.id}
-                    className="pl-4 basis-[90%] md:basis-[85%] first:pl-0"
+                    className="pl-4 min-w-[280px] max-w-[340px] md:min-w-[320px] md:max-w-[380px]"
                   >
                     <ProgramCard
                       program={program}
