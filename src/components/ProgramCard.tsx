@@ -107,7 +107,7 @@ export function ProgramCard({
         }}
         className="rounded-2xl overflow-hidden"
       >
-        <Card className="group relative overflow-hidden bg-white/90 backdrop-blur-sm border border-gray-100 hover:border-primary/20 transition-all duration-300 hover:shadow-xl rounded-2xl min-h-[520px]">
+        <Card className="group relative overflow-hidden bg-white/90 backdrop-blur-sm border border-gray-100 hover:border-primary/20 transition-all duration-300 hover:shadow-xl rounded-2xl min-h-[520px] flex flex-col">
           {isMobile && !dragStarted && (
             <motion.div 
               className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent"
@@ -134,7 +134,7 @@ export function ProgramCard({
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
           </CardHeader>
-          <CardContent className="p-6">
+          <CardContent className="p-6 flex-grow">
             <CardTitle className="text-xl mb-3 font-display text-accent group-hover:text-primary transition-colors duration-300">
               {translatedProgram.title}
             </CardTitle>
@@ -147,24 +147,26 @@ export function ProgramCard({
               timesAvailableText={timesAvailableText}
             />
           </CardContent>
-          <CardFooter className="p-6 pt-0 flex justify-between items-center border-t border-gray-100 mt-4">
+          <CardFooter className="p-6 flex flex-col items-center gap-3 border-t border-gray-100">
             <span className="text-lg font-semibold text-primary">
               {formatCurrency(program.price, currency)}/fő
             </span>
             <Button 
               variant="default"
               onClick={() => onBook(program.id)}
-              className="bg-primary hover:bg-primary/90 text-white transition-all duration-300 hover:shadow-lg"
+              className="w-full bg-primary hover:bg-primary/90 text-white transition-all duration-300 hover:shadow-lg"
             >
               {bookButtonText}
             </Button>
           </CardFooter>
-          
-          {isMobile && (
-            <SwipeIndicator language={language} />
-          )}
         </Card>
       </motion.div>
+      
+      {isMobile && (
+        <div className="mt-4">
+          <SwipeIndicator language={language} />
+        </div>
+      )}
     </div>
   );
 }

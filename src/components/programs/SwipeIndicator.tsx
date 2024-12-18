@@ -14,7 +14,7 @@ export function SwipeIndicator({ language }: SwipeIndicatorProps) {
 
   return (
     <motion.div
-      className="flex items-center justify-center gap-2 absolute bottom-4 left-0 right-0 text-xs font-medium tracking-wide text-primary pointer-events-none bg-white/80 py-2 rounded-full mx-4"
+      className="flex items-center justify-center gap-2 text-xs font-medium tracking-wide text-primary pointer-events-none bg-white/80 py-2 rounded-full"
       initial={{ opacity: 0 }}
       animate={{
         opacity: 1,
