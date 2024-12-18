@@ -3,15 +3,12 @@ import { useState } from "react";
 
 const translations = {
   en: {
-    title: "Abod Retreat",
     subtitle: "Discover our unique programs and experiences in the heart of Transylvania"
   },
   hu: {
-    title: "Abod Retreat",
     subtitle: "Fedezze fel egyedülálló programjainkat és élményeinket Erdély szívében"
   },
   ro: {
-    title: "Abod Retreat",
     subtitle: "Descoperiți programele și experiențele noastre unice în inima Transilvaniei"
   }
 };
@@ -21,12 +18,14 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="bg-primary py-16 text-primary-foreground">
+      <header className="bg-primary py-16 text-primary-foreground relative overflow-hidden">
         <div className="container mx-auto text-center">
-          <h1 className="text-5xl font-display font-bold mb-4">
-            {translations[language].title}
-          </h1>
-          <p className="text-xl max-w-2xl mx-auto">
+          <img 
+            src="/abod-logo-white.png" 
+            alt="Abod Retreat"
+            className="h-32 mx-auto mb-6"
+          />
+          <p className="text-xl max-w-2xl mx-auto opacity-90">
             {translations[language].subtitle}
           </p>
         </div>
@@ -36,6 +35,11 @@ const Index = () => {
       </main>
       <footer className="bg-accent text-accent-foreground py-8 mt-16">
         <div className="container mx-auto text-center">
+          <img 
+            src="/abod-logo-dark.png" 
+            alt="Abod Retreat"
+            className="h-16 mx-auto mb-4 opacity-80"
+          />
           <p>© 2024 Abod Retreat. Minden jog fenntartva.</p>
         </div>
       </footer>

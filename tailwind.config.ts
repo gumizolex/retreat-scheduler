@@ -25,7 +25,7 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#8A9A5B",
+          DEFAULT: "#6B8E76",  // The green color from the logo
           foreground: "#FFFFFF",
         },
         secondary: {
@@ -41,7 +41,7 @@ export default {
           foreground: "hsl(var(--muted-foreground))",
         },
         accent: {
-          DEFAULT: "#2D3748",  // Darker shade for better contrast
+          DEFAULT: "#2D3748",
           foreground: "#FFFFFF",
         },
         card: {
