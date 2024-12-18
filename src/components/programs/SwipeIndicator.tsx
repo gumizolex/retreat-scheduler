@@ -12,7 +12,7 @@ export function SwipeIndicator({ language }: SwipeIndicatorProps) {
     ro: "Glisați"
   }[language];
 
-  const leftChevrons = [2, 1, 0];  // Reversed order for left chevrons
+  const leftChevrons = [0, 1, 2];  // Changed order for correct animation flow
   const rightChevrons = [0, 1, 2];
 
   return (
@@ -24,11 +24,12 @@ export function SwipeIndicator({ language }: SwipeIndicatorProps) {
               key={`left-${index}`}
               animate={{
                 opacity: [0.2, 1, 0.2],
+                x: [2, 0, 2], // Added x animation for left movement
               }}
               transition={{
                 duration: 1.5,
                 repeat: Infinity,
-                delay: (2 - index) * 0.2,
+                delay: index * 0.2,
               }}
             >
               <ChevronLeft className="w-4 h-4 text-primary" />
@@ -42,6 +43,7 @@ export function SwipeIndicator({ language }: SwipeIndicatorProps) {
               key={`right-${index}`}
               animate={{
                 opacity: [0.2, 1, 0.2],
+                x: [-2, 0, -2], // Added x animation for right movement
               }}
               transition={{
                 duration: 1.5,
