@@ -52,26 +52,26 @@ export function ProgramCard({
           }
         } : {}}
         transition={{ 
-          duration: 0.3,
+          duration: 0.4,
           type: "spring",
-          stiffness: 500,
-          damping: 30
+          stiffness: 300,
+          damping: 25
         }}
         drag={isMobile ? "x" : false}
-        dragConstraints={{ left: -100, right: 100 }}
-        dragElastic={0.1}
+        dragConstraints={{ left: -50, right: 50 }}
+        dragElastic={0.05}
         onDragStart={() => setDragStarted(true)}
         onDragEnd={(e, info) => {
           setDragStarted(false);
-          if (Math.abs(info.offset.x) > 50) {
+          if (Math.abs(info.offset.x) > 40) {
             const element = e.target as HTMLElement;
             const carousel = element.closest('.embla');
             if (carousel) {
               controls.start({
-                x: info.offset.x > 0 ? 200 : -200,
-                opacity: 0,
+                x: info.offset.x > 0 ? 100 : -100,
+                opacity: 0.5,
                 transition: { 
-                  duration: 0.3,
+                  duration: 0.2,
                   ease: "easeOut"
                 }
               }).then(() => {
@@ -80,7 +80,14 @@ export function ProgramCard({
                 } else {
                   carousel.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
                 }
-                controls.start({ x: 0, opacity: 1 });
+                controls.start({ 
+                  x: 0, 
+                  opacity: 1,
+                  transition: {
+                    duration: 0.2,
+                    ease: "easeOut"
+                  }
+                });
               });
             }
           } else {
@@ -89,8 +96,8 @@ export function ProgramCard({
               opacity: 1,
               transition: { 
                 type: "spring",
-                stiffness: 500,
-                damping: 30
+                stiffness: 300,
+                damping: 25
               }
             });
           }
@@ -102,7 +109,8 @@ export function ProgramCard({
         whileDrag={{
           scale: 0.98,
           transition: { 
-            duration: 0.2
+            duration: 0.3,
+            ease: "easeOut"
           }
         }}
         className="rounded-2xl overflow-hidden"
