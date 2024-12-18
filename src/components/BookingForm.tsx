@@ -160,11 +160,11 @@ export function BookingForm({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] w-[95vw] mx-auto p-0 overflow-hidden bg-white rounded-xl fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+      <DialogContent className="sm:max-w-[500px] w-[90vw] mx-auto p-0 overflow-hidden bg-white rounded-xl fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
         <div className="relative w-full">
           <button
             onClick={onClose}
-            className="absolute right-4 top-4 p-2 rounded-full hover:bg-gray-100 transition-colors"
+            className="absolute right-3 top-3 p-1.5 rounded-full hover:bg-gray-100 transition-colors z-10"
           >
             <X className="h-4 w-4 text-gray-500" />
           </button>
@@ -177,10 +177,10 @@ export function BookingForm({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="p-4 sm:p-6 w-full"
+            className="p-3 sm:p-4 w-full"
           >
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 w-full">
                 <AnimatePresence mode="wait">
                   {step === 0 && (
                     <motion.div
@@ -188,9 +188,9 @@ export function BookingForm({
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -20 }}
-                      className="space-y-4 w-full"
+                      className="space-y-3 w-full"
                     >
-                      <h2 className="text-xl sm:text-2xl font-display text-accent mb-6">
+                      <h2 className="text-lg sm:text-xl font-display text-accent mb-4">
                         {programTitle} {t.booking}
                       </h2>
                       <BookingFormFields 
@@ -204,7 +204,7 @@ export function BookingForm({
                         <button
                           type="button"
                           onClick={() => setStep(1)}
-                          className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary/90 transition-colors"
+                          className="bg-primary text-white px-5 py-1.5 rounded-lg hover:bg-primary/90 transition-colors text-sm"
                         >
                           {t.next}
                         </button>
@@ -218,7 +218,7 @@ export function BookingForm({
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -20 }}
-                      className="space-y-4 w-full"
+                      className="space-y-3 w-full"
                     >
                       <BookingFormFields 
                         form={form}
@@ -231,14 +231,14 @@ export function BookingForm({
                         <button
                           type="button"
                           onClick={() => setStep(0)}
-                          className="text-gray-600 px-6 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+                          className="text-gray-600 px-5 py-1.5 rounded-lg hover:bg-gray-100 transition-colors text-sm"
                         >
                           {t.back}
                         </button>
                         <button
                           type="button"
                           onClick={() => setStep(2)}
-                          className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary/90 transition-colors"
+                          className="bg-primary text-white px-5 py-1.5 rounded-lg hover:bg-primary/90 transition-colors text-sm"
                         >
                           {t.next}
                         </button>
@@ -252,7 +252,7 @@ export function BookingForm({
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -20 }}
-                      className="space-y-4 w-full"
+                      className="space-y-3 w-full"
                     >
                       <BookingSummaryDetails
                         formData={{

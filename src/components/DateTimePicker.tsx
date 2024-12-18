@@ -41,7 +41,7 @@ export function DateTimePicker({ form, language, translations }: DateTimePickerP
               onSelect={field.onChange}
               disabled={(date) => date < new Date()}
               className={cn(
-                "rounded-lg border shadow-sm w-full",
+                "rounded-lg border shadow-sm w-full scale-90 origin-top",
                 "bg-white dark:bg-gray-800"
               )}
             />
