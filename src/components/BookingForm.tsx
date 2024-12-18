@@ -6,12 +6,15 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { Currency } from "@/types/program";
+import { formatCurrency } from "@/utils/currency";
 
 interface BookingFormProps {
   isOpen: boolean;
   onClose: () => void;
   programTitle: string;
   pricePerPerson: number;
+  currency: Currency;
 }
 
 const formSchema = z.object({
@@ -24,7 +27,7 @@ const formSchema = z.object({
   }),
 });
 
-export function BookingForm({ isOpen, onClose, programTitle, pricePerPerson }: BookingFormProps) {
+export function BookingForm({ isOpen, onClose, programTitle, pricePerPerson, currency }: BookingFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -73,7 +76,7 @@ export function BookingForm({ isOpen, onClose, programTitle, pricePerPerson }: B
                 <FormItem>
                   <FormLabel>Telefonszám</FormLabel>
                   <FormControl>
-                    <Input placeholder="+36..." {...field} />
+                    <Input placeholder="Telefonszám" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -132,8 +135,8 @@ export function BookingForm({ isOpen, onClose, programTitle, pricePerPerson }: B
             />
 
             <div className="text-lg font-semibold">
-              Összesen: {totalPrice.toLocaleString()} Ft
-              <span className="text-sm font-normal ml-2">({pricePerPerson.toLocaleString()} Ft/fő)</span>
+              Összesen: {formatCurrency(totalPrice, currency)}
+              <span className="text-sm font-normal ml-2">({formatCurrency(pricePerPerson, currency)}/fő)</span>
             </div>
 
             <Button type="submit" className="w-full">

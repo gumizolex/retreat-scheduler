@@ -1,14 +1,11 @@
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Calendar, Clock, MapPin, Bike, Compass, Mountain, Wine } from "lucide-react";
 import { useState } from "react";
 import { BookingForm } from "./BookingForm";
+import { LanguageSelector } from "./LanguageSelector";
+import { ProgramCard } from "./ProgramCard";
+import { Button } from "./ui/button";
+import { Language, Currency, Program, Translations } from "@/types/program";
 
-interface ProgramListProps {
-  onLanguageChange?: (language: string) => void;
-}
-
-const translations = {
+const translations: Record<Language, Translations> = {
   en: {
     pageTitle: "Programs and Experiences",
     bookButton: "Book Now",
@@ -122,7 +119,7 @@ const translations = {
   },
 };
 
-const programs = [
+const programs: Program[] = [
   {
     id: 1,
     price: 12000,
@@ -168,83 +165,63 @@ const programs = [
 ];
 
 export function ProgramList({ onLanguageChange }: ProgramListProps) {
-  const [language, setLanguage] = useState("hu");
+  const [language, setLanguage] = useState<Language>("hu");
   const [selectedProgram, setSelectedProgram] = useState<number | null>(null);
+  const [currency, setCurrency] = useState<Currency>("HUF");
 
-  const handleLanguageChange = (newLanguage: string) => {
+  const handleLanguageChange = (newLanguage: Language) => {
     setLanguage(newLanguage);
     onLanguageChange?.(newLanguage);
   };
 
   return (
     <div className="container mx-auto py-12">
-      <div className="flex justify-end mb-4 gap-2">
-        <Button
-          variant={language === "hu" ? "default" : "outline"}
-          onClick={() => handleLanguageChange("hu")}
-        >
-          Magyar
-        </Button>
-        <Button
-          variant={language === "en" ? "default" : "outline"}
-          onClick={() => handleLanguageChange("en")}
-        >
-          English
-        </Button>
-        <Button
-          variant={language === "ro" ? "default" : "outline"}
-          onClick={() => handleLanguageChange("ro")}
-        >
-          Română
-        </Button>
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex gap-2">
+          <Button
+            variant={currency === "HUF" ? "default" : "outline"}
+            onClick={() => setCurrency("HUF")}
+          >
+            HUF
+          </Button>
+          <Button
+            variant={currency === "RON" ? "default" : "outline"}
+            onClick={() => setCurrency("RON")}
+          >
+            RON
+          </Button>
+          <Button
+            variant={currency === "EUR" ? "default" : "outline"}
+            onClick={() => setCurrency("EUR")}
+          >
+            EUR
+          </Button>
+        </div>
+        <LanguageSelector 
+          currentLanguage={language}
+          onLanguageChange={handleLanguageChange}
+        />
       </div>
+
       <h1 className="text-4xl font-display font-bold text-accent mb-8 text-center">
         {translations[language].pageTitle}
       </h1>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {programs.map((program) => {
           const translatedProgram = translations[language].programs.find(
             (p) => p.id === program.id
-          );
+          )!;
           return (
-            <Card key={program.id} className="program-card">
-              <CardHeader className="p-0">
-                <img
-                  src={program.image}
-                  alt={translatedProgram.title}
-                  className="w-full h-48 object-cover"
-                />
-              </CardHeader>
-              <CardContent className="p-6">
-                <CardTitle className="text-xl mb-2">{translatedProgram.title}</CardTitle>
-                <CardDescription className="mb-4">{translatedProgram.description}</CardDescription>
-                <div className="space-y-2 text-sm">
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4" />
-                    <span>{program.duration}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4" />
-                    <span>{program.location}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4" />
-                    <span>{translations[language].timesAvailable}</span>
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter className="p-6 pt-0 flex justify-between items-center">
-                <span className="text-lg font-semibold">
-                  {program.price.toLocaleString()} Ft/fő
-                </span>
-                <Button 
-                  variant="default"
-                  onClick={() => setSelectedProgram(program.id)}
-                >
-                  {translations[language].bookButton}
-                </Button>
-              </CardFooter>
-            </Card>
+            <ProgramCard
+              key={program.id}
+              program={program}
+              translatedProgram={translatedProgram}
+              timesAvailableText={translations[language].timesAvailable}
+              bookButtonText={translations[language].bookButton}
+              onBook={setSelectedProgram}
+              currency={currency}
+            />
           );
         })}
       </div>
@@ -261,6 +238,7 @@ export function ProgramList({ onLanguageChange }: ProgramListProps) {
           pricePerPerson={
             programs.find((p) => p.id === selectedProgram)?.price || 0
           }
+          currency={currency}
         />
       )}
     </div>
