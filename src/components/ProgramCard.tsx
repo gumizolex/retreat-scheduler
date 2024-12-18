@@ -58,20 +58,20 @@ export function ProgramCard({
           damping: 25
         }}
         drag={isMobile ? "x" : false}
-        dragConstraints={{ left: -50, right: 50 }}
-        dragElastic={0.05}
+        dragConstraints={{ left: -100, right: 100 }}
+        dragElastic={0.1}
         onDragStart={() => setDragStarted(true)}
         onDragEnd={(e, info) => {
           setDragStarted(false);
-          if (Math.abs(info.offset.x) > 40) {
+          if (Math.abs(info.offset.x) > 50) {
             const element = e.target as HTMLElement;
             const carousel = element.closest('.embla');
             if (carousel) {
               controls.start({
-                x: info.offset.x > 0 ? 100 : -100,
+                x: info.offset.x > 0 ? 200 : -200,
                 opacity: 0.5,
                 transition: { 
-                  duration: 0.2,
+                  duration: 0.3,
                   ease: "easeOut"
                 }
               }).then(() => {
@@ -84,7 +84,7 @@ export function ProgramCard({
                   x: 0, 
                   opacity: 1,
                   transition: {
-                    duration: 0.2,
+                    duration: 0.3,
                     ease: "easeOut"
                   }
                 });
@@ -96,8 +96,8 @@ export function ProgramCard({
               opacity: 1,
               transition: { 
                 type: "spring",
-                stiffness: 300,
-                damping: 25
+                stiffness: 500,
+                damping: 30
               }
             });
           }
@@ -113,7 +113,7 @@ export function ProgramCard({
             ease: "easeOut"
           }
         }}
-        className="rounded-2xl overflow-hidden"
+        className="rounded-2xl overflow-hidden touch-pan-y"
       >
         <Card className="group relative overflow-hidden bg-white/90 backdrop-blur-sm border border-gray-100 hover:border-primary/20 transition-all duration-300 hover:shadow-xl rounded-2xl min-h-[520px] flex flex-col">
           {isMobile && !dragStarted && (

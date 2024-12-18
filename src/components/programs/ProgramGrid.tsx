@@ -33,14 +33,14 @@ export function ProgramGrid({
         <div className="relative pb-16">
           <Carousel
             opts={{
-              align: "start",
+              align: "center",
               loop: true,
               skipSnaps: false,
               dragFree: false,
               containScroll: "trimSnaps",
               startIndex: 0,
             }}
-            className="w-full relative overflow-visible px-4"
+            className="w-full relative overflow-visible px-8"
           >
             <CarouselContent className="-ml-8">
               {programs.map((program) => {
@@ -50,9 +50,9 @@ export function ProgramGrid({
                 return (
                   <CarouselItem
                     key={program.id}
-                    className="pl-8 min-w-[280px] max-w-[340px] md:min-w-[320px] md:max-w-[380px] flex-shrink-0"
+                    className="pl-8 basis-[85%] md:basis-[45%] lg:basis-[33%] snap-center"
                   >
-                    <div className="w-full">
+                    <div className="w-full h-full">
                       <ProgramCard
                         program={program}
                         translatedProgram={translatedProgram}
