@@ -54,12 +54,14 @@ export function ProgramCard({
       scale: 0.95,
       opacity: 0.8,
       y: 10,
+      boxShadow: "0px 0px 0px rgba(0,0,0,0)",
       transition: { duration: 0.6, ease: "easeInOut" }
     },
     hover: { 
       scale: 1.02,
       opacity: 1,
       y: -5,
+      boxShadow: "0px 10px 20px rgba(0,0,0,0.15)",
       transition: {
         type: "spring",
         stiffness: 400,
@@ -70,6 +72,7 @@ export function ProgramCard({
     tap: { 
       scale: 0.98,
       opacity: 0.9,
+      boxShadow: "0px 5px 10px rgba(0,0,0,0.1)",
       transition: {
         type: "spring",
         stiffness: 400,
