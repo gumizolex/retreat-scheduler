@@ -3,6 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Calendar, Clock, MapPin, Bike, Compass, Mountain, Wine } from "lucide-react";
 import { useState } from "react";
 
+interface ProgramListProps {
+  onLanguageChange?: (language: string) => void;
+}
+
 const translations = {
   en: {
     pageTitle: "Programs and Experiences",
@@ -162,27 +166,32 @@ const programs = [
   },
 ];
 
-export function ProgramList() {
+export function ProgramList({ onLanguageChange }: ProgramListProps) {
   const [language, setLanguage] = useState("hu");
+
+  const handleLanguageChange = (newLanguage: string) => {
+    setLanguage(newLanguage);
+    onLanguageChange?.(newLanguage);
+  };
 
   return (
     <div className="container mx-auto py-12">
       <div className="flex justify-end mb-4 gap-2">
         <Button
           variant={language === "hu" ? "default" : "outline"}
-          onClick={() => setLanguage("hu")}
+          onClick={() => handleLanguageChange("hu")}
         >
           Magyar
         </Button>
         <Button
           variant={language === "en" ? "default" : "outline"}
-          onClick={() => setLanguage("en")}
+          onClick={() => handleLanguageChange("en")}
         >
           English
         </Button>
         <Button
           variant={language === "ro" ? "default" : "outline"}
-          onClick={() => setLanguage("ro")}
+          onClick={() => handleLanguageChange("ro")}
         >
           Română
         </Button>
