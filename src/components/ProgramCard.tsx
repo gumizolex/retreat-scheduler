@@ -94,8 +94,8 @@ export function ProgramCard({
           whileHover={!isMobile ? "hover" : undefined}
           whileTap={!isMobile ? "tap" : undefined}
           drag={isMobile ? "x" : false}
-          dragConstraints={{ left: -50, right: 50 }}
-          dragElastic={0.1}
+          dragConstraints={{ left: -20, right: 20 }}
+          dragElastic={0.05}
           onDragStart={handleDragStart}
           onDrag={handleDrag}
           onDragEnd={handleDragEnd}
