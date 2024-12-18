@@ -9,6 +9,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { SwipeIndicator } from "./SwipeIndicator";
+import { useState, useEffect } from "react";
 
 interface ProgramGridProps {
   programs: Program[];
@@ -26,6 +27,29 @@ export function ProgramGrid({
   onBookProgram,
 }: ProgramGridProps) {
   const isMobile = useIsMobile();
+  const [centerIndex, setCenterIndex] = useState(0);
+
+  const handleScroll = (element: HTMLElement) => {
+    const cards = Array.from(element.querySelectorAll('.embla__slide'));
+    const containerRect = element.getBoundingClientRect();
+    const containerCenter = containerRect.left + containerRect.width / 2;
+    
+    let closestIndex = 0;
+    let minDistance = Infinity;
+    
+    cards.forEach((card, index) => {
+      const rect = card.getBoundingClientRect();
+      const cardCenter = rect.left + rect.width / 2;
+      const distance = Math.abs(containerCenter - cardCenter);
+      
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestIndex = index;
+      }
+    });
+    
+    setCenterIndex(closestIndex);
+  };
 
   if (isMobile) {
     return (
@@ -41,9 +65,10 @@ export function ProgramGrid({
               startIndex: 0,
             }}
             className="w-full relative overflow-visible px-8"
+            onScroll={(e) => handleScroll(e.target as HTMLElement)}
           >
             <CarouselContent className="-ml-8">
-              {programs.map((program) => {
+              {programs.map((program, index) => {
                 const translatedProgram = translations[language].programs.find(
                   (p) => p.id === program.id
                 )!;
@@ -61,6 +86,7 @@ export function ProgramGrid({
                         onBook={onBookProgram}
                         currency={currency}
                         language={language}
+                        isCentered={index === centerIndex}
                       />
                     </div>
                   </CarouselItem>
