@@ -6,6 +6,10 @@ import Activities from "./pages/Activities";
 import Admin from "./pages/Admin";
 import Login from "./pages/Login";
 import { Toaster } from "@/components/ui/toaster";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+// Create a client
+const queryClient = new QueryClient();
 
 function App() {
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
@@ -42,18 +46,20 @@ function App() {
   }
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/activities" element={<Activities />} />
-        <Route path="/login" element={<Login />} />
-        <Route
-          path="/admin"
-          element={isAdmin ? <Admin /> : <Navigate to="/login" replace />}
-        />
-      </Routes>
-      <Toaster />
-    </Router>
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/activities" element={<Activities />} />
+          <Route path="/login" element={<Login />} />
+          <Route
+            path="/admin"
+            element={isAdmin ? <Admin /> : <Navigate to="/login" replace />}
+          />
+        </Routes>
+        <Toaster />
+      </Router>
+    </QueryClientProvider>
   );
 }
 
