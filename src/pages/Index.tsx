@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Language } from "@/types/program";
+import { ProgramList } from "@/components/ProgramList";
 import { LanguageSelector } from "@/components/LanguageSelector";
 
 const translations = {
@@ -21,6 +22,10 @@ const translations = {
 const Index = () => {
   const [language, setLanguage] = useState<Language>("hu");
 
+  const handleLanguageChange = (newLanguage: Language) => {
+    setLanguage(newLanguage);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-secondary/20">
       <header className="sticky top-0 z-50 backdrop-blur-lg bg-white/80 shadow-sm">
@@ -35,14 +40,14 @@ const Index = () => {
           />
           <LanguageSelector 
             currentLanguage={language} 
-            onLanguageChange={setLanguage}
+            onLanguageChange={handleLanguageChange}
           />
         </div>
       </header>
       
       <main className="relative">
         <div className="container mx-auto px-4 py-12">
-          <div className="max-w-4xl mx-auto text-center">
+          <div className="max-w-4xl mx-auto text-center mb-12">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -56,6 +61,8 @@ const Index = () => {
               </p>
             </motion.div>
           </div>
+
+          <ProgramList onLanguageChange={handleLanguageChange} />
         </div>
       </main>
       
