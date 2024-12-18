@@ -11,15 +11,8 @@ import { BookingFormFields } from "./booking/BookingFormFields";
 import { BookingPriceSummary } from "./booking/BookingPriceSummary";
 import { BookingProgressSteps } from "./booking/BookingProgressSteps";
 import { BookingSummaryDetails } from "./booking/BookingSummaryDetails";
-
-interface BookingFormProps {
-  isOpen: boolean;
-  onClose: () => void;
-  programTitle: string;
-  pricePerPerson: number;
-  currency: Currency;
-  language: Language;
-}
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const translations = {
   hu: {
@@ -150,9 +143,36 @@ export function BookingForm({
     { icon: User, title: t.steps.summary }
   ];
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    onClose();
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      // Combine date and time
+      const bookingDateTime = new Date(values.date);
+      const [hours, minutes] = values.time.split(':');
+      bookingDateTime.setHours(parseInt(hours), parseInt(minutes));
+
+      const { error } = await supabase
+        .from('bookings')
+        .insert({
+          guest_name: values.name,
+          guest_phone: values.phone,
+          booking_date: bookingDateTime.toISOString(),
+          number_of_people: values.numberOfPeople,
+          program_id: 1, // You might want to make this dynamic based on the program
+          guest_email: 'test@example.com', // This should be collected in the form
+        });
+
+      if (error) {
+        console.error('Error inserting booking:', error);
+        toast.error('Hiba történt a foglalás mentése közben');
+        return;
+      }
+
+      toast.success('Foglalás sikeresen elmentve!');
+      onClose();
+    } catch (error) {
+      console.error('Error in form submission:', error);
+      toast.error('Váratlan hiba történt');
+    }
   }
 
   const numberOfPeople = form.watch("numberOfPeople") || 1;

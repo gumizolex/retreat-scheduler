@@ -5,15 +5,21 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 export function AdminDashboard() {
-  const { data: bookings } = useQuery({
+  const { data: bookings, isError } = useQuery({
     queryKey: ['bookings'],
     queryFn: async () => {
+      console.log('Fetching bookings...');
       const { data, error } = await supabase
         .from('bookings')
         .select('*')
         .order('created_at', { ascending: false });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching bookings:', error);
+        throw error;
+      }
+      
+      console.log('Fetched bookings:', data);
       
       // Ensure the status is of type BookingStatus
       return (data || []).map(booking => ({
@@ -22,6 +28,10 @@ export function AdminDashboard() {
       }));
     },
   });
+
+  if (isError) {
+    console.error('Error in bookings query');
+  }
 
   const totalBookings = bookings?.length || 0;
   const activeGuests = bookings?.filter(b => b.status === 'confirmed')?.length || 0;
