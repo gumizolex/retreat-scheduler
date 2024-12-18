@@ -106,29 +106,27 @@ html {
   }
 }
 
-/* 3D Transform Utilities */
-@layer utilities {
-  .perspective-1000 {
-    perspective: 1000px;
-  }
-  
-  .preserve-3d {
-    transform-style: preserve-3d;
-  }
-  
-  .backface-hidden {
-    backface-visibility: hidden;
-  }
+/* Enhanced 3D Transform Utilities */
+.perspective-1200 {
+  perspective: 1200px;
 }
 
-/* Carousel Custom Styles */
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+/* Enhanced Carousel Styles */
 .embla {
   @apply overflow-hidden;
 }
 
 .embla__container {
   @apply flex touch-pan-y;
-  perspective: 1000px;
+  perspective: 1200px;
   transform-style: preserve-3d;
 }
 
@@ -137,16 +135,16 @@ html {
   transform-style: preserve-3d;
 }
 
-/* Swipe Hint Animation */
+/* Enhanced Swipe Hint Animation */
 @keyframes swipeHint {
   0%, 100% {
-    opacity: 0;
+    opacity: 0.4;
   }
   50% {
-    opacity: 0.1;
+    opacity: 0.8;
   }
 }
 
 .swipe-hint {
-  animation: swipeHint 2s infinite;
+  animation: swipeHint 2s ease-in-out infinite;
 }

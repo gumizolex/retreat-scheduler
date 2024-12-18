@@ -29,13 +29,13 @@ export function ProgramCard({
   const [dragStarted, setDragStarted] = useState(false);
 
   useEffect(() => {
-    controls.set({ opacity: 0, y: 20 });
     controls.start({ opacity: 1, y: 0 });
   }, [controls]);
 
   return (
     <div className="relative">
       <motion.div
+        initial={{ opacity: 0, y: 20 }}
         animate={controls}
         whileHover={!isMobile ? { y: -5 } : {}}
         transition={{ duration: 0.3 }}
@@ -51,9 +51,9 @@ export function ProgramCard({
               controls.start({
                 x: info.offset.x > 0 ? 300 : -300,
                 opacity: 0,
-                rotateY: info.offset.x > 0 ? 45 : -45,
-                z: -100,
-                transition: { duration: 0.3 }
+                rotateY: info.offset.x > 0 ? 30 : -30,
+                scale: 0.8,
+                transition: { duration: 0.4, ease: "easeOut" }
               }).then(() => {
                 if (info.offset.x > 0) {
                   carousel.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
@@ -63,102 +63,127 @@ export function ProgramCard({
               });
             }
           } else {
-            controls.start({ x: 0, opacity: 1, rotateY: 0, z: 0 });
+            controls.start({ 
+              x: 0, 
+              opacity: 1, 
+              rotateY: 0, 
+              scale: 1,
+              transition: { 
+                type: "spring",
+                stiffness: 200,
+                damping: 20
+              }
+            });
           }
         }}
         style={{ 
-          perspective: "1000px",
+          perspective: "1200px",
           transformStyle: "preserve-3d"
         }}
-        whileDrag={{
+        whileDrag={(_, info) => ({
           scale: 0.95,
-          rotateY: dragStarted ? 0 : 0,
-          z: -50
-        }}
+          rotateY: (info?.offset?.x || 0) * 0.1,
+          transition: { duration: 0.1 }
+        })}
       >
-        <Card className="group relative overflow-hidden bg-white/80 backdrop-blur-sm border border-gray-100 hover:border-primary/20 transition-all duration-300 hover:shadow-xl">
+        <Card className="group relative overflow-hidden bg-white/90 backdrop-blur-sm border border-gray-100 hover:border-primary/20 transition-all duration-300 hover:shadow-xl">
           {isMobile && !dragStarted && (
             <motion.div 
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent"
-              initial={{ x: "-100%" }}
+              className="absolute inset-0 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5"
+              initial={{ opacity: 0 }}
               animate={{ 
-                x: "100%",
+                opacity: [0.3, 0, 0.3],
+                x: ["-100%", "100%", "-100%"],
                 transition: {
                   repeat: Infinity,
-                  duration: 1.5,
-                  ease: "linear",
-                  repeatDelay: 1
+                  duration: 3,
+                  ease: "easeInOut"
                 }
               }}
             />
           )}
           
-        <CardHeader className="p-0">
-          <div className="relative overflow-hidden aspect-video">
-            <img
-              src={program.image}
-              alt={translatedProgram.title}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          </div>
-        </CardHeader>
-        <CardContent className="p-6">
-          <CardTitle className="text-xl mb-3 font-display text-accent group-hover:text-primary transition-colors duration-300">
-            {translatedProgram.title}
-          </CardTitle>
-          <CardDescription className="mb-4 line-clamp-3 text-accent/80">
-            {translatedProgram.description}
-          </CardDescription>
-          <div className="space-y-2 text-sm">
-            <motion.div 
-              className="flex items-center gap-2 text-accent/70"
-              whileHover={{ x: 5 }}
-              transition={{ duration: 0.2 }}
+          <CardHeader className="p-0">
+            <div className="relative overflow-hidden aspect-video">
+              <img
+                src={program.image}
+                alt={translatedProgram.title}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            </div>
+          </CardHeader>
+          <CardContent className="p-6">
+            <CardTitle className="text-xl mb-3 font-display text-accent group-hover:text-primary transition-colors duration-300">
+              {translatedProgram.title}
+            </CardTitle>
+            <CardDescription className="mb-4 line-clamp-3 text-accent/80">
+              {translatedProgram.description}
+            </CardDescription>
+            <div className="space-y-2 text-sm">
+              <motion.div 
+                className="flex items-center gap-2 text-accent/70"
+                whileHover={{ x: 5 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Clock className="w-4 h-4" />
+                <span>{program.duration}</span>
+              </motion.div>
+              <motion.div 
+                className="flex items-center gap-2 text-accent/70"
+                whileHover={{ x: 5 }}
+                transition={{ duration: 0.2 }}
+              >
+                <MapPin className="w-4 h-4" />
+                <span>{program.location}</span>
+              </motion.div>
+              <motion.div 
+                className="flex items-center gap-2 text-accent/70"
+                whileHover={{ x: 5 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Calendar className="w-4 h-4" />
+                <span>{timesAvailableText}</span>
+              </motion.div>
+            </div>
+          </CardContent>
+          <CardFooter className="p-6 pt-0 flex justify-between items-center border-t border-gray-100 mt-4">
+            <span className="text-lg font-semibold text-primary">
+              {formatCurrency(program.price, currency)}/fő
+            </span>
+            <Button 
+              variant="default"
+              onClick={() => onBook(program.id)}
+              className="bg-primary hover:bg-primary/90 text-white transition-all duration-300 hover:shadow-lg"
             >
-              <Clock className="w-4 h-4" />
-              <span>{program.duration}</span>
-            </motion.div>
-            <motion.div 
-              className="flex items-center gap-2 text-accent/70"
-              whileHover={{ x: 5 }}
-              transition={{ duration: 0.2 }}
-            >
-              <MapPin className="w-4 h-4" />
-              <span>{program.location}</span>
-            </motion.div>
-            <motion.div 
-              className="flex items-center gap-2 text-accent/70"
-              whileHover={{ x: 5 }}
-              transition={{ duration: 0.2 }}
-            >
-              <Calendar className="w-4 h-4" />
-              <span>{timesAvailableText}</span>
-            </motion.div>
-          </div>
-        </CardContent>
-        <CardFooter className="p-6 pt-0 flex justify-between items-center border-t border-gray-100 mt-4">
-          <span className="text-lg font-semibold text-primary">
-            {formatCurrency(program.price, currency)}/fő
-          </span>
-          <Button 
-            variant="default"
-            onClick={() => onBook(program.id)}
-            className="bg-primary hover:bg-primary/90 text-white transition-all duration-300 hover:shadow-lg"
-          >
-            {bookButtonText}
-          </Button>
-        </CardFooter>
+              {bookButtonText}
+            </Button>
+          </CardFooter>
         </Card>
       </motion.div>
       
       {isMobile && (
         <motion.div 
           initial={{ opacity: 0 }}
-          animate={{ opacity: dragStarted ? 0 : 0.6 }}
-          className="absolute -bottom-6 left-0 right-0 text-center text-sm text-primary/60 pointer-events-none"
+          animate={{ 
+            opacity: dragStarted ? 0 : 0.8,
+            y: dragStarted ? 10 : 0
+          }}
+          transition={{ duration: 0.2 }}
+          className="absolute -bottom-8 left-0 right-0 text-center text-xs font-medium tracking-wide text-primary/70 pointer-events-none"
         >
-          ← húzd jobbra vagy balra →
+          <motion.div
+            animate={{
+              scale: [1, 1.1, 1],
+              transition: {
+                repeat: Infinity,
+                duration: 2,
+                ease: "easeInOut"
+              }
+            }}
+          >
+            Húzd jobbra vagy balra a további programokért
+          </motion.div>
         </motion.div>
       )}
     </div>
