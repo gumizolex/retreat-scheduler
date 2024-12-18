@@ -64,9 +64,9 @@ export function ProgramCard({
       boxShadow: "0px 10px 20px rgba(0,0,0,0.15)",
       transition: {
         type: "spring",
-        stiffness: 1000,
-        damping: 10,
-        duration: 0
+        stiffness: 200, // Reduced for smoother lift
+        damping: 25,    // Increased for more controlled movement
+        duration: 0.3   // Added duration for smoother transition
       }
     },
     tap: { 
@@ -75,9 +75,9 @@ export function ProgramCard({
       boxShadow: "0px 5px 10px rgba(0,0,0,0.1)",
       transition: {
         type: "spring",
-        stiffness: 1000,
-        damping: 10,
-        duration: 0
+        stiffness: 200,
+        damping: 25,
+        duration: 0.3
       }
     }
   };
