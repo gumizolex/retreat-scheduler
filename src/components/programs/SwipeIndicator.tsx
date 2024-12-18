@@ -16,7 +16,7 @@ export function SwipeIndicator({ language }: SwipeIndicatorProps) {
   const rightChevrons = [0, 1, 2];
 
   return (
-    <div className="absolute -bottom-6 left-0 right-0 flex justify-center">
+    <div className="absolute -bottom-2 left-0 right-0 flex justify-center">
       <div className="flex items-center justify-center gap-2 text-xs font-medium tracking-wide text-primary py-2 px-6">
         <div className="flex">
           {leftChevrons.map((index) => (
