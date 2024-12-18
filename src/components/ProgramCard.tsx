@@ -39,13 +39,13 @@ export function ProgramCard({
       scale: 1,
       y: 0,
       zIndex: 0,
-      transition: { duration: 0.6, ease: "easeInOut" }
+      transition: { duration: 0 }
     },
     centered: {
       scale: 1.15,
       y: -20,
       zIndex: 10,
-      transition: { duration: 0.6, ease: "easeInOut" }
+      transition: { duration: 0 }
     }
   };
 
@@ -55,7 +55,7 @@ export function ProgramCard({
       opacity: 0.8,
       y: 10,
       boxShadow: "0px 0px 0px rgba(0,0,0,0)",
-      transition: { duration: 0.08, ease: "easeOut" }
+      transition: { duration: 0 }
     },
     hover: { 
       scale: 1.02,
@@ -64,9 +64,9 @@ export function ProgramCard({
       boxShadow: "0px 10px 20px rgba(0,0,0,0.15)",
       transition: {
         type: "spring",
-        stiffness: 700,
-        damping: 12,
-        duration: 0.05
+        stiffness: 1000,
+        damping: 10,
+        duration: 0
       }
     },
     tap: { 
@@ -75,9 +75,9 @@ export function ProgramCard({
       boxShadow: "0px 5px 10px rgba(0,0,0,0.1)",
       transition: {
         type: "spring",
-        stiffness: 700,
-        damping: 12,
-        duration: 0.05
+        stiffness: 1000,
+        damping: 10,
+        duration: 0
       }
     }
   };
@@ -98,15 +98,11 @@ export function ProgramCard({
           onDrag={handleDrag}
           onDragEnd={handleDragEnd}
           style={{ transformStyle: "preserve-3d" }}
-          className={`
-            rounded-2xl overflow-hidden touch-pan-y transform-gpu
-            transition-all duration-300
-          `}
+          className="rounded-2xl overflow-hidden touch-pan-y transform-gpu"
         >
           <Card className={`
             group relative overflow-hidden bg-white/90 backdrop-blur-sm 
             border border-gray-100
-            transition-all duration-300
             min-h-[480px] sm:min-h-[520px] flex flex-col
             ${isCentered && isMobile ? 'shadow-xl border-primary/30' : 'hover:shadow-lg hover:border-primary/20'}
           `}>
