@@ -26,7 +26,7 @@ export function DateTimePicker({ form, language, translations }: DateTimePickerP
   const selectedDate = form.watch("date");
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       <FormField
         control={form.control}
         name="date"
@@ -41,7 +41,7 @@ export function DateTimePicker({ form, language, translations }: DateTimePickerP
               onSelect={field.onChange}
               disabled={(date) => date < new Date()}
               className={cn(
-                "rounded-lg border shadow-sm w-full scale-90 origin-top",
+                "rounded-lg border shadow-sm w-full scale-90 origin-top -mt-2 -mb-2",
                 "bg-white dark:bg-gray-800"
               )}
             />
