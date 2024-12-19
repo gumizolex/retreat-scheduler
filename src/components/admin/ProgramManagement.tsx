@@ -4,7 +4,7 @@ import { ProgramForm } from "./ProgramForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Program } from "@/types/program";
+import { Program, Language } from "@/types/program";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Edit, Plus } from "lucide-react";
 
@@ -27,7 +27,15 @@ export function ProgramManagement() {
         `);
       
       if (error) throw error;
-      return data;
+      
+      // Cast the response to ensure language is of type Language
+      return data?.map(program => ({
+        ...program,
+        program_translations: program.program_translations.map(translation => ({
+          ...translation,
+          language: translation.language as Language
+        }))
+      })) as Program[];
     },
   });
 
@@ -77,7 +85,7 @@ export function ProgramManagement() {
           <Card key={program.id} className="relative">
             <CardHeader className="pb-4">
               <CardTitle className="text-lg font-medium">
-                {program.program_translations.find(t => t.language === 'hu')?.title}
+                {program.program_translations?.find(t => t.language === 'hu')?.title}
               </CardTitle>
             </CardHeader>
             <CardContent>
