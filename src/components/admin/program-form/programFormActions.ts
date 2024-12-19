@@ -9,7 +9,7 @@ export const createNewProgram = async (values: FormValues) => {
       .from('programs')
       .insert([
         {
-          price: values.price,
+          price: Number(values.price),
           duration: values.duration,
           location: values.location,
         }
@@ -68,12 +68,14 @@ export const createNewProgram = async (values: FormValues) => {
 export const updateExistingProgram = async (values: FormValues, programId: number) => {
   try {
     console.log('Updating program with values:', values);
+    console.log('Program ID:', programId);
+    console.log('Price value:', values.price, 'Type:', typeof values.price);
     
     // Először frissítjük a program alapadatait
     const { error: programError } = await supabase
       .from('programs')
       .update({
-        price: values.price,
+        price: Number(values.price),
         duration: values.duration,
         location: values.location,
       })
