@@ -27,9 +27,9 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { programId, price, currency, guestName, guestEmail } = await req.json()
+    const { programId, price, currency, guestName, guestEmail, language = 'hu' } = await req.json()
     
-    console.log("Creating checkout session for program:", { programId, price, currency, guestName, guestEmail })
+    console.log("Creating checkout session for program:", { programId, price, currency, guestName, guestEmail, language })
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
@@ -57,9 +57,10 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error('Program not found')
     }
 
+    // Get the title in the requested language, fallback to Hungarian if not found
+    const requestedTitle = program.program_translations.find((t: any) => t.language === language)?.title
     const huTitle = program.program_translations.find((t: any) => t.language === 'hu')?.title
-    const enTitle = program.program_translations.find((t: any) => t.language === 'en')?.title
-    const programTitle = huTitle || enTitle || `Program #${programId}`
+    const programTitle = requestedTitle || huTitle || `Program #${programId}`
 
     const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY')
     if (!stripeSecretKey) {
@@ -104,7 +105,7 @@ const handler = async (req: Request): Promise<Response> => {
             currency: currency.toLowerCase(),
             product_data: {
               name: programTitle,
-              description: `Foglalás: ${guestName}`,
+              description: `Rezervare: ${guestName}`,
             },
             unit_amount: unitAmount,
           },

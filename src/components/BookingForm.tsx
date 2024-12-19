@@ -130,6 +130,7 @@ export function BookingForm({
           currency,
           guestName: values.name,
           guestEmail: values.email,
+          language, // Add language to the request
         },
       });
 
