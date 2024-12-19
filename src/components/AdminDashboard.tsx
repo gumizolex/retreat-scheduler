@@ -3,7 +3,6 @@ import { Calendar, Users, Activity } from "lucide-react";
 import { ProgramManagement } from "./admin/ProgramManagement";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { exchangeRates } from "@/utils/currency";
 
 export function AdminDashboard() {
   const { data: bookings, isError } = useQuery({
@@ -33,16 +32,14 @@ export function AdminDashboard() {
   const activeGuests = bookings?.filter(b => b.status === 'confirmed')?.length || 0;
   const utilizationRate = totalBookings > 0 ? Math.round((activeGuests / totalBookings) * 100) : 0;
   
-  const baseRevenueHUF = bookings
+  const monthlyRevenue = bookings
     ?.filter(b => {
       const bookingDate = new Date(b.created_at);
       const currentDate = new Date();
       return bookingDate.getMonth() === currentDate.getMonth() &&
              bookingDate.getFullYear() === currentDate.getFullYear();
     })
-    ?.length * 15000 || 0;
-  
-  const monthlyRevenue = baseRevenueHUF * exchangeRates.RON;
+    ?.reduce((acc, booking) => acc + 15000, 0) || 0;
 
   return (
     <div className="container mx-auto py-8">
@@ -92,7 +89,7 @@ export function AdminDashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{monthlyRevenue.toLocaleString()} RON</div>
+            <div className="text-2xl font-bold">{monthlyRevenue} RON</div>
           </CardContent>
         </Card>
       </div>
