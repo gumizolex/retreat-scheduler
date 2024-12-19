@@ -1,7 +1,7 @@
 export const exchangeRates = {
-  HUF: 1,
-  RON: 83.33, // 1 RON = 83.33 HUF
-  EUR: 380 // 1 EUR = 380 HUF
+  HUF: 83.33, // 1 RON = 83.33 HUF
+  RON: 1,
+  EUR: 4.55 // 1 RON = 0.2 EUR (approximate)
 };
 
 export const formatCurrency = (amount: number, currency: "HUF" | "RON" | "EUR") => {
@@ -9,10 +9,10 @@ export const formatCurrency = (amount: number, currency: "HUF" | "RON" | "EUR") 
   
   switch (currency) {
     case "HUF":
-      converted = amount;
+      converted = amount * exchangeRates.HUF;
       return `${converted.toLocaleString()} Ft`;
     case "RON":
-      converted = amount / exchangeRates.RON;
+      converted = amount;
       return `${converted.toLocaleString()} RON`;
     case "EUR":
       converted = amount / exchangeRates.EUR;
