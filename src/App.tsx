@@ -30,6 +30,10 @@ function App() {
         .single();
 
       setIsAdmin(profile?.role === 'admin');
+      
+      // Add debug log
+      console.log('Session:', session);
+      console.log('Profile:', profile);
     };
 
     checkAdmin();
