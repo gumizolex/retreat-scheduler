@@ -27,6 +27,33 @@ export function BookingActions({ booking, onStatusUpdate }: BookingActionsProps)
   const handleDelete = async () => {
     try {
       console.log('Deleting booking:', booking.id);
+      
+      // First, send the deletion notification email
+      const programTitle = booking.programs?.program_translations.find(t => t.language === "hu")?.title || '';
+      const formattedDate = new Date(booking.booking_date).toLocaleDateString('hu-HU', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+
+      const emailResponse = await supabase.functions.invoke('send-booking-deletion-notification', {
+        body: {
+          to: booking.guest_email,
+          guestName: booking.guest_name,
+          programTitle: programTitle,
+          bookingDate: formattedDate
+        },
+      });
+
+      if (emailResponse.error) {
+        console.error('Error sending deletion notification:', emailResponse.error);
+        toast.error('Hiba történt az értesítő email küldése során');
+        return;
+      }
+
+      // Then delete the booking
       const { error } = await supabase
         .from('bookings')
         .delete()
