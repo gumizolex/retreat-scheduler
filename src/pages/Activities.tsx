@@ -10,12 +10,12 @@ const Activities = () => {
 
   return (
     <div className="min-h-screen">
-      <section className="relative h-[50vh] bg-primary flex flex-col items-center justify-center text-white px-4">
+      <section className="relative h-[40vh] bg-primary flex flex-col items-center justify-center text-white px-4">
         <h1 className="text-4xl md:text-5xl font-display mb-4 text-center">
           Abod Retreat
         </h1>
         <p className="text-lg md:text-xl max-w-2xl text-center font-light">
-          Fedezze fel programjainkat és töltődjön fel nálunk
+          Fedezze fel egyedülálló programjainkat és élményeinket Erdély szívében
         </p>
       </section>
 
