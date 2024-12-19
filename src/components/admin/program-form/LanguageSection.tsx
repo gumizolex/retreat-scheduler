@@ -6,48 +6,63 @@ import { FormValues } from "./types";
 
 interface LanguageSectionProps {
   form: UseFormReturn<FormValues>;
-  language: "hu" | "en" | "ro";
-  title: string;
-  titleLabel: string;
-  descriptionLabel: string;
 }
 
-export function LanguageSection({ 
-  form, 
-  language, 
-  title, 
-  titleLabel, 
-  descriptionLabel 
-}: LanguageSectionProps) {
+export function LanguageSection({ form }: LanguageSectionProps) {
+  const languages = [
+    {
+      code: 'hu',
+      title: 'Magyar',
+      titleLabel: 'Magyar cím',
+      descriptionLabel: 'Magyar leírás'
+    },
+    {
+      code: 'en',
+      title: 'English',
+      titleLabel: 'English title',
+      descriptionLabel: 'English description'
+    },
+    {
+      code: 'ro',
+      title: 'Română',
+      titleLabel: 'Titlu în română',
+      descriptionLabel: 'Descriere în română'
+    }
+  ];
+
   return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-semibold">{title}</h3>
-      <FormField
-        control={form.control}
-        name={`${language}_title`}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>{titleLabel}</FormLabel>
-            <FormControl>
-              <Input {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
-        name={`${language}_description`}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>{descriptionLabel}</FormLabel>
-            <FormControl>
-              <Textarea {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+    <div className="space-y-8">
+      {languages.map(lang => (
+        <div key={lang.code} className="space-y-4">
+          <h3 className="text-lg font-semibold">{lang.title}</h3>
+          <FormField
+            control={form.control}
+            name={`${lang.code}_title`}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{lang.titleLabel}</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name={`${lang.code}_description`}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{lang.descriptionLabel}</FormLabel>
+                <FormControl>
+                  <Textarea {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+      ))}
     </div>
   );
 }
