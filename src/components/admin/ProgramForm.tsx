@@ -4,11 +4,11 @@ import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { BasicDetails } from "./program-form/BasicDetails";
 import { LanguageSection } from "./program-form/LanguageSection";
-import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 import { Program } from "@/types/program";
 import { formSchema, FormValues } from "./program-form/types";
+import { createNewProgram, updateExistingProgram, updateProgramTranslation } from "./program-form/programFormActions";
 
 interface ProgramFormProps {
   initialData?: Program;
@@ -39,132 +39,22 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
       console.log('Starting form submission with values:', values);
 
       if (initialData?.id) {
-        console.log('Updating existing program with ID:', initialData.id);
-        
-        // Update program details
-        const { data: updatedProgram, error: programError } = await supabase
-          .from('programs')
-          .update({
-            price: values.price,
-            duration: values.duration,
-            location: values.location,
-          })
-          .eq('id', initialData.id)
-          .select()
-          .maybeSingle();
-
-        if (programError) {
-          console.error('Error updating program:', programError);
-          throw programError;
-        }
-
-        if (!updatedProgram) {
-          throw new Error('Program not found or could not be updated');
-        }
-
-        console.log('Successfully updated program:', updatedProgram);
+        await updateExistingProgram(values, initialData.id);
 
         // Update translations one by one
         const languages = ['hu', 'en', 'ro'] as const;
         for (const lang of languages) {
-          console.log(`Updating ${lang} translation for program ${initialData.id}`);
-          
           const existingTranslation = initialData.program_translations.find(t => t.language === lang);
-          
-          if (existingTranslation) {
-            const { data: updatedTranslation, error: translationError } = await supabase
-              .from('program_translations')
-              .update({
-                title: String(values[`${lang}_title` as keyof FormValues]),
-                description: String(values[`${lang}_description` as keyof FormValues]),
-              })
-              .eq('program_id', initialData.id)
-              .eq('language', lang)
-              .select()
-              .maybeSingle();
-
-            if (translationError) {
-              console.error(`Error updating ${lang} translation:`, translationError);
-              throw translationError;
-            }
-
-            if (!updatedTranslation) {
-              throw new Error(`Translation for language ${lang} not found or could not be updated`);
-            }
-
-            console.log(`Successfully updated ${lang} translation:`, updatedTranslation);
-          } else {
-            // If translation doesn't exist, create it
-            const { data: newTranslation, error: translationError } = await supabase
-              .from('program_translations')
-              .insert({
-                program_id: initialData.id,
-                language: lang,
-                title: String(values[`${lang}_title` as keyof FormValues]),
-                description: String(values[`${lang}_description` as keyof FormValues]),
-              })
-              .select()
-              .maybeSingle();
-
-            if (translationError) {
-              console.error(`Error creating ${lang} translation:`, translationError);
-              throw translationError;
-            }
-
-            if (!newTranslation) {
-              throw new Error(`Could not create translation for language ${lang}`);
-            }
-
-            console.log(`Successfully created ${lang} translation:`, newTranslation);
-          }
+          await updateProgramTranslation(
+            initialData.id,
+            lang,
+            String(values[`${lang}_title` as keyof FormValues]),
+            String(values[`${lang}_description` as keyof FormValues]),
+            !existingTranslation
+          );
         }
       } else {
-        console.log('Creating new program');
-        // Create new program
-        const { data: newProgram, error: programError } = await supabase
-          .from('programs')
-          .insert({
-            price: values.price,
-            duration: values.duration,
-            location: values.location,
-          })
-          .select()
-          .maybeSingle();
-
-        if (programError) {
-          console.error('Error creating program:', programError);
-          throw programError;
-        }
-
-        if (!newProgram) {
-          throw new Error('Could not create new program');
-        }
-
-        console.log('Created new program:', newProgram);
-
-        // Insert translations
-        const translations = ['hu', 'en', 'ro'].map(lang => ({
-          program_id: newProgram.id,
-          language: lang,
-          title: String(values[`${lang}_title` as keyof FormValues]),
-          description: String(values[`${lang}_description` as keyof FormValues]),
-        }));
-
-        const { data: newTranslations, error: translationsError } = await supabase
-          .from('program_translations')
-          .insert(translations)
-          .select();
-
-        if (translationsError) {
-          console.error('Error creating translations:', translationsError);
-          throw translationsError;
-        }
-
-        if (!newTranslations || newTranslations.length === 0) {
-          throw new Error('Could not create translations');
-        }
-
-        console.log('Successfully created translations:', newTranslations);
+        await createNewProgram(values);
       }
 
       // Force refetch the data
