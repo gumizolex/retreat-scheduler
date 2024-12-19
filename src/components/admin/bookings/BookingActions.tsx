@@ -57,12 +57,20 @@ export function BookingActions({ booking, onStatusUpdate }: BookingActionsProps)
           minute: '2-digit'
         });
 
+        // Calculate the total amount if the booking was confirmed
+        const amount = booking.status === 'confirmed' && booking.programs?.price 
+          ? booking.programs.price * booking.number_of_people 
+          : undefined;
+
         const emailResponse = await supabase.functions.invoke('send-booking-deletion-notification', {
           body: {
             to: booking.guest_email,
             guestName: booking.guest_name,
             programTitle: programTitle,
-            bookingDate: formattedDate
+            bookingDate: formattedDate,
+            amount: amount,
+            // Use the language of the first translation as the guest's preferred language
+            language: booking.programs?.program_translations[0]?.language || 'hu'
           },
         });
 

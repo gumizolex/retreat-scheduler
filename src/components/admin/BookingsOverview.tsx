@@ -13,6 +13,7 @@ export function BookingsOverview() {
           *,
           programs (
             id,
+            price,
             program_translations (
               language,
               title
