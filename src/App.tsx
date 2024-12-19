@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Activities from "./pages/Activities";
 import Admin from "./pages/Admin";
 import Login from "./pages/Login";
+import BookingSuccess from "./pages/BookingSuccess";
 import { Toaster } from "@/components/ui/toaster";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
@@ -50,6 +51,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Activities />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/booking-success" element={<BookingSuccess />} />
           <Route
             path="/admin"
             element={isAdmin ? <Admin /> : <Navigate to="/login" replace />}
