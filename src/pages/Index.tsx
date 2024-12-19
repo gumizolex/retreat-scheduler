@@ -1,17 +1,21 @@
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ProgramList } from "@/components/ProgramList";
+import { useToast } from "@/components/ui/use-toast";
 
 const Index = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       
       if (session) {
+        setIsLoggedIn(true);
         const { data: profile } = await supabase
           .from('profiles')
           .select('role')
@@ -20,17 +24,43 @@ const Index = () => {
 
         if (profile?.role === 'admin') {
           navigate('/admin');
-          return;
         }
+      } else {
+        setIsLoggedIn(false);
       }
     };
 
     checkSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, [navigate]);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate('/login');
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      toast({
+        title: "Sikeres kijelentkezés",
+        description: "Viszontlátásra!",
+      });
+      
+      navigate('/login');
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Hiba történt",
+        description: error.message || "Sikertelen kijelentkezés",
+      });
+    }
   };
 
   return (
@@ -39,9 +69,11 @@ const Index = () => {
         <h1 className="text-2xl font-display text-accent-foreground">
           Abod Retreat
         </h1>
-        <Button variant="secondary" onClick={handleLogout}>
-          Kijelentkezés
-        </Button>
+        {isLoggedIn && (
+          <Button variant="secondary" onClick={handleLogout}>
+            Kijelentkezés
+          </Button>
+        )}
       </header>
       <main>
         <ProgramList />
