@@ -26,7 +26,14 @@ export function BookingActions({ booking, onStatusUpdate }: BookingActionsProps)
 
   const handlePaymentAction = async (action: 'capture' | 'cancel') => {
     try {
-      // Get the payment intent ID from the booking metadata or session
+      if (!booking.payment_intent_id) {
+        console.log('No payment intent found, updating booking status directly');
+        await onStatusUpdate(booking.id, action === 'capture' ? 'confirmed' : 'cancelled', booking);
+        return;
+      }
+
+      console.log(`Handling payment action: ${action} for intent: ${booking.payment_intent_id}`);
+      
       const { data: session, error: sessionError } = await supabase.functions.invoke('handle-booking-payment', {
         body: {
           paymentIntentId: booking.payment_intent_id,
@@ -35,7 +42,7 @@ export function BookingActions({ booking, onStatusUpdate }: BookingActionsProps)
       });
 
       if (sessionError) {
-        console.error('Error handling payment:', sessionError);
+        console.error(`Error ${action}ing payment:`, sessionError);
         throw sessionError;
       }
 
