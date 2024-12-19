@@ -49,10 +49,10 @@ export function AdminDashboard() {
     ?.slice(0, 5) || [];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <h1 className="text-2xl sm:text-3xl font-display font-bold">Admin Vezérlőpult</h1>
       
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
@@ -101,27 +101,27 @@ export function AdminDashboard() {
         </Card>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         <BookingsOverview />
         
         {upcomingBookings.length > 0 && (
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Clock className="h-5 w-5" />
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <Clock className="h-4 w-4 sm:h-5 sm:w-5" />
                 Következő foglalások
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
+              <div className="space-y-2 sm:space-y-3">
                 {upcomingBookings.map((booking) => (
                   <div 
                     key={booking.id}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-muted rounded-lg gap-2"
+                    className="flex flex-col sm:flex-row sm:items-center justify-between p-2 sm:p-3 bg-muted rounded-lg gap-1 sm:gap-2 text-sm"
                   >
                     <div>
                       <p className="font-medium">{booking.guest_name}</p>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-muted-foreground text-xs sm:text-sm">
                         {new Date(booking.booking_date).toLocaleDateString('hu-HU', {
                           year: 'numeric',
                           month: 'long',
@@ -131,7 +131,7 @@ export function AdminDashboard() {
                         })}
                       </p>
                     </div>
-                    <div className="text-sm">
+                    <div className="text-xs sm:text-sm text-muted-foreground">
                       {booking.number_of_people} fő
                     </div>
                   </div>
