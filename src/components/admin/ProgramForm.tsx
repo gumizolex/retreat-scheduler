@@ -1,16 +1,31 @@
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { BasicDetails } from "./program-form/BasicDetails";
 import { LanguageSection } from "./program-form/LanguageSection";
-import { FormValues, formSchema } from "./program-form/types";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/components/ui/use-toast";
+import { Program } from "@/types/program";
+
+const formSchema = z.object({
+  price: z.coerce.number().min(0),
+  duration: z.string().min(1),
+  location: z.string().min(1),
+  hu_title: z.string().min(1),
+  hu_description: z.string().min(1),
+  en_title: z.string().min(1),
+  en_description: z.string().min(1),
+  ro_title: z.string().min(1),
+  ro_description: z.string().min(1),
+});
+
+type FormValues = z.infer<typeof formSchema>;
 
 interface ProgramFormProps {
-  initialData?: any;
+  initialData?: Program;
   onSuccess?: () => void;
 }
 
@@ -21,34 +36,28 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      price: initialData?.price?.toString() || "",
+      price: initialData?.price || 0,
       duration: initialData?.duration || "",
       location: initialData?.location || "",
-      hu_title: initialData?.program_translations?.find((t: any) => t.language === "hu")?.title || "",
-      hu_description: initialData?.program_translations?.find((t: any) => t.language === "hu")?.description || "",
-      en_title: initialData?.program_translations?.find((t: any) => t.language === "en")?.title || "",
-      en_description: initialData?.program_translations?.find((t: any) => t.language === "en")?.description || "",
-      ro_title: initialData?.program_translations?.find((t: any) => t.language === "ro")?.title || "",
-      ro_description: initialData?.program_translations?.find((t: any) => t.language === "ro")?.description || "",
+      hu_title: initialData?.program_translations?.find(t => t.language === "hu")?.title || "",
+      hu_description: initialData?.program_translations?.find(t => t.language === "hu")?.description || "",
+      en_title: initialData?.program_translations?.find(t => t.language === "en")?.title || "",
+      en_description: initialData?.program_translations?.find(t => t.language === "en")?.description || "",
+      ro_title: initialData?.program_translations?.find(t => t.language === "ro")?.title || "",
+      ro_description: initialData?.program_translations?.find(t => t.language === "ro")?.description || "",
     },
   });
 
   const onSubmit = async (values: FormValues) => {
     try {
-      console.log('Submitting form with values:', values);
-      const price = parseInt(values.price);
-      
-      if (isNaN(price)) {
-        throw new Error("Invalid price value");
-      }
+      console.log('Form values:', values);
 
       if (initialData?.id) {
         console.log('Updating existing program with ID:', initialData.id);
-        // Update existing program
         const { error: programError } = await supabase
           .from('programs')
           .update({
-            price: price,
+            price: values.price,
             duration: values.duration,
             location: values.location,
           })
@@ -59,6 +68,8 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
           throw programError;
         }
 
+        console.log('Successfully updated program');
+
         // Update translations
         const languages = ['hu', 'en', 'ro'] as const;
         for (const lang of languages) {
@@ -66,8 +77,8 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
           const { error: translationError } = await supabase
             .from('program_translations')
             .update({
-              title: values[`${lang}_title`],
-              description: values[`${lang}_description`],
+              title: values[`${lang}_title` as keyof FormValues],
+              description: values[`${lang}_description` as keyof FormValues],
             })
             .eq('program_id', initialData.id)
             .eq('language', lang);
@@ -78,14 +89,14 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
           }
         }
 
-        console.log('Successfully updated program and translations');
+        console.log('Successfully updated translations');
       } else {
         console.log('Creating new program');
         // Create new program
-        const { data: program, error: programError } = await supabase
+        const { data: newProgram, error: programError } = await supabase
           .from('programs')
           .insert({
-            price: price,
+            price: values.price,
             duration: values.duration,
             location: values.location,
           })
@@ -97,16 +108,14 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
           throw programError;
         }
 
-        console.log('Created new program:', program);
+        console.log('Created new program:', newProgram);
 
         // Insert translations
-        const translations = [
-          { language: 'hu', title: values.hu_title, description: values.hu_description },
-          { language: 'en', title: values.en_title, description: values.en_description },
-          { language: 'ro', title: values.ro_title, description: values.ro_description },
-        ].map(t => ({
-          ...t,
-          program_id: program.id,
+        const translations = ['hu', 'en', 'ro'].map(lang => ({
+          program_id: newProgram.id,
+          language: lang,
+          title: values[`${lang}_title` as keyof FormValues],
+          description: values[`${lang}_description` as keyof FormValues],
         }));
 
         const { error: translationsError } = await supabase
@@ -125,7 +134,7 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
       await queryClient.invalidateQueries({ queryKey: ['programs'] });
       
       toast({
-        title: initialData ? "Program frissítve" : "Program létrehozva",
+        title: "Siker!",
         description: "A művelet sikeresen végrehajtva.",
       });
 
@@ -136,8 +145,8 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
       console.error('Error in form submission:', error);
       toast({
         variant: "destructive",
-        title: "Hiba történt",
-        description: error.message || "Nem sikerült menteni a változtatásokat.",
+        title: "Hiba!",
+        description: error.message || "Váratlan hiba történt",
       });
     }
   };
@@ -147,8 +156,9 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <BasicDetails form={form} />
         <LanguageSection form={form} />
+        
         <Button type="submit" className="w-full">
-          {initialData ? "Mentés" : "Létrehozás"}
+          {initialData ? "Mentés" : "Program létrehozása"}
         </Button>
       </form>
     </Form>
