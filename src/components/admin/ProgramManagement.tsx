@@ -6,7 +6,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Program } from "@/types/program";
 import { useToast } from "@/hooks/use-toast";
-import { Trash2 } from "lucide-react";
+import { Trash2, Image } from "lucide-react";
+import { ProgramImageManager } from "./program-form/ProgramImageManager";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,6 +22,7 @@ import {
 export function ProgramManagement() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [programToDelete, setProgramToDelete] = useState<Program | null>(null);
+  const [programToEditImage, setProgramToEditImage] = useState<Program | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -113,18 +115,28 @@ export function ProgramManagement() {
           return (
             <div 
               key={program.id}
-              className="bg-card rounded-lg p-4 shadow-sm border"
+              className="bg-card rounded-lg p-4 shadow-sm border space-y-4"
             >
-              <div className="flex justify-between items-start mb-2">
+              <div className="flex justify-between items-start">
                 <h3 className="font-medium truncate flex-1">{huTitle}</h3>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-destructive hover:text-destructive/90 -mr-2"
-                  onClick={() => setProgramToDelete(program)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-primary hover:text-primary/90"
+                    onClick={() => setProgramToEditImage(program)}
+                  >
+                    <Image className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-destructive hover:text-destructive/90"
+                    onClick={() => setProgramToDelete(program)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
               <div className="text-sm text-muted-foreground">
                 {program.duration} • {program.price.toLocaleString()} Ft
@@ -153,6 +165,17 @@ export function ProgramManagement() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog open={!!programToEditImage} onOpenChange={(open) => !open && setProgramToEditImage(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Kép módosítása</DialogTitle>
+          </DialogHeader>
+          {programToEditImage && (
+            <ProgramImageManager program={programToEditImage} />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
