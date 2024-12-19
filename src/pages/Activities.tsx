@@ -1,8 +1,8 @@
-import { ProgramList } from "@/components/ProgramList";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { CurrencySelector } from "@/components/CurrencySelector";
 import { useState } from "react";
 import { Language, Currency } from "@/types/program";
+import { ProgramList } from "@/components/ProgramList";
 
 const Activities = () => {
   const [language, setLanguage] = useState<Language>("hu");
@@ -21,7 +21,7 @@ const Activities = () => {
         <div className="container mx-auto px-4">
           <div className="flex flex-col items-center justify-center gap-8">
             <img 
-              src="/lovable-uploads/abod-logo-white.png" 
+              src="/abod-logo-white.png" 
               alt="Abod Retreat Logo" 
               className="h-32 md:h-40 w-auto"
             />
