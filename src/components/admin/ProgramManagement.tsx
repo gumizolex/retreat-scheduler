@@ -17,6 +17,7 @@ export function ProgramManagement() {
   const { data: programs, refetch } = useQuery({
     queryKey: ['admin-programs'],
     queryFn: async () => {
+      console.log('Fetching programs...');
       const { data, error } = await supabase
         .from('programs')
         .select(`
@@ -29,6 +30,8 @@ export function ProgramManagement() {
         `);
       
       if (error) throw error;
+      
+      console.log('Fetched programs:', data);
       
       return data?.map(program => ({
         ...program,

@@ -8,7 +8,7 @@ import { Program } from "@/types/program";
 import { BasicDetails } from "./program-form/BasicDetails";
 import { LanguageSection } from "./program-form/LanguageSection";
 import { formSchema, type FormValues } from "./program-form/types";
-import { exchangeRates } from "@/utils/currency";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface ProgramFormProps {
   program?: Program | null;
@@ -17,12 +17,12 @@ interface ProgramFormProps {
 
 export function ProgramForm({ program, onClose }: ProgramFormProps) {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      // Convert RON to HUF for the form if program exists
-      price: program ? (Math.round(program.price / exchangeRates.RON)).toString() : "",
+      price: program?.price.toString() || "",
       duration: program?.duration || "",
       location: program?.location || "",
       hu_title: program?.program_translations?.find(t => t.language === "hu")?.title || "",
@@ -36,15 +36,14 @@ export function ProgramForm({ program, onClose }: ProgramFormProps) {
 
   const onSubmit = async (values: FormValues) => {
     try {
-      // Convert RON to HUF for storage
-      const priceInHUF = Math.round(parseFloat(values.price) / exchangeRates.RON);
+      const priceInRON = Math.round(parseFloat(values.price));
 
       if (program) {
         // Update existing program
         const { error: programError } = await supabase
           .from('programs')
           .update({
-            price: priceInHUF,
+            price: priceInRON,
             duration: values.duration,
             location: values.location,
           })
@@ -67,6 +66,10 @@ export function ProgramForm({ program, onClose }: ProgramFormProps) {
           if (translationError) throw translationError;
         }
 
+        // Invalidate queries to refresh the data
+        await queryClient.invalidateQueries({ queryKey: ['admin-programs'] });
+        await queryClient.invalidateQueries({ queryKey: ['programs'] });
+
         toast({
           title: "Sikeres mentés",
           description: "A program módosításai elmentve.",
@@ -76,7 +79,7 @@ export function ProgramForm({ program, onClose }: ProgramFormProps) {
         const { data: newProgram, error: programError } = await supabase
           .from('programs')
           .insert({
-            price: priceInHUF,
+            price: priceInRON,
             duration: values.duration,
             location: values.location,
           })
@@ -100,6 +103,10 @@ export function ProgramForm({ program, onClose }: ProgramFormProps) {
           .insert(translations);
 
         if (translationsError) throw translationsError;
+
+        // Invalidate queries to refresh the data
+        await queryClient.invalidateQueries({ queryKey: ['admin-programs'] });
+        await queryClient.invalidateQueries({ queryKey: ['programs'] });
 
         toast({
           title: "Sikeres létrehozás",
