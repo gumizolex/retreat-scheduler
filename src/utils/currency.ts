@@ -1,5 +1,5 @@
 export const exchangeRates = {
-  HUF: 83.33, // 1 RON = 83.33 HUF
+  HUF: 83.25, // 1 RON = 83.25 HUF
   RON: 1,
   EUR: 5 // 1 RON = 0.20 EUR (1/0.20 = 5)
 };
