@@ -21,7 +21,7 @@ const Activities = () => {
         <div className="container mx-auto px-4">
           <div className="flex flex-col items-center justify-center gap-8">
             <img 
-              src="/abod-logo-white.png" 
+              src="/public/abod-logo-white.png" 
               alt="Abod Retreat Logo" 
               className="h-32 md:h-40 w-auto"
             />
