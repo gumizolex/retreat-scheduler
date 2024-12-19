@@ -1,6 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Users, Activity } from "lucide-react";
-import { BookingsTable, type BookingStatus } from "./admin/BookingsTable";
 import { ProgramManagement } from "./admin/ProgramManagement";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,12 +21,7 @@ export function AdminDashboard() {
       }
       
       console.log('Fetched bookings:', data);
-      
-      // Ensure the status is of type BookingStatus
-      return (data || []).map(booking => ({
-        ...booking,
-        status: booking.status as BookingStatus
-      }));
+      return data || [];
     },
   });
 
@@ -39,7 +33,6 @@ export function AdminDashboard() {
   const activeGuests = bookings?.filter(b => b.status === 'confirmed')?.length || 0;
   const utilizationRate = totalBookings > 0 ? Math.round((activeGuests / totalBookings) * 100) : 0;
   
-  // Convert monthly revenue from HUF to RON
   const baseRevenueHUF = bookings
     ?.filter(b => {
       const bookingDate = new Date(b.created_at);
@@ -106,7 +99,6 @@ export function AdminDashboard() {
 
       <div className="space-y-8">
         <ProgramManagement />
-        <BookingsTable bookings={bookings || []} />
       </div>
     </div>
   );
