@@ -40,6 +40,8 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
 
       if (initialData?.id) {
         console.log('Updating existing program with ID:', initialData.id);
+        
+        // Update program details
         const { error: programError } = await supabase
           .from('programs')
           .update({
@@ -56,22 +58,42 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
 
         console.log('Successfully updated program');
 
-        // Update translations
+        // Update translations one by one
         const languages = ['hu', 'en', 'ro'] as const;
         for (const lang of languages) {
           console.log(`Updating ${lang} translation for program ${initialData.id}`);
-          const { error: translationError } = await supabase
-            .from('program_translations')
-            .update({
-              title: String(values[`${lang}_title` as keyof FormValues]),
-              description: String(values[`${lang}_description` as keyof FormValues]),
-            })
-            .eq('program_id', initialData.id)
-            .eq('language', lang);
+          
+          const existingTranslation = initialData.program_translations.find(t => t.language === lang);
+          
+          if (existingTranslation) {
+            const { error: translationError } = await supabase
+              .from('program_translations')
+              .update({
+                title: values[`${lang}_title` as keyof FormValues],
+                description: values[`${lang}_description` as keyof FormValues],
+              })
+              .eq('program_id', initialData.id)
+              .eq('language', lang);
 
-          if (translationError) {
-            console.error(`Error updating ${lang} translation:`, translationError);
-            throw translationError;
+            if (translationError) {
+              console.error(`Error updating ${lang} translation:`, translationError);
+              throw translationError;
+            }
+          } else {
+            // If translation doesn't exist, create it
+            const { error: translationError } = await supabase
+              .from('program_translations')
+              .insert({
+                program_id: initialData.id,
+                language: lang,
+                title: values[`${lang}_title` as keyof FormValues],
+                description: values[`${lang}_description` as keyof FormValues],
+              });
+
+            if (translationError) {
+              console.error(`Error creating ${lang} translation:`, translationError);
+              throw translationError;
+            }
           }
         }
 
@@ -121,7 +143,7 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
       
       toast({
         title: "Siker!",
-        description: "A művelet sikeresen végrehajtva.",
+        description: initialData ? "A program sikeresen frissítve." : "Az új program sikeresen létrehozva.",
       });
 
       if (onSuccess) {
