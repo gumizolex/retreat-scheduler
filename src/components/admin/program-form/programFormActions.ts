@@ -89,66 +89,61 @@ export const updateExistingProgram = async (values: FormValues, programId: numbe
       throw new Error('Program not found');
     }
 
-    const { data: updatedProgram, error: programError } = await supabase
+    const { error: programError } = await supabase
       .from('programs')
       .update({
         price: Number(values.price),
         duration: values.duration,
         location: values.location,
       })
-      .eq('id', programId)
-      .select()
-      .maybeSingle();
+      .eq('id', programId);
 
     if (programError) {
       console.error('Error updating program:', programError);
       throw new Error('Failed to update program');
     }
 
-    if (!updatedProgram) {
-      console.error('No program found after update with ID:', programId);
-      throw new Error('Program not found after update');
-    }
-
-    console.log('Program update response:', updatedProgram);
-
     const languages = ['hu', 'en', 'ro'] as const;
+    
     for (const lang of languages) {
-      const existingTranslation = existingProgram.program_translations.find(t => t.language === lang);
-      
       const translationData = {
+        program_id: programId,
+        language: lang,
         title: String(values[`${lang}_title` as keyof FormValues]),
         description: String(values[`${lang}_description` as keyof FormValues]),
       };
 
+      const existingTranslation = existingProgram.program_translations.find(
+        t => t.language === lang
+      );
+
       if (existingTranslation) {
-        const { error: translationError } = await supabase
+        const { error: updateError } = await supabase
           .from('program_translations')
-          .update(translationData)
+          .update({
+            title: translationData.title,
+            description: translationData.description,
+          })
           .eq('program_id', programId)
           .eq('language', lang);
 
-        if (translationError) {
-          console.error(`Error updating ${lang} translation:`, translationError);
+        if (updateError) {
+          console.error(`Error updating ${lang} translation:`, updateError);
           throw new Error(`Failed to update ${lang} translation`);
         }
       } else {
-        const { error: translationError } = await supabase
+        const { error: insertError } = await supabase
           .from('program_translations')
-          .insert([{
-            program_id: programId,
-            language: lang,
-            ...translationData,
-          }]);
+          .insert([translationData]);
 
-        if (translationError) {
-          console.error(`Error creating ${lang} translation:`, translationError);
+        if (insertError) {
+          console.error(`Error creating ${lang} translation:`, insertError);
           throw new Error(`Failed to create ${lang} translation`);
         }
       }
     }
 
-    return updatedProgram;
+    return true;
   } catch (error: any) {
     console.error('Error in updateExistingProgram:', error);
     throw error;
