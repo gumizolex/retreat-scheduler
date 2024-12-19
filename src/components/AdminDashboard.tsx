@@ -43,17 +43,16 @@ export function AdminDashboard() {
     })
     ?.reduce((acc, booking) => acc + 15000, 0) || 0;
 
-  // Get upcoming bookings (bookings with future dates)
   const upcomingBookings = bookings
     ?.filter(b => new Date(b.booking_date) > new Date())
     ?.sort((a, b) => new Date(a.booking_date).getTime() - new Date(b.booking_date).getTime())
     ?.slice(0, 5) || [];
 
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-display font-bold mb-8">Admin Vezérlőpult</h1>
+    <div className="space-y-6">
+      <h1 className="text-2xl sm:text-3xl font-display font-bold">Admin Vezérlőpult</h1>
       
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
@@ -102,7 +101,7 @@ export function AdminDashboard() {
         </Card>
       </div>
 
-      <div className="space-y-8">
+      <div className="space-y-6">
         <BookingsOverview />
         
         {upcomingBookings.length > 0 && (
@@ -118,7 +117,7 @@ export function AdminDashboard() {
                 {upcomingBookings.map((booking) => (
                   <div 
                     key={booking.id}
-                    className="flex items-center justify-between p-3 bg-muted rounded-lg"
+                    className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-muted rounded-lg gap-2"
                   >
                     <div>
                       <p className="font-medium">{booking.guest_name}</p>
