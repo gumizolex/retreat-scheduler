@@ -13,27 +13,42 @@ const queryClient = new QueryClient();
 
 function App() {
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const checkAdmin = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        console.log('Current session:', session);
+        
+        if (!session) {
+          console.log('No session found');
+          setIsAdmin(false);
+          setIsLoading(false);
+          return;
+        }
+
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', session.user.id)
+          .single();
+
+        if (error) {
+          console.error('Error fetching profile:', error);
+          setIsAdmin(false);
+          setIsLoading(false);
+          return;
+        }
+
+        console.log('Profile data:', profile);
+        setIsAdmin(profile?.role === 'admin');
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error in checkAdmin:', error);
         setIsAdmin(false);
-        return;
+        setIsLoading(false);
       }
-
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', session.user.id)
-        .single();
-
-      setIsAdmin(profile?.role === 'admin');
-      
-      // Add debug log
-      console.log('Session:', session);
-      console.log('Profile:', profile);
     };
 
     checkAdmin();
@@ -45,11 +60,11 @@ function App() {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Add a console log to help debug authentication state
-  console.log('Admin status:', isAdmin);
-
-  if (isAdmin === null) {
-    return null; // or a loading spinner
+  // Add loading state
+  if (isLoading) {
+    return <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+    </div>;
   }
 
   return (
@@ -61,7 +76,15 @@ function App() {
           <Route path="/booking-success" element={<BookingSuccess />} />
           <Route
             path="/admin/*"
-            element={isAdmin ? <Admin /> : <Navigate to="/login" replace />}
+            element={
+              isAdmin === null ? (
+                <div>Loading...</div>
+              ) : isAdmin ? (
+                <Admin />
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
           />
         </Routes>
         <Toaster />
