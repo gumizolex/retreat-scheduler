@@ -74,7 +74,7 @@ export const updateExistingProgram = async (values: FormValues, programId: numbe
         location: values.location,
       })
       .eq('id', programId)
-      .select()
+      .select('*')
       .maybeSingle();
 
     if (programError) {
