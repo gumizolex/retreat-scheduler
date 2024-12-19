@@ -64,6 +64,13 @@ export function MobileBookingList({ bookings, onViewDetails }: MobileBookingList
                         <p className="text-sm text-muted-foreground">{booking.guest_email}</p>
                       </div>
                       
+                      {booking.guest_phone && (
+                        <div>
+                          <p className="text-sm font-medium">Telefonszám</p>
+                          <p className="text-sm text-muted-foreground">{booking.guest_phone}</p>
+                        </div>
+                      )}
+                      
                       <div>
                         <p className="text-sm font-medium">Program</p>
                         <p className="text-sm text-muted-foreground">{programTitle}</p>
