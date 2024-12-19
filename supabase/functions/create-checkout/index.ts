@@ -17,7 +17,13 @@ serve(async (req) => {
     
     console.log('Creating checkout session for program:', { programId, price, currency, guestName, guestEmail })
 
-    const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
+    const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY')
+    if (!stripeSecretKey) {
+      console.error('STRIPE_SECRET_KEY is not set in environment variables')
+      throw new Error('Stripe secret key is not configured')
+    }
+
+    const stripe = new Stripe(stripeSecretKey, {
       apiVersion: '2023-10-16',
     })
 
