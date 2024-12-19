@@ -85,8 +85,16 @@ export function BookingsTable({ bookings, showProgramName = false }: BookingsTab
 
       if (error) throw error;
 
+      // Invalidate both queries to ensure all views are updated
+      queryClient.invalidateQueries({ queryKey: ['bookings'] });
       queryClient.invalidateQueries({ queryKey: ['all-bookings'] });
+      
       toast.success('Foglalás sikeresen törölve');
+      
+      // Close the dialog if the deleted booking was being viewed
+      if (selectedBooking?.id === bookingId) {
+        setSelectedBooking(null);
+      }
     } catch (error) {
       console.error('Hiba történt a foglalás törlése közben:', error);
       toast.error('Hiba történt a törlés során');
