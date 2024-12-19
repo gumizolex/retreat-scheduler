@@ -34,6 +34,9 @@ const translations = {
     name: "Név",
     namePlaceholder: "Az Ön neve",
     nameError: "A név legalább 2 karakter hosszú kell legyen",
+    email: "E-mail cím",
+    emailPlaceholder: "Az Ön e-mail címe",
+    emailError: "Kérjük adjon meg egy érvényes e-mail címet",
     phone: "Telefonszám",
     phonePlaceholder: "Telefonszám",
     phoneError: "Érvényes telefonszámot adjon meg",
@@ -62,6 +65,9 @@ const translations = {
     name: "Name",
     namePlaceholder: "Your name",
     nameError: "Name must be at least 2 characters long",
+    email: "Email address",
+    emailPlaceholder: "Your email address",
+    emailError: "Please provide a valid email address",
     phone: "Phone number",
     phonePlaceholder: "Phone number",
     phoneError: "Please provide a valid phone number",
@@ -90,6 +96,9 @@ const translations = {
     name: "Nume",
     namePlaceholder: "Numele dumneavoastră",
     nameError: "Numele trebuie să aibă cel puțin 2 caractere",
+    email: "Adresă de email",
+    emailPlaceholder: "Adresa dvs. de email",
+    emailError: "Vă rugăm să furnizați o adresă de email validă",
     phone: "Număr de telefon",
     phonePlaceholder: "Număr de telefon",
     phoneError: "Vă rugăm să furnizați un număr de telefon valid",
@@ -112,6 +121,7 @@ const translations = {
 
 const getFormSchema = (t: typeof translations.hu) => z.object({
   name: z.string().min(2, { message: t.nameError }),
+  email: z.string().email({ message: t.emailError }),
   phone: z.string().min(6, { message: t.phoneError }),
   bookingNumber: z.string().optional(),
   numberOfPeople: z.number().min(1, { message: "1" }),
@@ -139,6 +149,7 @@ export function BookingForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
+      email: "",
       phone: "",
       bookingNumber: "",
       numberOfPeople: 1,
@@ -154,29 +165,19 @@ export function BookingForm({
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      // Combine date and time
       const bookingDateTime = new Date(values.date);
       const [hours, minutes] = values.time.split(':');
       bookingDateTime.setHours(parseInt(hours), parseInt(minutes));
-
-      console.log('Submitting booking with data:', {
-        guest_name: values.name,
-        guest_phone: values.phone,
-        booking_date: bookingDateTime.toISOString(),
-        number_of_people: values.numberOfPeople,
-        program_id: 1,
-        guest_email: 'test@example.com'
-      });
 
       const { error } = await supabase
         .from('bookings')
         .insert({
           guest_name: values.name,
+          guest_email: values.email,
           guest_phone: values.phone,
           booking_date: bookingDateTime.toISOString(),
           number_of_people: values.numberOfPeople,
-          program_id: 1, // You might want to make this dynamic based on the program
-          guest_email: 'test@example.com', // This should be collected in the form
+          program_id: 1,
         });
 
       if (error) {
@@ -295,6 +296,7 @@ export function BookingForm({
                       <BookingSummaryDetails
                         formData={{
                           name: form.watch("name"),
+                          email: form.watch("email"),
                           date: form.watch("date"),
                           time: form.watch("time"),
                           numberOfPeople: form.watch("numberOfPeople")

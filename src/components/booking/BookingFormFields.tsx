@@ -87,6 +87,25 @@ export function BookingFormFields({
 
         <FormField
           control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-accent font-medium">{t.email}</FormLabel>
+              <FormControl>
+                <Input 
+                  type="email"
+                  placeholder={t.emailPlaceholder} 
+                  {...field} 
+                  className="text-accent transition-all duration-300 border-gray-200 focus:border-primary hover:border-primary/50" 
+                />
+              </FormControl>
+              <FormMessage className="text-destructive" />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="phone"
           render={({ field }) => (
             <FormItem>
