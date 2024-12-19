@@ -9,6 +9,9 @@ import { useToast } from "@/components/ui/use-toast";
 import { Program } from "@/types/program";
 import { formSchema, FormValues } from "./program-form/types";
 import { createNewProgram, updateExistingProgram, updateProgramTranslation } from "./program-form/programFormActions";
+import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface ProgramFormProps {
   initialData?: Program;
@@ -18,6 +21,34 @@ interface ProgramFormProps {
 export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const checkAdminAccess = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        navigate('/');
+        return;
+      }
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', session.user.id)
+        .single();
+
+      if (!profile || profile.role !== 'admin') {
+        navigate('/');
+        return;
+      }
+
+      setIsAdmin(true);
+    };
+
+    checkAdminAccess();
+  }, [navigate]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -35,6 +66,15 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
   });
 
   const onSubmit = async (values: FormValues) => {
+    if (!isAdmin) {
+      toast({
+        variant: "destructive",
+        title: "Hiba!",
+        description: "Nincs jogosultsága a program módosításához.",
+      });
+      return;
+    }
+
     try {
       console.log('Starting form submission with values:', values);
 
@@ -84,6 +124,10 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
       });
     }
   };
+
+  if (!isAdmin) {
+    return null;
+  }
 
   return (
     <Form {...form}>
