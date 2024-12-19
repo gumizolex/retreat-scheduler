@@ -87,10 +87,20 @@ export function ProgramGrid({
                         currency={currency}
                         language={language}
                         translations={{
-                          [language]: {
-                            duration: translations[language].duration,
-                            location: translations[language].location,
-                            timesAvailable: translations[language].timesAvailable
+                          hu: {
+                            duration: translations.hu.duration,
+                            location: translations.hu.location,
+                            timesAvailable: translations.hu.timesAvailable
+                          },
+                          en: {
+                            duration: translations.en.duration,
+                            location: translations.en.location,
+                            timesAvailable: translations.en.timesAvailable
+                          },
+                          ro: {
+                            duration: translations.ro.duration,
+                            location: translations.ro.location,
+                            timesAvailable: translations.ro.timesAvailable
                           }
                         }}
                         isCentered={index === centerIndex}
@@ -126,10 +136,20 @@ export function ProgramGrid({
             currency={currency}
             language={language}
             translations={{
-              [language]: {
-                duration: translations[language].duration,
-                location: translations[language].location,
-                timesAvailable: translations[language].timesAvailable
+              hu: {
+                duration: translations.hu.duration,
+                location: translations.hu.location,
+                timesAvailable: translations.hu.timesAvailable
+              },
+              en: {
+                duration: translations.en.duration,
+                location: translations.en.location,
+                timesAvailable: translations.en.timesAvailable
+              },
+              ro: {
+                duration: translations.ro.duration,
+                location: translations.ro.location,
+                timesAvailable: translations.ro.timesAvailable
               }
             }}
           />

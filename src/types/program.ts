@@ -30,5 +30,7 @@ export interface Translations {
   pageTitle: string;
   bookButton: string;
   timesAvailable: string;
+  duration: string;
+  location: string;
   programs: TranslatedProgram[];
 }
