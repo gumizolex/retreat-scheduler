@@ -16,7 +16,7 @@ interface ProgramGridProps {
   translations: Record<Language, Translations>;
   language: Language;
   currency: Currency;
-  onBookProgram: (programId: number) => void;
+  onBookProgram: (programId: number, price: number) => void;
 }
 
 export function ProgramGrid({
