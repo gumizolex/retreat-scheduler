@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { Eye, EyeOff } from "lucide-react";
 import { Booking } from "../BookingsTable";
-import { BookingStatusBadges } from "./BookingStatusBadges";
+import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 
 interface MobileBookingListProps {
@@ -82,10 +82,32 @@ export function MobileBookingList({ bookings, onViewDetails }: MobileBookingList
                           {booking.number_of_people} fő
                         </p>
                       </div>
+
+                      <div>
+                        <p className="text-sm font-medium">Összeg</p>
+                        <p className="text-sm text-muted-foreground">
+                          {(booking.programs?.price || 0) * booking.number_of_people} RON
+                        </p>
+                      </div>
                     </div>
 
                     <div className="pt-2 border-t">
-                      <BookingStatusBadges booking={booking} />
+                      <p className="text-sm font-medium mb-1">Státusz</p>
+                      <Badge
+                        variant={
+                          booking.status === 'confirmed'
+                            ? 'default'
+                            : booking.status === 'cancelled'
+                            ? 'destructive'
+                            : 'secondary'
+                        }
+                      >
+                        {booking.status === 'confirmed'
+                          ? 'Elfogadva'
+                          : booking.status === 'cancelled'
+                          ? 'Elutasítva'
+                          : 'Függőben'}
+                      </Badge>
                     </div>
                   </>
                 )}

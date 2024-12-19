@@ -2,7 +2,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { format } from "date-fns";
 import { Booking } from "../BookingsTable";
 import { BookingActions } from "./BookingActions";
-import { BookingStatusBadges } from "./BookingStatusBadges";
+import { Badge } from "@/components/ui/badge";
 
 interface DesktopBookingTableProps {
   bookings: Booking[];
@@ -22,7 +22,8 @@ export function DesktopBookingTable({ bookings, showProgramName, onStatusUpdate 
             {showProgramName && <TableHead>Program</TableHead>}
             <TableHead>Időpont</TableHead>
             <TableHead>Létszám</TableHead>
-            <TableHead>Státusz és fizetés</TableHead>
+            <TableHead>Összeg</TableHead>
+            <TableHead>Státusz</TableHead>
             <TableHead>Műveletek</TableHead>
           </TableRow>
         </TableHeader>
@@ -37,8 +38,23 @@ export function DesktopBookingTable({ bookings, showProgramName, onStatusUpdate 
                 {format(new Date(booking.booking_date), 'yyyy. MM. dd. HH:mm')}
               </TableCell>
               <TableCell>{booking.number_of_people}</TableCell>
+              <TableCell>{(booking.programs?.price || 0) * booking.number_of_people} RON</TableCell>
               <TableCell>
-                <BookingStatusBadges booking={booking} />
+                <Badge
+                  variant={
+                    booking.status === 'confirmed'
+                      ? 'default'
+                      : booking.status === 'cancelled'
+                      ? 'destructive'
+                      : 'secondary'
+                  }
+                >
+                  {booking.status === 'confirmed'
+                    ? 'Elfogadva'
+                    : booking.status === 'cancelled'
+                    ? 'Elutasítva'
+                    : 'Függőben'}
+                </Badge>
               </TableCell>
               <TableCell>
                 <BookingActions 

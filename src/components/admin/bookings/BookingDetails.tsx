@@ -8,32 +8,6 @@ interface BookingDetailsProps {
 }
 
 export function BookingDetails({ booking, showProgramName }: BookingDetailsProps) {
-  const getPaymentStatusBadge = (booking: Booking) => {
-    if (!booking.payment_intent_id) {
-      return null;
-    }
-
-    if (booking.status === 'confirmed') {
-      return (
-        <Badge variant="default" className="bg-green-600">
-          Sikeresen fizetve
-        </Badge>
-      );
-    } else if (booking.status === 'cancelled') {
-      return (
-        <Badge variant="secondary">
-          Visszautalva
-        </Badge>
-      );
-    } else {
-      return (
-        <Badge variant="secondary">
-          Függőben lévő fizetés
-        </Badge>
-      );
-    }
-  };
-
   return (
     <div className="space-y-4">
       <div className="grid gap-2">
@@ -62,6 +36,12 @@ export function BookingDetails({ booking, showProgramName }: BookingDetailsProps
           <p className="text-sm text-muted-foreground">{booking.number_of_people} fő</p>
         </div>
         <div>
+          <p className="font-medium">Összeg</p>
+          <p className="text-sm text-muted-foreground">
+            {(booking.programs?.price || 0) * booking.number_of_people} RON
+          </p>
+        </div>
+        <div>
           <p className="font-medium">Státusz</p>
           <Badge
             variant={
@@ -79,12 +59,6 @@ export function BookingDetails({ booking, showProgramName }: BookingDetailsProps
               : 'Függőben'}
           </Badge>
         </div>
-        {booking.payment_intent_id && (
-          <div>
-            <p className="font-medium">Fizetési státusz</p>
-            {getPaymentStatusBadge(booking)}
-          </div>
-        )}
       </div>
     </div>
   );
