@@ -43,6 +43,7 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
       }
 
       if (initialData?.id) {
+        console.log('Updating existing program with ID:', initialData.id);
         // Update existing program
         const { error: programError } = await supabase
           .from('programs')
@@ -53,11 +54,15 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
           })
           .eq('id', initialData.id);
 
-        if (programError) throw programError;
+        if (programError) {
+          console.error('Error updating program:', programError);
+          throw programError;
+        }
 
         // Update translations
         const languages = ['hu', 'en', 'ro'] as const;
         for (const lang of languages) {
+          console.log(`Updating ${lang} translation for program ${initialData.id}`);
           const { error: translationError } = await supabase
             .from('program_translations')
             .update({
@@ -67,11 +72,15 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
             .eq('program_id', initialData.id)
             .eq('language', lang);
 
-          if (translationError) throw translationError;
+          if (translationError) {
+            console.error(`Error updating ${lang} translation:`, translationError);
+            throw translationError;
+          }
         }
 
         console.log('Successfully updated program and translations');
       } else {
+        console.log('Creating new program');
         // Create new program
         const { data: program, error: programError } = await supabase
           .from('programs')
@@ -83,7 +92,12 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
           .select()
           .single();
 
-        if (programError) throw programError;
+        if (programError) {
+          console.error('Error creating program:', programError);
+          throw programError;
+        }
+
+        console.log('Created new program:', program);
 
         // Insert translations
         const translations = [
@@ -99,9 +113,12 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
           .from('program_translations')
           .insert(translations);
 
-        if (translationsError) throw translationsError;
+        if (translationsError) {
+          console.error('Error creating translations:', translationsError);
+          throw translationsError;
+        }
 
-        console.log('Successfully created new program and translations');
+        console.log('Successfully created translations');
       }
 
       // Invalidate and refetch queries
@@ -112,7 +129,9 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
         description: "A művelet sikeresen végrehajtva.",
       });
 
-      onSuccess?.();
+      if (onSuccess) {
+        onSuccess();
+      }
     } catch (error: any) {
       console.error('Error in form submission:', error);
       toast({
