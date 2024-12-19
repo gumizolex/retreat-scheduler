@@ -56,13 +56,20 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
-      <header className="bg-primary py-16 text-primary-foreground">
+      <header className="bg-primary py-16 text-primary-foreground relative">
+        {isLoggedIn && (
+          <div className="absolute top-4 right-4">
+            <Button variant="secondary" onClick={handleLogout}>
+              Kijelentkezés
+            </Button>
+          </div>
+        )}
         <div className="container mx-auto px-4">
           <div className="flex flex-col items-center justify-center gap-8">
             <img 
-              src="/lovable-uploads/abod-logo-white.png" 
+              src="/286a10de-5937-4235-ae40-ff61e619ded2.png"
               alt="Abod Retreat Logo" 
-              className="h-32 md:h-40 w-auto"
+              className="h-32 md:h-40 w-auto object-contain"
             />
             <h1 className="text-5xl font-display font-bold text-center">
               Abod Retreat
