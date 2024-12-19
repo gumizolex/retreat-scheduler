@@ -1,15 +1,11 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { format } from "date-fns";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Eye } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { BookingActions } from "./bookings/BookingActions";
 import { BookingDetails } from "./bookings/BookingDetails";
+import { DesktopBookingTable } from "./bookings/DesktopBookingTable";
+import { MobileBookingList } from "./bookings/MobileBookingList";
 
 export interface Booking {
   id: number;
@@ -85,132 +81,18 @@ export function BookingsTable({ bookings, showProgramName = false }: BookingsTab
     }
   };
 
-  const getPaymentStatusBadge = (booking: Booking) => {
-    if (!booking.payment_intent_id) {
-      return null;
-    }
-
-    if (booking.status === 'confirmed') {
-      return (
-        <Badge variant="default" className="bg-green-600">
-          Sikeresen fizetve
-        </Badge>
-      );
-    } else if (booking.status === 'cancelled') {
-      return (
-        <Badge variant="secondary">
-          Visszautalva
-        </Badge>
-      );
-    } else {
-      return (
-        <Badge variant="secondary">
-          Függőben lévő fizetés
-        </Badge>
-      );
-    }
-  };
-
   return (
     <>
-      <div className="hidden md:block">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Vendég neve</TableHead>
-              <TableHead>Email</TableHead>
-              {showProgramName && <TableHead>Program</TableHead>}
-              <TableHead>Időpont</TableHead>
-              <TableHead>Létszám</TableHead>
-              <TableHead>Státusz</TableHead>
-              <TableHead>Fizetés</TableHead>
-              <TableHead>Műveletek</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {bookings.map((booking) => (
-              <TableRow key={booking.id}>
-                <TableCell>{booking.guest_name}</TableCell>
-                <TableCell>{booking.guest_email}</TableCell>
-                {showProgramName && <TableCell>{booking.program_title}</TableCell>}
-                <TableCell>
-                  {format(new Date(booking.booking_date), 'yyyy. MM. dd. HH:mm')}
-                </TableCell>
-                <TableCell>{booking.number_of_people}</TableCell>
-                <TableCell>
-                  <Badge
-                    variant={
-                      booking.status === 'confirmed'
-                        ? 'default'
-                        : booking.status === 'cancelled'
-                        ? 'destructive'
-                        : 'secondary'
-                    }
-                  >
-                    {booking.status === 'confirmed'
-                      ? 'Elfogadva'
-                      : booking.status === 'cancelled'
-                      ? 'Elutasítva'
-                      : 'Függőben'}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  {getPaymentStatusBadge(booking)}
-                </TableCell>
-                <TableCell>
-                  <BookingActions 
-                    booking={booking}
-                    onStatusUpdate={handleStatusUpdate}
-                  />
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      <DesktopBookingTable 
+        bookings={bookings}
+        showProgramName={showProgramName}
+        onStatusUpdate={handleStatusUpdate}
+      />
 
-      <div className="md:hidden space-y-4">
-        {bookings.map((booking) => (
-          <div
-            key={booking.id}
-            className="bg-card rounded-lg shadow-sm p-4 space-y-2"
-          >
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="font-medium">{booking.guest_name}</p>
-                <p className="text-sm text-muted-foreground">
-                  {format(new Date(booking.booking_date), 'yyyy. MM. dd. HH:mm')}
-                </p>
-                <div className="flex flex-col gap-1.5 mt-2">
-                  <Badge
-                    variant={
-                      booking.status === 'confirmed'
-                        ? 'default'
-                        : booking.status === 'cancelled'
-                        ? 'destructive'
-                        : 'secondary'
-                    }
-                  >
-                    {booking.status === 'confirmed'
-                      ? 'Elfogadva'
-                      : booking.status === 'cancelled'
-                      ? 'Elutasítva'
-                      : 'Függőben'}
-                  </Badge>
-                  {getPaymentStatusBadge(booking)}
-                </div>
-              </div>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setSelectedBooking(booking)}
-              >
-                <Eye className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        ))}
-      </div>
+      <MobileBookingList 
+        bookings={bookings}
+        onViewDetails={setSelectedBooking}
+      />
 
       <Dialog open={!!selectedBooking} onOpenChange={() => setSelectedBooking(null)}>
         <DialogContent>
