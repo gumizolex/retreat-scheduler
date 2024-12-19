@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: Language) => void }) {
   const [language, setLanguage] = useState<Language>("hu");
   const [selectedProgram, setSelectedProgram] = useState<number | null>(null);
+  const [selectedPrice, setSelectedPrice] = useState<number>(0);
   const [currency, setCurrency] = useState<Currency>("RON");
   const queryClient = useQueryClient();
 
@@ -142,15 +143,22 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
             translations={translations}
             language={language}
             currency={currency}
-            onBookProgram={setSelectedProgram}
+            onBookProgram={(programId: number, price: number) => {
+              setSelectedProgram(programId);
+              setSelectedPrice(price);
+            }}
           />
         </div>
 
         {selectedProgram && (
           <BookingForm
             isOpen={selectedProgram !== null}
-            onClose={() => setSelectedProgram(null)}
+            onClose={() => {
+              setSelectedProgram(null);
+              setSelectedPrice(0);
+            }}
             programId={selectedProgram}
+            programPrice={selectedPrice}
             currency={currency}
             language={language}
           />

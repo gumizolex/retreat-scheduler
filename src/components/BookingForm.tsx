@@ -38,9 +38,17 @@ interface BookingFormProps {
   programId?: number;
   currency: Currency;
   language: Language;
+  programPrice?: number;
 }
 
-export function BookingForm({ isOpen, onClose, programId = 1, language }: BookingFormProps) {
+export function BookingForm({ 
+  isOpen, 
+  onClose, 
+  programId = 1, 
+  language,
+  currency,
+  programPrice = 0
+}: BookingFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -67,6 +75,7 @@ export function BookingForm({ isOpen, onClose, programId = 1, language }: Bookin
       submit: "Foglalás véglegesítése",
       processing: "Feldolgozás...",
       successMessage: "Foglalás sikeresen elküldve! Hamarosan felvesszük Önnel a kapcsolatot.",
+      paymentError: "Hiba történt a fizetési folyamat során. Kérjük próbálja újra.",
     },
     en: {
       title: "Booking",
@@ -80,6 +89,7 @@ export function BookingForm({ isOpen, onClose, programId = 1, language }: Bookin
       submit: "Confirm Booking",
       processing: "Processing...",
       successMessage: "Booking successfully sent! We will contact you soon.",
+      paymentError: "An error occurred during the payment process. Please try again.",
     },
     ro: {
       title: "Rezervare",
@@ -93,6 +103,7 @@ export function BookingForm({ isOpen, onClose, programId = 1, language }: Bookin
       submit: "Confirmă Rezervarea",
       processing: "Se procesează...",
       successMessage: "Rezervare trimisă cu succes! Vă vom contacta în curând.",
+      paymentError: "A apărut o eroare în timpul procesului de plată. Vă rugăm să încercați din nou.",
     }
   };
 
@@ -108,7 +119,28 @@ export function BookingForm({ isOpen, onClose, programId = 1, language }: Bookin
       bookingDate.setSeconds(0);
       bookingDate.setMilliseconds(0);
 
-      const { error } = await supabase
+      // Calculate total price based on number of people
+      const totalPrice = programPrice * values.numberOfPeople;
+
+      // Create Stripe checkout session
+      const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke('create-checkout', {
+        body: {
+          programId,
+          price: totalPrice,
+          currency,
+          guestName: values.name,
+          guestEmail: values.email,
+        },
+      });
+
+      if (checkoutError) {
+        console.error('Error creating checkout session:', checkoutError);
+        toast.error(translations[language].paymentError);
+        return;
+      }
+
+      // Save booking to database
+      const { error: bookingError } = await supabase
         .from('bookings')
         .insert({
           guest_name: values.name,
@@ -119,13 +151,23 @@ export function BookingForm({ isOpen, onClose, programId = 1, language }: Bookin
           program_id: programId,
         });
 
-      if (error) throw error;
+      if (bookingError) {
+        console.error('Error saving booking:', bookingError);
+        throw bookingError;
+      }
+
+      // Redirect to Stripe checkout
+      if (checkoutData?.url) {
+        window.location.href = checkoutData.url;
+      } else {
+        throw new Error('No checkout URL received');
+      }
 
       toast.success(translations[language].successMessage);
       onClose();
     } catch (error: any) {
       console.error('Error in form submission:', error);
-      toast.error('Váratlan hiba történt');
+      toast.error(translations[language].paymentError);
     } finally {
       setIsSubmitting(false);
     }

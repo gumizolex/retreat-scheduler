@@ -14,7 +14,7 @@ interface ProgramCardProps {
   translatedProgram: TranslatedProgram;
   timesAvailableText: string;
   bookButtonText: string;
-  onBook: (programId: number) => void;
+  onBook: (programId: number, price: number) => void;
   currency: Currency;
   language: string;
   isCentered?: boolean;
@@ -157,7 +157,7 @@ export function ProgramCard({
               </span>
               <Button 
                 variant="default"
-                onClick={() => onBook(program.id)}
+                onClick={() => onBook(program.id, program.price)}
                 className="w-full bg-primary hover:bg-primary/90 text-white transition-all duration-300 hover:shadow-lg text-sm sm:text-base py-2 sm:py-3"
               >
                 {bookButtonText}
