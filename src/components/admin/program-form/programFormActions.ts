@@ -65,32 +65,7 @@ export const updateExistingProgram = async (values: FormValues, programId: numbe
     console.log('Updating program with values:', values);
     console.log('Program ID:', programId);
     
-    // First, check if the program exists
-    const { data: existingProgram, error: checkError } = await supabase
-      .from('programs')
-      .select(`
-        *,
-        program_translations (
-          id,
-          language,
-          title,
-          description
-        )
-      `)
-      .eq('id', programId)
-      .maybeSingle();
-
-    if (checkError) {
-      console.error('Error checking program existence:', checkError);
-      throw new Error('Failed to check program existence');
-    }
-
-    if (!existingProgram) {
-      console.error('No program found with ID:', programId);
-      throw new Error('Program not found');
-    }
-
-    // Update the program first with the new values
+    // First, update the program with the new values
     const { error: programError } = await supabase
       .from('programs')
       .update({
@@ -116,32 +91,25 @@ export const updateExistingProgram = async (values: FormValues, programId: numbe
         description: String(values[`${lang}_description` as keyof FormValues]),
       };
 
-      const existingTranslation = existingProgram.program_translations.find(
-        t => t.language === lang
-      );
+      // First try to update existing translation
+      const { error: updateError } = await supabase
+        .from('program_translations')
+        .update({
+          title: translationData.title,
+          description: translationData.description,
+        })
+        .eq('program_id', programId)
+        .eq('language', lang);
 
-      if (existingTranslation) {
-        const { error: updateError } = await supabase
-          .from('program_translations')
-          .update({
-            title: translationData.title,
-            description: translationData.description,
-          })
-          .eq('program_id', programId)
-          .eq('language', lang);
-
-        if (updateError) {
-          console.error(`Error updating ${lang} translation:`, updateError);
-          throw new Error(`Failed to update ${lang} translation`);
-        }
-      } else {
+      if (updateError) {
+        // If update fails, try to insert new translation
         const { error: insertError } = await supabase
           .from('program_translations')
           .insert([translationData]);
 
         if (insertError) {
-          console.error(`Error creating ${lang} translation:`, insertError);
-          throw new Error(`Failed to create ${lang} translation`);
+          console.error(`Error handling ${lang} translation:`, insertError);
+          throw new Error(`Failed to handle ${lang} translation`);
         }
       }
     }
@@ -158,13 +126,14 @@ export const updateExistingProgram = async (values: FormValues, programId: numbe
         )
       `)
       .eq('id', programId)
-      .maybeSingle();
+      .single();
 
     if (fetchError || !updatedProgram) {
       console.error('Error fetching updated program:', fetchError);
       throw new Error('Failed to fetch updated program');
     }
 
+    console.log('Successfully updated program:', updatedProgram);
     return updatedProgram;
   } catch (error: any) {
     console.error('Error in updateExistingProgram:', error);
