@@ -25,6 +25,9 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const emailRequest: EmailRequest = await req.json();
     console.log("Sending email with request:", emailRequest);
+
+    // Tesztelési módban mindig erre a címre küldjük
+    const testEmail = "gumizolex@gmail.com";
     
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -34,9 +37,15 @@ const handler = async (req: Request): Promise<Response> => {
       },
       body: JSON.stringify({
         from: "Abod Retreat <onboarding@resend.dev>",
-        to: emailRequest.to, // Most már közvetlenül a vendég email címét használjuk
-        subject: emailRequest.subject,
-        html: emailRequest.html,
+        to: [testEmail],
+        subject: `[TESZT] ${emailRequest.subject}`,
+        html: `
+          <div style="background: #f9f9f9; padding: 20px; margin-bottom: 20px; border-radius: 5px;">
+            <strong>⚠️ TESZT MÓD</strong><br>
+            Ez egy teszt email. Az eredeti címzett(ek): ${emailRequest.to.join(", ")}
+          </div>
+          ${emailRequest.html}
+        `,
       }),
     });
 
