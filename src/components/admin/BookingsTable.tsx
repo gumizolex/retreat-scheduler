@@ -4,10 +4,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Check, X, Trash2, Eye } from "lucide-react";
+import { Eye } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { BookingActions } from "./bookings/BookingActions";
+import { BookingDetails } from "./bookings/BookingDetails";
 
 export interface Booking {
   id: number;
@@ -76,107 +78,6 @@ export function BookingsTable({ bookings, showProgramName = false }: BookingsTab
     }
   };
 
-  const handleDelete = async (bookingId: number) => {
-    try {
-      const { error } = await supabase
-        .from('bookings')
-        .delete()
-        .eq('id', bookingId);
-
-      if (error) throw error;
-
-      // Invalidate both queries to ensure all views are updated
-      queryClient.invalidateQueries({ queryKey: ['bookings'] });
-      queryClient.invalidateQueries({ queryKey: ['all-bookings'] });
-      
-      toast.success('Foglalás sikeresen törölve');
-      
-      // Close the dialog if the deleted booking was being viewed
-      if (selectedBooking?.id === bookingId) {
-        setSelectedBooking(null);
-      }
-    } catch (error) {
-      console.error('Hiba történt a foglalás törlése közben:', error);
-      toast.error('Hiba történt a törlés során');
-    }
-  };
-
-  const BookingDetails = ({ booking }: { booking: Booking }) => (
-    <div className="space-y-4">
-      <div className="grid gap-2">
-        <div>
-          <p className="font-medium">Vendég neve</p>
-          <p className="text-sm text-muted-foreground">{booking.guest_name}</p>
-        </div>
-        <div>
-          <p className="font-medium">Email</p>
-          <p className="text-sm text-muted-foreground">{booking.guest_email}</p>
-        </div>
-        {showProgramName && (
-          <div>
-            <p className="font-medium">Program</p>
-            <p className="text-sm text-muted-foreground">{booking.program_title}</p>
-          </div>
-        )}
-        <div>
-          <p className="font-medium">Időpont</p>
-          <p className="text-sm text-muted-foreground">
-            {format(new Date(booking.booking_date), 'yyyy. MM. dd. HH:mm')}
-          </p>
-        </div>
-        <div>
-          <p className="font-medium">Létszám</p>
-          <p className="text-sm text-muted-foreground">{booking.number_of_people} fő</p>
-        </div>
-        <div>
-          <p className="font-medium">Státusz</p>
-          <Badge
-            variant={
-              booking.status === 'confirmed'
-                ? 'default'
-                : booking.status === 'cancelled'
-                ? 'destructive'
-                : 'secondary'
-            }
-          >
-            {booking.status === 'confirmed'
-              ? 'Elfogadva'
-              : booking.status === 'cancelled'
-              ? 'Elutasítva'
-              : 'Függőben'}
-          </Badge>
-        </div>
-      </div>
-      <div className="flex justify-end gap-2">
-        {booking.status === 'pending' && (
-          <>
-            <Button
-              size="sm"
-              onClick={() => handleStatusUpdate(booking.id, 'confirmed', booking)}
-              className="bg-green-600 hover:bg-green-700"
-            >
-              <Check className="h-4 w-4" />
-            </Button>
-            <Button
-              size="sm"
-              variant="destructive"
-              onClick={() => handleStatusUpdate(booking.id, 'cancelled', booking)}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </>
-        )}
-        <Button
-          size="sm"
-          variant="destructive"
-          onClick={() => handleDelete(booking.id)}
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
-      </div>
-    </div>
-  );
-
   return (
     <>
       <div className="hidden md:block">
@@ -220,33 +121,10 @@ export function BookingsTable({ bookings, showProgramName = false }: BookingsTab
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <div className="flex gap-2">
-                    {booking.status === 'pending' && (
-                      <>
-                        <Button
-                          size="sm"
-                          onClick={() => handleStatusUpdate(booking.id, 'confirmed', booking)}
-                          className="bg-green-600 hover:bg-green-700"
-                        >
-                          <Check className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          onClick={() => handleStatusUpdate(booking.id, 'cancelled', booking)}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </>
-                    )}
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={() => handleDelete(booking.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  <BookingActions 
+                    booking={booking}
+                    onStatusUpdate={handleStatusUpdate}
+                  />
                 </TableCell>
               </TableRow>
             ))}
@@ -284,7 +162,17 @@ export function BookingsTable({ bookings, showProgramName = false }: BookingsTab
           <DialogHeader>
             <DialogTitle>Foglalás részletei</DialogTitle>
           </DialogHeader>
-          {selectedBooking && <BookingDetails booking={selectedBooking} />}
+          {selectedBooking && (
+            <div className="space-y-4">
+              <BookingDetails booking={selectedBooking} showProgramName={showProgramName} />
+              <div className="flex justify-end">
+                <BookingActions 
+                  booking={selectedBooking}
+                  onStatusUpdate={handleStatusUpdate}
+                />
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </>
