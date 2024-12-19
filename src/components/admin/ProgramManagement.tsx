@@ -1,21 +1,25 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { ProgramForm } from "./ProgramForm";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Program, Language } from "@/types/program";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Edit, Plus, Calendar } from "lucide-react";
 import { BookingsDialog } from "./BookingsDialog";
 
 export function ProgramManagement() {
-  const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
+  const [selectedProgram, setSelectedProgram] = useState<any>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isBookingsDialogOpen, setIsBookingsDialogOpen] = useState(false);
+  const queryClient = useQueryClient();
 
-  const { data: programs, refetch } = useQuery({
-    queryKey: ['admin-programs'],
+  const { data: programs, isLoading } = useQuery({
+    queryKey: ['programs'],
     queryFn: async () => {
       console.log('Fetching programs...');
       const { data, error } = await supabase
@@ -27,105 +31,102 @@ export function ProgramManagement() {
             title,
             description
           )
-        `);
+        `)
+        .order('created_at', { ascending: false });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching programs:', error);
+        throw error;
+      }
       
       console.log('Fetched programs:', data);
-      
-      return data?.map(program => ({
-        ...program,
-        program_translations: program.program_translations.map(translation => ({
-          ...translation,
-          language: translation.language as Language
-        }))
-      })) as Program[];
+      return data || [];
     },
   });
 
-  const handleEditProgram = (program: Program) => {
-    setSelectedProgram(program);
-    setIsDialogOpen(true);
-  };
-
-  const handleAddNewProgram = () => {
-    setSelectedProgram(null);
-    setIsDialogOpen(true);
-  };
-
-  const handleFormClose = () => {
+  const handleSuccess = () => {
     setIsDialogOpen(false);
     setSelectedProgram(null);
-    refetch();
+    queryClient.invalidateQueries({ queryKey: ['programs'] });
   };
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Programok kezelése</h2>
-        <div className="flex gap-2">
-          <Dialog open={isBookingsDialogOpen} onOpenChange={setIsBookingsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button variant="outline">
-                <Calendar className="w-4 h-4 mr-2" />
-                Foglalások
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Foglalások áttekintése</DialogTitle>
-              </DialogHeader>
-              <BookingsDialog onClose={() => setIsBookingsDialogOpen(false)} />
-            </DialogContent>
-          </Dialog>
-          
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button onClick={handleAddNewProgram}>
-                <Plus className="w-4 h-4 mr-2" />
-                Új program
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>
-                  {selectedProgram ? 'Program szerkesztése' : 'Új program létrehozása'}
-                </DialogTitle>
-              </DialogHeader>
-              <ProgramForm
-                program={selectedProgram}
-                onClose={handleFormClose}
-              />
-            </DialogContent>
-          </Dialog>
-        </div>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button onClick={() => setSelectedProgram(null)}>
+              Új program
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>
+                {selectedProgram ? "Program szerkesztése" : "Új program létrehozása"}
+              </DialogTitle>
+            </DialogHeader>
+            <ProgramForm
+              initialData={selectedProgram}
+              onSuccess={handleSuccess}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {programs?.map((program) => (
-          <Card key={program.id} className="relative">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-lg font-medium">
-                {program.program_translations?.find(t => t.language === 'hu')?.title}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2 text-sm">
-                <p><strong>Ár:</strong> {program.price.toLocaleString()} RON</p>
-                <p><strong>Időtartam:</strong> {program.duration}</p>
-                <p><strong>Helyszín:</strong> {program.location}</p>
+      <div className="grid gap-4">
+        {programs?.map((program: any) => (
+          <div
+            key={program.id}
+            className="p-4 border rounded-lg bg-white shadow-sm"
+          >
+            <div className="flex justify-between items-start">
+              <div>
+                <h3 className="text-lg font-semibold">
+                  {program.program_translations.find((t: any) => t.language === "hu")?.title}
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Ár: {program.price} RON | Időtartam: {program.duration} | Helyszín: {program.location}
+                </p>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                className="mt-4"
-                onClick={() => handleEditProgram(program)}
-              >
-                <Edit className="w-4 h-4 mr-2" />
-                Szerkesztés
-              </Button>
-            </CardContent>
-          </Card>
+              <div className="space-x-2">
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      onClick={() => setSelectedProgram(program)}
+                    >
+                      Szerkesztés
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>Program szerkesztése</DialogTitle>
+                    </DialogHeader>
+                    <ProgramForm
+                      initialData={program}
+                      onSuccess={handleSuccess}
+                    />
+                  </DialogContent>
+                </Dialog>
+                <Dialog open={isBookingsDialogOpen} onOpenChange={setIsBookingsDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="secondary">Foglalások</Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>Foglalások</DialogTitle>
+                    </DialogHeader>
+                    <BookingsDialog programId={program.id} />
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </div>
+          </div>
         ))}
       </div>
     </div>

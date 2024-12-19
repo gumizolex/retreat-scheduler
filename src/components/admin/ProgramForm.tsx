@@ -1,53 +1,52 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
-import { Program } from "@/types/program";
+import { Button } from "@/components/ui/button";
 import { BasicDetails } from "./program-form/BasicDetails";
 import { LanguageSection } from "./program-form/LanguageSection";
-import { formSchema, type FormValues } from "./program-form/types";
+import { FormValues, formSchema } from "./program-form/types";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface ProgramFormProps {
-  program?: Program | null;
-  onClose: () => void;
+  initialData?: any;
+  onSuccess?: () => void;
 }
 
-export function ProgramForm({ program, onClose }: ProgramFormProps) {
+export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      price: program?.price.toString() || "",
-      duration: program?.duration || "",
-      location: program?.location || "",
-      hu_title: program?.program_translations?.find(t => t.language === "hu")?.title || "",
-      hu_description: program?.program_translations?.find(t => t.language === "hu")?.description || "",
-      en_title: program?.program_translations?.find(t => t.language === "en")?.title || "",
-      en_description: program?.program_translations?.find(t => t.language === "en")?.description || "",
-      ro_title: program?.program_translations?.find(t => t.language === "ro")?.title || "",
-      ro_description: program?.program_translations?.find(t => t.language === "ro")?.description || "",
+      price: initialData?.price?.toString() || "",
+      duration: initialData?.duration || "",
+      location: initialData?.location || "",
+      hu_title: initialData?.program_translations?.find((t: any) => t.language === "hu")?.title || "",
+      hu_description: initialData?.program_translations?.find((t: any) => t.language === "hu")?.description || "",
+      en_title: initialData?.program_translations?.find((t: any) => t.language === "en")?.title || "",
+      en_description: initialData?.program_translations?.find((t: any) => t.language === "en")?.description || "",
+      ro_title: initialData?.program_translations?.find((t: any) => t.language === "ro")?.title || "",
+      ro_description: initialData?.program_translations?.find((t: any) => t.language === "ro")?.description || "",
     },
   });
 
   const onSubmit = async (values: FormValues) => {
     try {
-      const priceInRON = Math.round(parseFloat(values.price));
-
-      if (program) {
+      console.log('Submitting form with values:', values);
+      
+      if (initialData?.id) {
         // Update existing program
         const { error: programError } = await supabase
           .from('programs')
           .update({
-            price: priceInRON,
+            price: parseInt(values.price),
             duration: values.duration,
             location: values.location,
           })
-          .eq('id', program.id);
+          .eq('id', initialData.id);
 
         if (programError) throw programError;
 
@@ -57,29 +56,22 @@ export function ProgramForm({ program, onClose }: ProgramFormProps) {
           const { error: translationError } = await supabase
             .from('program_translations')
             .update({
-              title: values[`${lang}_title` as keyof FormValues],
-              description: values[`${lang}_description` as keyof FormValues],
+              title: values[`${lang}_title`],
+              description: values[`${lang}_description`],
             })
-            .eq('program_id', program.id)
+            .eq('program_id', initialData.id)
             .eq('language', lang);
 
           if (translationError) throw translationError;
         }
 
-        // Invalidate queries to refresh the data
-        await queryClient.invalidateQueries({ queryKey: ['admin-programs'] });
-        await queryClient.invalidateQueries({ queryKey: ['programs'] });
-
-        toast({
-          title: "Sikeres mentés",
-          description: "A program módosításai elmentve.",
-        });
+        console.log('Successfully updated program and translations');
       } else {
         // Create new program
-        const { data: newProgram, error: programError } = await supabase
+        const { data: program, error: programError } = await supabase
           .from('programs')
           .insert({
-            price: priceInRON,
+            price: parseInt(values.price),
             duration: values.duration,
             location: values.location,
           })
@@ -95,7 +87,7 @@ export function ProgramForm({ program, onClose }: ProgramFormProps) {
           { language: 'ro', title: values.ro_title, description: values.ro_description },
         ].map(t => ({
           ...t,
-          program_id: newProgram.id,
+          program_id: program.id,
         }));
 
         const { error: translationsError } = await supabase
@@ -104,64 +96,36 @@ export function ProgramForm({ program, onClose }: ProgramFormProps) {
 
         if (translationsError) throw translationsError;
 
-        // Invalidate queries to refresh the data
-        await queryClient.invalidateQueries({ queryKey: ['admin-programs'] });
-        await queryClient.invalidateQueries({ queryKey: ['programs'] });
-
-        toast({
-          title: "Sikeres létrehozás",
-          description: "Az új program sikeresen létrehozva.",
-        });
+        console.log('Successfully created new program and translations');
       }
 
-      onClose();
-    } catch (error) {
-      console.error('Error saving program:', error);
+      // Invalidate and refetch queries
+      await queryClient.invalidateQueries({ queryKey: ['programs'] });
+      
       toast({
-        title: "Hiba történt",
-        description: "A program mentése sikertelen.",
+        title: initialData ? "Program frissítve" : "Program létrehozva",
+        description: "A művelet sikeresen végrehajtva.",
+      });
+
+      onSuccess?.();
+    } catch (error: any) {
+      console.error('Error in form submission:', error);
+      toast({
         variant: "destructive",
+        title: "Hiba történt",
+        description: error.message || "Nem sikerült menteni a változtatásokat.",
       });
     }
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <BasicDetails form={form} />
-        
-        <LanguageSection
-          form={form}
-          language="hu"
-          title="Magyar"
-          titleLabel="Cím"
-          descriptionLabel="Leírás"
-        />
-
-        <LanguageSection
-          form={form}
-          language="en"
-          title="English"
-          titleLabel="Title"
-          descriptionLabel="Description"
-        />
-
-        <LanguageSection
-          form={form}
-          language="ro"
-          title="Română"
-          titleLabel="Titlu"
-          descriptionLabel="Descriere"
-        />
-
-        <div className="flex justify-end gap-4">
-          <Button type="button" variant="outline" onClick={onClose}>
-            Mégse
-          </Button>
-          <Button type="submit">
-            {program ? 'Mentés' : 'Létrehozás'}
-          </Button>
-        </div>
+        <LanguageSection form={form} />
+        <Button type="submit" className="w-full">
+          {initialData ? "Mentés" : "Létrehozás"}
+        </Button>
       </form>
     </Form>
   );
