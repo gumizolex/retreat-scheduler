@@ -8,7 +8,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 import { Program } from "@/types/program";
 import { formSchema, FormValues } from "./program-form/types";
-import { createNewProgram, updateExistingProgram, updateProgramTranslation } from "./program-form/programFormActions";
+import { createNewProgram, updateExistingProgram } from "./program-form/programFormActions";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -79,28 +79,13 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
       console.log('Starting form submission with values:', values);
 
       if (initialData?.id) {
-        // Először frissítjük a program alapadatait
         await updateExistingProgram(values, initialData.id);
-
-        // Majd frissítjük a fordításokat nyelvenként
-        const languages = ['hu', 'en', 'ro'] as const;
-        for (const lang of languages) {
-          const existingTranslation = initialData.program_translations.find(t => t.language === lang);
-          await updateProgramTranslation(
-            initialData.id,
-            lang,
-            String(values[`${lang}_title` as keyof FormValues]),
-            String(values[`${lang}_description` as keyof FormValues]),
-            !existingTranslation
-          );
-        }
-
+        
         toast({
           title: "Siker!",
           description: "A program sikeresen frissítve.",
         });
       } else {
-        // Új program létrehozása
         await createNewProgram(values);
         
         toast({
@@ -109,7 +94,6 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
         });
       }
 
-      // Frissítjük a cache-t
       await queryClient.invalidateQueries({ queryKey: ['programs'] });
       
       if (onSuccess) {

@@ -26,20 +26,20 @@ export const createNewProgram = async (values: FormValues) => {
       {
         program_id: program.id,
         language: 'hu',
-        title: values.hu_title,
-        description: values.hu_description,
+        title: String(values.hu_title),
+        description: String(values.hu_description),
       },
       {
         program_id: program.id,
         language: 'en',
-        title: values.en_title,
-        description: values.en_description,
+        title: String(values.en_title),
+        description: String(values.en_description),
       },
       {
         program_id: program.id,
         language: 'ro',
-        title: values.ro_title,
-        description: values.ro_description,
+        title: String(values.ro_title),
+        description: String(values.ro_description),
       },
     ];
 
@@ -65,7 +65,6 @@ export const updateExistingProgram = async (values: FormValues, programId: numbe
     console.log('Updating program with values:', values);
     console.log('Program ID:', programId);
     
-    // First check if the program exists with its translations
     const { data: existingProgram, error: checkError } = await supabase
       .from('programs')
       .select(`
@@ -90,7 +89,6 @@ export const updateExistingProgram = async (values: FormValues, programId: numbe
       throw new Error('Program not found');
     }
 
-    // Update the program's basic data
     const { data: updatedProgram, error: programError } = await supabase
       .from('programs')
       .update({
@@ -114,18 +112,16 @@ export const updateExistingProgram = async (values: FormValues, programId: numbe
 
     console.log('Program update response:', updatedProgram);
 
-    // Update translations for each language
     const languages = ['hu', 'en', 'ro'] as const;
     for (const lang of languages) {
       const existingTranslation = existingProgram.program_translations.find(t => t.language === lang);
       
       const translationData = {
-        title: values[`${lang}_title` as keyof FormValues],
-        description: values[`${lang}_description` as keyof FormValues],
+        title: String(values[`${lang}_title` as keyof FormValues]),
+        description: String(values[`${lang}_description` as keyof FormValues]),
       };
 
       if (existingTranslation) {
-        // Update existing translation
         const { error: translationError } = await supabase
           .from('program_translations')
           .update(translationData)
@@ -137,7 +133,6 @@ export const updateExistingProgram = async (values: FormValues, programId: numbe
           throw new Error(`Failed to update ${lang} translation`);
         }
       } else {
-        // Create new translation if it doesn't exist
         const { error: translationError } = await supabase
           .from('program_translations')
           .insert([{
