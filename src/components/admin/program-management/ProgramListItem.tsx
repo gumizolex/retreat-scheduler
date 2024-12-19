@@ -1,8 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Trash2 } from "lucide-react";
-import { BookingsDialog } from "../BookingsDialog";
 
 interface ProgramListItemProps {
   program: any;
@@ -53,17 +51,6 @@ export function ProgramListItem({ program, onEdit, onDelete }: ProgramListItemPr
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="secondary">Foglalások</Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Foglalások</DialogTitle>
-              </DialogHeader>
-              <BookingsDialog programId={program.id} />
-            </DialogContent>
-          </Dialog>
         </div>
       </div>
     </div>

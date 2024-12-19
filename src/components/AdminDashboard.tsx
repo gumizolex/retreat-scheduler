@@ -3,6 +3,7 @@ import { Calendar, Users, Activity } from "lucide-react";
 import { ProgramManagement } from "./admin/ProgramManagement";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { BookingsOverview } from "./admin/BookingsOverview";
 
 export function AdminDashboard() {
   const { data: bookings, isError } = useQuery({
@@ -95,6 +96,7 @@ export function AdminDashboard() {
       </div>
 
       <div className="space-y-8">
+        <BookingsOverview />
         <ProgramManagement />
       </div>
     </div>

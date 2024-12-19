@@ -25,15 +25,17 @@ export interface Booking {
   number_of_people: number;
   status: BookingStatus;
   program_id: number;
+  program_title?: string;
   user_id: string | null;
   created_at: string;
 }
 
 interface BookingsTableProps {
   bookings: Booking[];
+  showProgramName?: boolean;
 }
 
-export function BookingsTable({ bookings }: BookingsTableProps) {
+export function BookingsTable({ bookings, showProgramName = false }: BookingsTableProps) {
   const queryClient = useQueryClient();
 
   const updateBookingStatus = useMutation({
@@ -47,6 +49,7 @@ export function BookingsTable({ bookings }: BookingsTableProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bookings'] });
+      queryClient.invalidateQueries({ queryKey: ['all-bookings'] });
       toast.success('Foglalás státusza frissítve');
     },
     onError: (error) => {
@@ -70,6 +73,7 @@ export function BookingsTable({ bookings }: BookingsTableProps) {
       <Table>
         <TableHeader>
           <TableRow>
+            {showProgramName && <TableHead>Program</TableHead>}
             <TableHead>Vendég neve</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Telefon</TableHead>
@@ -82,6 +86,7 @@ export function BookingsTable({ bookings }: BookingsTableProps) {
         <TableBody>
           {bookings.map((booking) => (
             <TableRow key={booking.id}>
+              {showProgramName && <TableCell>{booking.program_title}</TableCell>}
               <TableCell>{booking.guest_name}</TableCell>
               <TableCell>{booking.guest_email}</TableCell>
               <TableCell>{booking.guest_phone || '-'}</TableCell>
