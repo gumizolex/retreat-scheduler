@@ -85,6 +85,32 @@ export function BookingsTable({ bookings, showProgramName = false }: BookingsTab
     }
   };
 
+  const getPaymentStatusBadge = (booking: Booking) => {
+    if (!booking.payment_intent_id) {
+      return null;
+    }
+
+    if (booking.status === 'confirmed') {
+      return (
+        <Badge variant="default" className="bg-green-600">
+          Sikeresen fizetve
+        </Badge>
+      );
+    } else if (booking.status === 'cancelled') {
+      return (
+        <Badge variant="secondary">
+          Visszautalva
+        </Badge>
+      );
+    } else {
+      return (
+        <Badge variant="secondary">
+          Függőben lévő fizetés
+        </Badge>
+      );
+    }
+  };
+
   return (
     <>
       <div className="hidden md:block">
@@ -97,6 +123,7 @@ export function BookingsTable({ bookings, showProgramName = false }: BookingsTab
               <TableHead>Időpont</TableHead>
               <TableHead>Létszám</TableHead>
               <TableHead>Státusz</TableHead>
+              <TableHead>Fizetés</TableHead>
               <TableHead>Műveletek</TableHead>
             </TableRow>
           </TableHeader>
@@ -128,6 +155,9 @@ export function BookingsTable({ bookings, showProgramName = false }: BookingsTab
                   </Badge>
                 </TableCell>
                 <TableCell>
+                  {getPaymentStatusBadge(booking)}
+                </TableCell>
+                <TableCell>
                   <BookingActions 
                     booking={booking}
                     onStatusUpdate={handleStatusUpdate}
@@ -151,6 +181,24 @@ export function BookingsTable({ bookings, showProgramName = false }: BookingsTab
                 <p className="text-sm text-muted-foreground">
                   {format(new Date(booking.booking_date), 'yyyy. MM. dd. HH:mm')}
                 </p>
+                <div className="flex flex-col gap-1.5 mt-2">
+                  <Badge
+                    variant={
+                      booking.status === 'confirmed'
+                        ? 'default'
+                        : booking.status === 'cancelled'
+                        ? 'destructive'
+                        : 'secondary'
+                    }
+                  >
+                    {booking.status === 'confirmed'
+                      ? 'Elfogadva'
+                      : booking.status === 'cancelled'
+                      ? 'Elutasítva'
+                      : 'Függőben'}
+                  </Badge>
+                  {getPaymentStatusBadge(booking)}
+                </div>
               </div>
               <Button
                 size="sm"
