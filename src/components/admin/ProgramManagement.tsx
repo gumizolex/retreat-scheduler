@@ -139,7 +139,7 @@ export function ProgramManagement() {
                 </div>
               </div>
               <div className="text-sm text-muted-foreground">
-                {program.duration} • {program.price.toLocaleString()} Ft
+                {program.duration}
               </div>
             </div>
           );
