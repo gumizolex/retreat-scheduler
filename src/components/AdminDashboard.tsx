@@ -4,6 +4,7 @@ import { BookingsTable, type BookingStatus } from "./admin/BookingsTable";
 import { ProgramManagement } from "./admin/ProgramManagement";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { exchangeRates } from "@/utils/currency";
 
 export function AdminDashboard() {
   const { data: bookings, isError } = useQuery({
@@ -37,7 +38,9 @@ export function AdminDashboard() {
   const totalBookings = bookings?.length || 0;
   const activeGuests = bookings?.filter(b => b.status === 'confirmed')?.length || 0;
   const utilizationRate = totalBookings > 0 ? Math.round((activeGuests / totalBookings) * 100) : 0;
-  const monthlyRevenue = bookings
+  
+  // Convert monthly revenue from HUF to RON
+  const baseRevenueHUF = bookings
     ?.filter(b => {
       const bookingDate = new Date(b.created_at);
       const currentDate = new Date();
@@ -45,6 +48,8 @@ export function AdminDashboard() {
              bookingDate.getFullYear() === currentDate.getFullYear();
     })
     ?.length * 15000 || 0;
+  
+  const monthlyRevenue = baseRevenueHUF * exchangeRates.RON;
 
   return (
     <div className="container mx-auto py-8">
@@ -95,7 +100,7 @@ export function AdminDashboard() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{monthlyRevenue.toLocaleString()} Ft</div>
+            <div className="text-2xl font-bold">{monthlyRevenue.toLocaleString()} RON</div>
           </CardContent>
         </Card>
       </div>
