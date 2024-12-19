@@ -19,6 +19,12 @@ export interface Booking {
   number_of_people: number;
   status: 'pending' | 'confirmed' | 'cancelled';
   program_title?: string;
+  programs?: {
+    program_translations: Array<{
+      language: string;
+      title: string;
+    }>;
+  };
 }
 
 interface BookingsTableProps {
