@@ -1,15 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BookingForm } from "./BookingForm";
 import { Language, Currency, Program } from "@/types/program";
 import { ProgramHeader } from "./programs/ProgramHeader";
 import { ProgramGrid } from "./programs/ProgramGrid";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: Language) => void }) {
   const [language, setLanguage] = useState<Language>("hu");
   const [selectedProgram, setSelectedProgram] = useState<number | null>(null);
   const [currency, setCurrency] = useState<Currency>("RON");
+  const queryClient = useQueryClient();
 
   const { data: programsData, isLoading } = useQuery({
     queryKey: ['programs'],
@@ -36,6 +37,41 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
       return programs as Program[];
     },
   });
+
+  // Subscribe to real-time changes
+  useEffect(() => {
+    const channel = supabase
+      .channel('program-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'programs'
+        },
+        () => {
+          console.log('Programs table changed, invalidating query...');
+          queryClient.invalidateQueries({ queryKey: ['programs'] });
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'program_translations'
+        },
+        () => {
+          console.log('Program translations changed, invalidating query...');
+          queryClient.invalidateQueries({ queryKey: ['programs'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   const handleLanguageChange = (newLanguage: Language) => {
     setLanguage(newLanguage);

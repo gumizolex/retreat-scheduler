@@ -139,7 +139,10 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
       }
 
       // Invalidate and refetch queries
-      await queryClient.invalidateQueries({ queryKey: ['programs'] });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['programs'] }),
+        queryClient.refetchQueries({ queryKey: ['programs'] })
+      ]);
       
       toast({
         title: "Siker!",
