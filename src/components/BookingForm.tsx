@@ -164,29 +164,36 @@ export function BookingForm({
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      // Combine date and time
-      const bookingDateTime = new Date(values.date);
-      const [hours, minutes] = values.time.split(':');
-      bookingDateTime.setHours(parseInt(hours), parseInt(minutes));
+      // Create a new date object for the booking date
+      const bookingDate = new Date(values.date);
+      
+      // Parse the time string (expected format: "HH:mm")
+      const [hours, minutes] = values.time.split(':').map(Number);
+      
+      // Set the time on the booking date
+      bookingDate.setHours(hours || 0);
+      bookingDate.setMinutes(minutes || 0);
+      bookingDate.setSeconds(0);
+      bookingDate.setMilliseconds(0);
 
       console.log('Submitting booking with data:', {
         guest_name: values.name,
+        guest_email: values.email,
         guest_phone: values.phone,
-        booking_date: bookingDateTime.toISOString(),
+        booking_date: bookingDate.toISOString(),
         number_of_people: values.numberOfPeople,
         program_id: 1,
-        guest_email: 'test@example.com'
       });
 
       const { error } = await supabase
         .from('bookings')
         .insert({
           guest_name: values.name,
+          guest_email: values.email,
           guest_phone: values.phone,
-          booking_date: bookingDateTime.toISOString(),
+          booking_date: bookingDate.toISOString(),
           number_of_people: values.numberOfPeople,
           program_id: 1, // You might want to make this dynamic based on the program
-          guest_email: 'test@example.com', // This should be collected in the form
         });
 
       if (error) {
@@ -197,7 +204,7 @@ export function BookingForm({
 
       toast.success('Foglalás sikeresen elmentve!');
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error in form submission:', error);
       toast.error('Váratlan hiba történt');
     }
