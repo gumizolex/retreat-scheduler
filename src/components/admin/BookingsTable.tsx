@@ -6,6 +6,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { BookingDetails } from "./bookings/BookingDetails";
 import { DesktopBookingTable } from "./bookings/DesktopBookingTable";
 import { MobileBookingList } from "./bookings/MobileBookingList";
+import { format } from "date-fns";
+import { BookingActions } from "./bookings/BookingActions";
 
 export interface Booking {
   id: number;
@@ -95,9 +97,9 @@ export function BookingsTable({ bookings, showProgramName = false }: BookingsTab
       />
 
       <Dialog open={!!selectedBooking} onOpenChange={() => setSelectedBooking(null)}>
-        <DialogContent>
+        <DialogContent className="w-[90%] max-w-lg mx-auto rounded-xl shadow-lg">
           <DialogHeader>
-            <DialogTitle>Foglalás részletei</DialogTitle>
+            <DialogTitle className="text-xl font-display">Foglalás részletei</DialogTitle>
           </DialogHeader>
           {selectedBooking && (
             <div className="space-y-4">
