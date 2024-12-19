@@ -4,7 +4,8 @@ export interface Program {
   duration: string;
   location: string;
   image: string;
-  program_translations?: ProgramTranslation[];
+  created_at: string;
+  program_translations: ProgramTranslation[];
 }
 
 export interface TranslatedProgram {

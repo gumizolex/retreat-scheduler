@@ -33,7 +33,7 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
       }
 
       console.log('Fetched programs:', programs);
-      return programs;
+      return programs as Program[];
     },
   });
 
@@ -42,22 +42,40 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
     onLanguageChange?.(newLanguage);
   };
 
-  // Transform the data to match the expected format
-  const translations = {
-    [language]: {
-      pageTitle: language === "hu" ? "Programok és Élmények" : 
-                 language === "en" ? "Programs and Experiences" : 
-                 "Programe și Experiențe",
-      bookButton: language === "hu" ? "Foglalás" : 
-                  language === "en" ? "Book Now" : 
-                  "Rezervare",
-      timesAvailable: language === "hu" ? "Elérhető időpontok" :
-                     language === "en" ? "Times Available" :
-                     "Ore disponibile",
+  const translations: Record<Language, {
+    pageTitle: string;
+    bookButton: string;
+    timesAvailable: string;
+    programs: { id: number; title: string; description: string; }[];
+  }> = {
+    hu: {
+      pageTitle: "Programok és Élmények",
+      bookButton: "Foglalás",
+      timesAvailable: "Elérhető időpontok",
       programs: programsData?.map(program => ({
         id: program.id,
-        title: program.program_translations.find(t => t.language === language)?.title || '',
-        description: program.program_translations.find(t => t.language === language)?.description || '',
+        title: program.program_translations.find(t => t.language === "hu")?.title || '',
+        description: program.program_translations.find(t => t.language === "hu")?.description || '',
+      })) || []
+    },
+    en: {
+      pageTitle: "Programs and Experiences",
+      bookButton: "Book Now",
+      timesAvailable: "Times Available",
+      programs: programsData?.map(program => ({
+        id: program.id,
+        title: program.program_translations.find(t => t.language === "en")?.title || '',
+        description: program.program_translations.find(t => t.language === "en")?.description || '',
+      })) || []
+    },
+    ro: {
+      pageTitle: "Programe și Experiențe",
+      bookButton: "Rezervare",
+      timesAvailable: "Ore disponibile",
+      programs: programsData?.map(program => ({
+        id: program.id,
+        title: program.program_translations.find(t => t.language === "ro")?.title || '',
+        description: program.program_translations.find(t => t.language === "ro")?.description || '',
       })) || []
     }
   };
