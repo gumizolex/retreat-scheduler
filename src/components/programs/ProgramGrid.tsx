@@ -86,6 +86,13 @@ export function ProgramGrid({
                         onBook={onBookProgram}
                         currency={currency}
                         language={language}
+                        translations={{
+                          [language]: {
+                            duration: translations[language].duration,
+                            location: translations[language].location,
+                            timesAvailable: translations[language].timesAvailable
+                          }
+                        }}
                         isCentered={index === centerIndex}
                       />
                     </div>
@@ -118,6 +125,13 @@ export function ProgramGrid({
             onBook={onBookProgram}
             currency={currency}
             language={language}
+            translations={{
+              [language]: {
+                duration: translations[language].duration,
+                location: translations[language].location,
+                timesAvailable: translations[language].timesAvailable
+              }
+            }}
           />
         );
       })}
