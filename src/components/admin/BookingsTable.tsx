@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Check, X } from "lucide-react";
 
-interface Booking {
+export interface Booking {
   id: number;
   guest_name: string;
   guest_email: string;
