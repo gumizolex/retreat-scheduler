@@ -50,6 +50,12 @@ export function ProgramManagement() {
     queryClient.invalidateQueries({ queryKey: ['programs'] });
   };
 
+  const handleEditClick = (program: any) => {
+    console.log('Selected program for editing:', program);
+    setSelectedProgram(program);
+    setIsDialogOpen(true);
+  };
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -94,25 +100,12 @@ export function ProgramManagement() {
                 </p>
               </div>
               <div className="space-x-2">
-                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button
-                      variant="outline"
-                      onClick={() => setSelectedProgram(program)}
-                    >
-                      Szerkesztés
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-                    <DialogHeader>
-                      <DialogTitle>Program szerkesztése</DialogTitle>
-                    </DialogHeader>
-                    <ProgramForm
-                      initialData={program}
-                      onSuccess={handleSuccess}
-                    />
-                  </DialogContent>
-                </Dialog>
+                <Button
+                  variant="outline"
+                  onClick={() => handleEditClick(program)}
+                >
+                  Szerkesztés
+                </Button>
                 <Dialog open={isBookingsDialogOpen} onOpenChange={setIsBookingsDialogOpen}>
                   <DialogTrigger asChild>
                     <Button variant="secondary">Foglalások</Button>
