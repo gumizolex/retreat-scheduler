@@ -66,7 +66,7 @@ export function BookingForm({ isOpen, onClose, programId = 1, language }: Bookin
       cancel: "Mégsem",
       submit: "Foglalás véglegesítése",
       processing: "Feldolgozás...",
-      successMessage: "Foglalás sikeresen elmentve! Hamarosan felvesszük Önnel a kapcsolatot.",
+      successMessage: "Foglalás sikeresen elküldve! Hamarosan felvesszük Önnel a kapcsolatot.",
     },
     en: {
       title: "Booking",
@@ -79,7 +79,7 @@ export function BookingForm({ isOpen, onClose, programId = 1, language }: Bookin
       cancel: "Cancel",
       submit: "Confirm Booking",
       processing: "Processing...",
-      successMessage: "Booking successfully saved! We will contact you soon.",
+      successMessage: "Booking successfully sent! We will contact you soon.",
     },
     ro: {
       title: "Rezervare",
@@ -92,7 +92,7 @@ export function BookingForm({ isOpen, onClose, programId = 1, language }: Bookin
       cancel: "Anulare",
       submit: "Confirmă Rezervarea",
       processing: "Se procesează...",
-      successMessage: "Rezervare salvată cu succes! Vă vom contacta în curând.",
+      successMessage: "Rezervare trimisă cu succes! Vă vom contacta în curând.",
     }
   };
 
