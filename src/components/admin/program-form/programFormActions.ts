@@ -65,6 +65,7 @@ export const updateExistingProgram = async (values: FormValues, programId: numbe
     console.log('Updating program with values:', values);
     console.log('Program ID:', programId);
     
+    // First, check if the program exists
     const { data: existingProgram, error: checkError } = await supabase
       .from('programs')
       .select(`
@@ -89,7 +90,7 @@ export const updateExistingProgram = async (values: FormValues, programId: numbe
       throw new Error('Program not found');
     }
 
-    // Update the program first
+    // Update the program first with the new values
     const { error: programError } = await supabase
       .from('programs')
       .update({
@@ -145,7 +146,7 @@ export const updateExistingProgram = async (values: FormValues, programId: numbe
       }
     }
 
-    // Invalidate the cache by refetching the updated program
+    // Fetch and return the updated program with its translations
     const { data: updatedProgram, error: fetchError } = await supabase
       .from('programs')
       .select(`
