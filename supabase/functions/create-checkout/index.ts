@@ -75,7 +75,7 @@ serve(async (req) => {
       mode: 'payment',
       customer_email: guestEmail,
       payment_intent_data: {
-        capture_method: 'manual', // This makes it only authorize, not capture
+        // Removing capture_method: 'manual' to capture payment immediately
         metadata: {
           programId: programId.toString(),
           guestName,
