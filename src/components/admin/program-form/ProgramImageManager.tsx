@@ -46,7 +46,7 @@ export function ProgramImageManager({ program }: ProgramImageManagerProps) {
       const fileName = `${Math.random()}.${fileExt}`;
       const filePath = `${fileName}`;
 
-      const { error: uploadError, data } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('program-images')
         .upload(filePath, file);
 
@@ -54,6 +54,7 @@ export function ProgramImageManager({ program }: ProgramImageManagerProps) {
         throw uploadError;
       }
 
+      // Get the public URL for the uploaded file
       const { data: { publicUrl } } = supabase.storage
         .from('program-images')
         .getPublicUrl(filePath);
