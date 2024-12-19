@@ -6,11 +6,13 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Program, Language } from "@/types/program";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Edit, Plus } from "lucide-react";
+import { Edit, Plus, Calendar } from "lucide-react";
+import { BookingsDialog } from "./BookingsDialog";
 
 export function ProgramManagement() {
   const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isBookingsDialogOpen, setIsBookingsDialogOpen] = useState(false);
 
   const { data: programs, refetch } = useQuery({
     queryKey: ['admin-programs'],
@@ -28,7 +30,6 @@ export function ProgramManagement() {
       
       if (error) throw error;
       
-      // Cast the response to ensure language is of type Language
       return data?.map(program => ({
         ...program,
         program_translations: program.program_translations.map(translation => ({
@@ -59,25 +60,42 @@ export function ProgramManagement() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Programok kezelése</h2>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={handleAddNewProgram}>
-              <Plus className="w-4 h-4 mr-2" />
-              Új program
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>
-                {selectedProgram ? 'Program szerkesztése' : 'Új program létrehozása'}
-              </DialogTitle>
-            </DialogHeader>
-            <ProgramForm
-              program={selectedProgram}
-              onClose={handleFormClose}
-            />
-          </DialogContent>
-        </Dialog>
+        <div className="flex gap-2">
+          <Dialog open={isBookingsDialogOpen} onOpenChange={setIsBookingsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline">
+                <Calendar className="w-4 h-4 mr-2" />
+                Foglalások
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Foglalások áttekintése</DialogTitle>
+              </DialogHeader>
+              <BookingsDialog onClose={() => setIsBookingsDialogOpen(false)} />
+            </DialogContent>
+          </Dialog>
+          
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button onClick={handleAddNewProgram}>
+                <Plus className="w-4 h-4 mr-2" />
+                Új program
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>
+                  {selectedProgram ? 'Program szerkesztése' : 'Új program létrehozása'}
+                </DialogTitle>
+              </DialogHeader>
+              <ProgramForm
+                program={selectedProgram}
+                onClose={handleFormClose}
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -90,7 +108,7 @@ export function ProgramManagement() {
             </CardHeader>
             <CardContent>
               <div className="space-y-2 text-sm">
-                <p><strong>Ár:</strong> {program.price.toLocaleString()} Ft</p>
+                <p><strong>Ár:</strong> {program.price.toLocaleString()} RON</p>
                 <p><strong>Időtartam:</strong> {program.duration}</p>
                 <p><strong>Helyszín:</strong> {program.location}</p>
               </div>
