@@ -126,7 +126,7 @@ export function AdminDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
                 {upcomingBookings.map((booking) => {
                   const programTranslations = booking.programs?.program_translations || [];
                   const programTitle = programTranslations.find(
@@ -136,16 +136,16 @@ export function AdminDashboard() {
                   return (
                     <div
                       key={booking.id}
-                      className="bg-secondary/50 rounded-lg p-3 hover:bg-secondary/70 transition-colors"
+                      className="bg-secondary/50 rounded-lg p-2.5 hover:bg-secondary/70 transition-colors"
                     >
-                      <div className="flex flex-col gap-1">
-                        <div className="font-medium text-sm truncate">
+                      <div className="flex flex-col gap-0.5">
+                        <div className="font-medium text-xs truncate">
                           {booking.guest_name}
                         </div>
-                        <div className="text-xs text-muted-foreground truncate">
+                        <div className="text-[11px] text-muted-foreground truncate">
                           {programTitle}
                         </div>
-                        <div className="text-xs text-primary font-medium mt-1">
+                        <div className="text-[11px] text-primary font-medium mt-0.5">
                           {new Date(booking.booking_date).toLocaleDateString('hu-HU', {
                             month: 'short',
                             day: 'numeric',
@@ -153,7 +153,7 @@ export function AdminDashboard() {
                             minute: '2-digit'
                           })}
                         </div>
-                        <div className="text-xs text-muted-foreground mt-1">
+                        <div className="text-[11px] text-muted-foreground">
                           {booking.number_of_people} fő
                         </div>
                       </div>
