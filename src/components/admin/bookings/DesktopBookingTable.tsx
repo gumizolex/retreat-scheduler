@@ -18,6 +18,7 @@ export function DesktopBookingTable({ bookings, showProgramName, onStatusUpdate 
           <TableRow>
             <TableHead>Vendég neve</TableHead>
             <TableHead>Email</TableHead>
+            <TableHead>Telefonszám</TableHead>
             {showProgramName && <TableHead>Program</TableHead>}
             <TableHead>Időpont</TableHead>
             <TableHead>Létszám</TableHead>
@@ -30,6 +31,7 @@ export function DesktopBookingTable({ bookings, showProgramName, onStatusUpdate 
             <TableRow key={booking.id}>
               <TableCell>{booking.guest_name}</TableCell>
               <TableCell>{booking.guest_email}</TableCell>
+              <TableCell>{booking.guest_phone || '-'}</TableCell>
               {showProgramName && <TableCell>{booking.program_title}</TableCell>}
               <TableCell>
                 {format(new Date(booking.booking_date), 'yyyy. MM. dd. HH:mm')}
