@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
-import { Eye } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { Booking } from "../BookingsTable";
 import { BookingStatusBadges } from "./BookingStatusBadges";
+import { useState } from "react";
 
 interface MobileBookingListProps {
   bookings: Booking[];
@@ -10,6 +11,12 @@ interface MobileBookingListProps {
 }
 
 export function MobileBookingList({ bookings, onViewDetails }: MobileBookingListProps) {
+  const [expandedBooking, setExpandedBooking] = useState<number | null>(null);
+
+  const toggleBookingDetails = (bookingId: number) => {
+    setExpandedBooking(expandedBooking === bookingId ? null : bookingId);
+  };
+
   return (
     <div className="md:hidden space-y-4">
       {bookings.map((booking) => {
@@ -17,6 +24,8 @@ export function MobileBookingList({ bookings, onViewDetails }: MobileBookingList
         const programTitle = programTranslations.find(
           (t: any) => t.language === 'hu'
         )?.title || programTranslations[0]?.title || 'Program nem található';
+
+        const isExpanded = expandedBooking === booking.id;
 
         return (
           <div
@@ -30,43 +39,49 @@ export function MobileBookingList({ bookings, onViewDetails }: MobileBookingList
                     <div>
                       <p className="font-medium">{booking.guest_name}</p>
                       <p className="text-sm text-muted-foreground">
-                        {booking.guest_email}
+                        {format(new Date(booking.booking_date), 'yyyy. MM. dd. HH:mm')}
                       </p>
                     </div>
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => onViewDetails(booking)}
+                      onClick={() => toggleBookingDetails(booking.id)}
                     >
-                      <Eye className="h-4 w-4" />
+                      {isExpanded ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
                     </Button>
                   </div>
                 </div>
 
-                <div className="space-y-2 pt-2 border-t">
-                  <div>
-                    <p className="text-sm font-medium">Program</p>
-                    <p className="text-sm text-muted-foreground">{programTitle}</p>
-                  </div>
-                  
-                  <div>
-                    <p className="text-sm font-medium">Időpont</p>
-                    <p className="text-sm text-muted-foreground">
-                      {format(new Date(booking.booking_date), 'yyyy. MM. dd. HH:mm')}
-                    </p>
-                  </div>
-                  
-                  <div>
-                    <p className="text-sm font-medium">Létszám</p>
-                    <p className="text-sm text-muted-foreground">
-                      {booking.number_of_people} fő
-                    </p>
-                  </div>
-                </div>
+                {isExpanded && (
+                  <>
+                    <div className="space-y-2 pt-2 border-t">
+                      <div>
+                        <p className="text-sm font-medium">Email</p>
+                        <p className="text-sm text-muted-foreground">{booking.guest_email}</p>
+                      </div>
+                      
+                      <div>
+                        <p className="text-sm font-medium">Program</p>
+                        <p className="text-sm text-muted-foreground">{programTitle}</p>
+                      </div>
+                      
+                      <div>
+                        <p className="text-sm font-medium">Létszám</p>
+                        <p className="text-sm text-muted-foreground">
+                          {booking.number_of_people} fő
+                        </p>
+                      </div>
+                    </div>
 
-                <div className="pt-2 border-t">
-                  <BookingStatusBadges booking={booking} />
-                </div>
+                    <div className="pt-2 border-t">
+                      <BookingStatusBadges booking={booking} />
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
