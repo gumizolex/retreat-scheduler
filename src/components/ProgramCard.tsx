@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Program, TranslatedProgram, Currency } from "@/types/program";
+import { Program, TranslatedProgram, Currency, Language } from "@/types/program";
 import { formatCurrency } from "@/utils/currency";
 import { motion, AnimatePresence } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -16,7 +16,12 @@ interface ProgramCardProps {
   bookButtonText: string;
   onBook: (programId: number, price: number) => void;
   currency: Currency;
-  language: string;
+  language: Language;
+  translations: Record<Language, {
+    duration: string;
+    location: string;
+    timesAvailable: string;
+  }>;
   isCentered?: boolean;
 }
 
@@ -28,6 +33,7 @@ export function ProgramCard({
   onBook,
   currency,
   language,
+  translations,
   isCentered = false
 }: ProgramCardProps) {
   const isMobile = useIsMobile();
@@ -149,6 +155,8 @@ export function ProgramCard({
                 duration={program.duration}
                 location={program.location}
                 timesAvailableText={timesAvailableText}
+                language={language}
+                translations={translations}
               />
             </CardContent>
             <CardFooter className="p-4 sm:p-6 flex flex-col items-center gap-2 sm:gap-3 border-t border-gray-100">

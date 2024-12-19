@@ -87,12 +87,16 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
     pageTitle: string;
     bookButton: string;
     timesAvailable: string;
+    duration: string;
+    location: string;
     programs: { id: number; title: string; description: string; }[];
   }> = {
     hu: {
       pageTitle: "Programok és Élmények",
       bookButton: "Foglalás",
       timesAvailable: "Elérhető időpontok",
+      duration: "Időtartam",
+      location: "Helyszín",
       programs: programsData?.map(program => ({
         id: program.id,
         title: program.program_translations.find(t => t.language === "hu")?.title || '',
@@ -103,6 +107,8 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
       pageTitle: "Programs and Experiences",
       bookButton: "Book Now",
       timesAvailable: "Available Times",
+      duration: "Duration",
+      location: "Location",
       programs: programsData?.map(program => ({
         id: program.id,
         title: program.program_translations.find(t => t.language === "en")?.title || '',
@@ -113,6 +119,8 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
       pageTitle: "Programe și Experiențe",
       bookButton: "Rezervare",
       timesAvailable: "Ore disponibile",
+      duration: "Durată",
+      location: "Locație",
       programs: programsData?.map(program => ({
         id: program.id,
         title: program.program_translations.find(t => t.language === "ro")?.title || '',
