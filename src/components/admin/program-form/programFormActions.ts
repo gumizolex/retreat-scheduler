@@ -87,11 +87,14 @@ export const updateExistingProgram = async (values: FormValues, programId: numbe
     // Frissítjük a fordításokat nyelvenként
     const languages = ['hu', 'en', 'ro'] as const;
     for (const lang of languages) {
+      const titleKey = `${lang}_title` as keyof FormValues;
+      const descriptionKey = `${lang}_description` as keyof FormValues;
+      
       const { error: translationError } = await supabase
         .from('program_translations')
         .update({
-          title: values[`${lang}_title` as keyof FormValues],
-          description: values[`${lang}_description` as keyof FormValues],
+          title: String(values[titleKey]),
+          description: String(values[descriptionKey]),
         })
         .eq('program_id', programId)
         .eq('language', lang);
