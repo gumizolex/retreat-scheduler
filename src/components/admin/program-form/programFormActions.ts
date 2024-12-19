@@ -47,44 +47,34 @@ export async function createNewProgram(values: FormValues) {
 export async function updateExistingProgram(values: FormValues, programId: number) {
   console.log('Updating program with values:', values);
   
-  const { data: existingProgram, error: checkError } = await supabase
-    .from('programs')
-    .select()
-    .eq('id', programId)
-    .maybeSingle();
-
-  if (checkError) {
-    console.error('Error checking program:', checkError);
-    throw new Error('Failed to check program existence');
-  }
-
-  if (!existingProgram) {
-    console.error('No program found with id:', programId);
-    throw new Error('Program not found');
-  }
-
-  const { data: program, error: programError } = await supabase
+  // First, update the program
+  const { error: programError } = await supabase
     .from('programs')
     .update({
       price: values.price,
       duration: values.duration,
       location: values.location,
     })
-    .eq('id', programId)
-    .select()
-    .maybeSingle();
+    .eq('id', programId);
 
   if (programError) {
     console.error('Error updating program:', programError);
     throw new Error('Failed to update program');
   }
 
-  if (!program) {
-    console.error('No program data returned after update');
-    throw new Error('Program update failed - no data returned');
+  // Fetch the updated program to confirm the update
+  const { data: updatedProgram, error: fetchError } = await supabase
+    .from('programs')
+    .select()
+    .eq('id', programId)
+    .maybeSingle();
+
+  if (fetchError || !updatedProgram) {
+    console.error('Error fetching updated program:', fetchError);
+    throw new Error('Failed to verify program update');
   }
 
-  return program;
+  return updatedProgram;
 }
 
 export async function updateProgramTranslation(
