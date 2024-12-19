@@ -138,7 +138,7 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
         console.log('Successfully created translations');
       }
 
-      // Invalidate and refetch queries
+      // Force refetch the data
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['programs'] }),
         queryClient.refetchQueries({ queryKey: ['programs'] })
