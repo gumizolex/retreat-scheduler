@@ -24,11 +24,46 @@ interface BookingActionsProps {
 export function BookingActions({ booking, onStatusUpdate }: BookingActionsProps) {
   const queryClient = useQueryClient();
 
+  const handlePaymentAction = async (action: 'capture' | 'cancel') => {
+    try {
+      // Get the payment intent ID from the booking metadata or session
+      const { data: session, error: sessionError } = await supabase.functions.invoke('handle-booking-payment', {
+        body: {
+          paymentIntentId: booking.payment_intent_id,
+          action: action
+        },
+      });
+
+      if (sessionError) {
+        console.error('Error handling payment:', sessionError);
+        throw sessionError;
+      }
+
+      console.log(`Payment ${action}d:`, session);
+      
+      // Now update the booking status
+      if (action === 'capture') {
+        await onStatusUpdate(booking.id, 'confirmed', booking);
+      } else {
+        await onStatusUpdate(booking.id, 'cancelled', booking);
+      }
+      
+    } catch (error) {
+      console.error(`Error ${action}ing payment:`, error);
+      toast.error(`Hiba történt a fizetés ${action === 'capture' ? 'elfogadása' : 'elutasítása'} során`);
+    }
+  };
+
   const handleDelete = async () => {
     try {
       console.log('Deleting booking:', booking.id);
       
-      // First, send the deletion notification email
+      // First, cancel the payment if it exists and is not already captured
+      if (booking.payment_intent_id && booking.status !== 'confirmed') {
+        await handlePaymentAction('cancel');
+      }
+      
+      // Then, send the deletion notification email
       const programTitle = booking.programs?.program_translations.find(t => t.language === "hu")?.title || '';
       const formattedDate = new Date(booking.booking_date).toLocaleDateString('hu-HU', {
         year: 'numeric',
@@ -81,7 +116,7 @@ export function BookingActions({ booking, onStatusUpdate }: BookingActionsProps)
         <>
           <Button
             size="sm"
-            onClick={() => onStatusUpdate(booking.id, 'confirmed', booking)}
+            onClick={() => handlePaymentAction('capture')}
             className="bg-green-600 hover:bg-green-700"
           >
             <Check className="h-4 w-4" />
@@ -89,7 +124,7 @@ export function BookingActions({ booking, onStatusUpdate }: BookingActionsProps)
           <Button
             size="sm"
             variant="destructive"
-            onClick={() => onStatusUpdate(booking.id, 'cancelled', booking)}
+            onClick={() => handlePaymentAction('cancel')}
           >
             <X className="h-4 w-4" />
           </Button>

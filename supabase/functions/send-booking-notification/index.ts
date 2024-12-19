@@ -45,6 +45,11 @@ const handler = async (req: Request): Promise<Response> => {
             Ez egy teszt email. Az eredeti címzett(ek): ${emailRequest.to.join(", ")}
           </div>
           ${emailRequest.html}
+          ${emailRequest.subject.includes('elutasítva') ? `
+          <p style="color: #666; font-size: 14px; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
+            Megjegyzés: A foglalás elutasítása miatt a kártyáján zárolt összeg feloldásra kerül. Ez banktól függően 5-7 munkanapot vehet igénybe.
+          </p>
+          ` : ''}
         `,
       }),
     });

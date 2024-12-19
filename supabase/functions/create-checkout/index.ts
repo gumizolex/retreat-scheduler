@@ -72,6 +72,16 @@ serve(async (req) => {
     console.log('Creating payment session for program:', programTitle)
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
+      mode: 'payment',
+      customer_email: guestEmail,
+      payment_intent_data: {
+        capture_method: 'manual', // This makes it only authorize, not capture
+        metadata: {
+          programId: programId.toString(),
+          guestName,
+          guestEmail,
+        },
+      },
       line_items: [
         {
           price_data: {
@@ -85,8 +95,6 @@ serve(async (req) => {
           quantity: 1,
         },
       ],
-      mode: 'payment',
-      customer_email: guestEmail,
       success_url: `${req.headers.get('origin')}/booking-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.get('origin')}/booking-cancelled`,
     })
