@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { BookingsTable } from "./BookingsTable";
+import { BookingsTable, Booking } from "./BookingsTable";
 
 export interface BookingsDialogProps {
   programId: number;
@@ -17,7 +17,12 @@ export function BookingsDialog({ programId }: BookingsDialogProps) {
         .order('booking_date', { ascending: true });
 
       if (error) throw error;
-      return data;
+      
+      // Convert the raw data to match the Booking type
+      return (data || []).map((booking): Booking => ({
+        ...booking,
+        status: booking.status as 'pending' | 'confirmed' | 'cancelled',
+      }));
     },
   });
 

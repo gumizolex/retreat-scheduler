@@ -8,8 +8,15 @@ interface LanguageSectionProps {
   form: UseFormReturn<FormValues>;
 }
 
+type LanguageConfig = {
+  code: 'hu' | 'en' | 'ro';
+  title: string;
+  titleLabel: string;
+  descriptionLabel: string;
+}
+
 export function LanguageSection({ form }: LanguageSectionProps) {
-  const languages = [
+  const languages: LanguageConfig[] = [
     {
       code: 'hu',
       title: 'Magyar',
@@ -37,7 +44,7 @@ export function LanguageSection({ form }: LanguageSectionProps) {
           <h3 className="text-lg font-semibold">{lang.title}</h3>
           <FormField
             control={form.control}
-            name={`${lang.code}_title`}
+            name={`${lang.code}_title` as keyof FormValues}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{lang.titleLabel}</FormLabel>
@@ -50,7 +57,7 @@ export function LanguageSection({ form }: LanguageSectionProps) {
           />
           <FormField
             control={form.control}
-            name={`${lang.code}_description`}
+            name={`${lang.code}_description` as keyof FormValues}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{lang.descriptionLabel}</FormLabel>
