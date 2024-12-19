@@ -42,22 +42,34 @@ export function ProgramImageManager({ program }: ProgramImageManagerProps) {
     setIsUploading(true);
 
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
-      const filePath = `${fileName}`;
+      console.log('Starting file upload:', file.name, file.type);
+      
+      const fileExt = file.name.split('.').pop()?.toLowerCase() || '';
+      const fileName = `${Date.now()}-${Math.random()}.${fileExt}`;
+      const filePath = fileName;
+
+      console.log('Uploading file to path:', filePath);
 
       const { error: uploadError } = await supabase.storage
         .from('program-images')
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false,
+          contentType: file.type
+        });
 
       if (uploadError) {
+        console.error('Upload error:', uploadError);
         throw uploadError;
       }
 
-      // Get the public URL for the uploaded file
+      console.log('File uploaded successfully, getting public URL');
+
       const { data: { publicUrl } } = supabase.storage
         .from('program-images')
         .getPublicUrl(filePath);
+
+      console.log('Got public URL:', publicUrl);
 
       // Update program with new image URL
       const { error: updateError } = await supabase
@@ -66,6 +78,7 @@ export function ProgramImageManager({ program }: ProgramImageManagerProps) {
         .eq('id', program.id);
 
       if (updateError) {
+        console.error('Update error:', updateError);
         throw updateError;
       }
 
