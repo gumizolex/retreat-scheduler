@@ -128,9 +128,10 @@ export function AdminDashboard() {
             <CardContent>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {upcomingBookings.map((booking) => {
-                  const programTitle = booking.programs?.program_translations?.find(
+                  const programTranslations = booking.programs?.program_translations || [];
+                  const programTitle = programTranslations.find(
                     (t: any) => t.language === 'hu'
-                  )?.title || 'Ismeretlen program';
+                  )?.title || programTranslations[0]?.title || 'Program nem található';
 
                   return (
                     <div
