@@ -8,14 +8,13 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { paymentIntentId, action, refund } = await req.json();
-    console.log(`Processing payment action: ${action} for intent: ${paymentIntentId}, refund: ${refund}`);
+    const { paymentIntentId, action } = await req.json();
+    console.log(`Processing payment action: ${action} for intent: ${paymentIntentId}`);
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2023-10-16",
@@ -25,21 +24,25 @@ serve(async (req) => {
 
     if (action === "capture") {
       console.log("Capturing payment intent:", paymentIntentId);
+      // Capture the authorized payment
       result = await stripe.paymentIntents.capture(paymentIntentId);
+      console.log("Payment captured successfully");
     } else if (action === "cancel") {
       console.log("Canceling payment intent:", paymentIntentId);
       
-      // First cancel the payment intent
-      const paymentIntent = await stripe.paymentIntents.cancel(paymentIntentId);
+      // Get the payment intent to check its status
+      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
       
-      // If refund is requested and the payment was already captured, create a refund
-      if (refund && paymentIntent.status === "succeeded") {
-        console.log("Creating refund for payment intent:", paymentIntentId);
+      if (paymentIntent.status === 'requires_capture') {
+        // If payment is only authorized, just cancel it
+        result = await stripe.paymentIntents.cancel(paymentIntentId);
+        console.log("Payment intent cancelled successfully");
+      } else if (paymentIntent.status === 'succeeded') {
+        // If payment was already captured, create a refund
         result = await stripe.refunds.create({
           payment_intent: paymentIntentId,
         });
-      } else {
-        result = paymentIntent;
+        console.log("Payment refunded successfully");
       }
     }
 

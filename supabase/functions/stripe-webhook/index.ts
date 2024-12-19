@@ -22,7 +22,6 @@ serve(async (req) => {
       apiVersion: '2023-10-16',
     })
 
-    // Get the signature from the headers
     const signature = req.headers.get('stripe-signature')
     if (!signature) {
       throw new Error('No Stripe signature found')
@@ -33,10 +32,8 @@ serve(async (req) => {
       throw new Error('Missing Stripe webhook secret')
     }
 
-    // Get the raw body
     const body = await req.text()
     
-    // Verify the webhook signature
     let event
     try {
       event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
@@ -50,7 +47,6 @@ serve(async (req) => {
 
     console.log('Received Stripe webhook event:', event.type)
 
-    // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
     if (!supabaseUrl || !supabaseKey) {
@@ -58,22 +54,18 @@ serve(async (req) => {
     }
     const supabase = createClient(supabaseUrl, supabaseKey)
 
-    // Handle the event
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object
         console.log('Checkout session completed:', session.id)
 
-        // Capture the payment intent
+        // Update booking with payment intent ID but don't capture payment yet
         if (session.payment_intent) {
-          console.log('Capturing payment intent:', session.payment_intent)
-          await stripe.paymentIntents.capture(session.payment_intent as string)
+          console.log('Saving payment intent ID:', session.payment_intent)
           
-          // Update booking status to confirmed
           const { error: updateError } = await supabase
             .from('bookings')
             .update({ 
-              status: 'confirmed',
               payment_intent_id: session.payment_intent
             })
             .eq('guest_email', session.customer_email)
@@ -86,7 +78,7 @@ serve(async (req) => {
             throw updateError
           }
 
-          console.log('Successfully captured payment and updated booking')
+          console.log('Successfully saved payment intent ID')
         }
         break
       }
@@ -95,7 +87,6 @@ serve(async (req) => {
         const paymentIntent = event.data.object
         console.log('Payment failed:', paymentIntent.id)
         
-        // Update booking status to cancelled
         const { error: updateError } = await supabase
           .from('bookings')
           .update({ 

@@ -8,7 +8,6 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
@@ -18,7 +17,6 @@ serve(async (req) => {
     
     console.log('Creating checkout session for program:', { programId, price, currency, guestName, guestEmail })
 
-    // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
     
@@ -28,7 +26,6 @@ serve(async (req) => {
     
     const supabase = createClient(supabaseUrl, supabaseKey)
 
-    // Fetch program details
     const { data: program, error: programError } = await supabase
       .from('programs')
       .select(`
@@ -46,7 +43,6 @@ serve(async (req) => {
       throw new Error('Program not found')
     }
 
-    // Get the Hungarian title (or fallback to English)
     const huTitle = program.program_translations.find((t: any) => t.language === 'hu')?.title
     const enTitle = program.program_translations.find((t: any) => t.language === 'en')?.title
     const programTitle = huTitle || enTitle || `Program #${programId}`
@@ -66,7 +62,6 @@ serve(async (req) => {
       apiVersion: '2023-10-16',
     })
 
-    // Convert price to cents/bani
     const unitAmount = Math.round(price * 100)
 
     console.log('Creating payment session for program:', programTitle)
@@ -75,7 +70,7 @@ serve(async (req) => {
       mode: 'payment',
       customer_email: guestEmail,
       payment_intent_data: {
-        // Removing capture_method: 'manual' to capture payment immediately
+        capture_method: 'manual', // This ensures the payment is only authorized, not captured
         metadata: {
           programId: programId.toString(),
           guestName,
