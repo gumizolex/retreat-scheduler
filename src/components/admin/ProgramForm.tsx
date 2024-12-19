@@ -36,7 +36,7 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
 
   const onSubmit = async (values: FormValues) => {
     try {
-      console.log('Form values:', values);
+      console.log('Submitting form values:', values);
 
       if (initialData?.id) {
         console.log('Updating existing program with ID:', initialData.id);
