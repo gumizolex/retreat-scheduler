@@ -9,7 +9,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { SwipeIndicator } from "./SwipeIndicator";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 interface ProgramGridProps {
   programs: Program[];
@@ -69,9 +69,9 @@ export function ProgramGrid({
           >
             <CarouselContent className="-ml-8">
               {programs.map((program, index) => {
-                const translatedProgram = translations[language].programs.find(
+                const translatedTitle = translations[language].programs.find(
                   (p) => p.id === program.id
-                )!;
+                )?.title || "";
                 return (
                   <CarouselItem
                     key={program.id}
@@ -79,14 +79,10 @@ export function ProgramGrid({
                   >
                     <div className="w-full h-full">
                       <ProgramCard
-                        program={program}
-                        translatedProgram={translatedProgram}
-                        timesAvailableText={translations[language].timesAvailable}
-                        bookButtonText={translations[language].bookButton}
-                        onBook={onBookProgram}
+                        title={translatedTitle}
+                        price={program.price}
                         currency={currency}
                         language={language}
-                        isCentered={index === centerIndex}
                       />
                     </div>
                   </CarouselItem>
@@ -105,17 +101,14 @@ export function ProgramGrid({
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
       {programs.map((program) => {
-        const translatedProgram = translations[language].programs.find(
+        const translatedTitle = translations[language].programs.find(
           (p) => p.id === program.id
-        )!;
+        )?.title || "";
         return (
           <ProgramCard
             key={program.id}
-            program={program}
-            translatedProgram={translatedProgram}
-            timesAvailableText={translations[language].timesAvailable}
-            bookButtonText={translations[language].bookButton}
-            onBook={onBookProgram}
+            title={translatedTitle}
+            price={program.price}
             currency={currency}
             language={language}
           />
