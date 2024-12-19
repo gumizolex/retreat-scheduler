@@ -56,23 +56,13 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
-      <header className="bg-primary py-8">
-        {isLoggedIn && (
-          <div className="absolute top-4 right-4">
-            <Button variant="secondary" onClick={handleLogout}>
-              Kijelentkezés
-            </Button>
-          </div>
-        )}
-        <div className="container mx-auto px-4">
-          <h1 className="text-4xl font-display font-bold text-center text-primary-foreground">
-            Abod Retreat
-          </h1>
-          <p className="text-lg mt-4 text-center text-primary-foreground/90">
-            Fedezze fel egyedülálló programjainkat és élményeinket Erdély szívében
-          </p>
+      {isLoggedIn && (
+        <div className="absolute top-4 right-4">
+          <Button variant="secondary" onClick={handleLogout}>
+            Kijelentkezés
+          </Button>
         </div>
-      </header>
+      )}
       <main>
         <ProgramList />
       </main>
