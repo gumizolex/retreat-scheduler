@@ -8,7 +8,7 @@ import { translations, programs } from "@/data/programs";
 export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: Language) => void }) {
   const [language, setLanguage] = useState<Language>("hu");
   const [selectedProgram, setSelectedProgram] = useState<number | null>(null);
-  const [currency, setCurrency] = useState<Currency>("HUF");
+  const [currency, setCurrency] = useState<Currency>("RON");
 
   const handleLanguageChange = (newLanguage: Language) => {
     setLanguage(newLanguage);
