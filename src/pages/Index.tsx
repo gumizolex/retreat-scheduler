@@ -67,7 +67,7 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="flex flex-col items-center justify-center gap-8">
             <img 
-              src="/lovable-uploads/abod-logo-white.png"
+              src="/85946a47-9542-4b08-a430-df5f32002b3b.png"
               alt="Abod Retreat Logo" 
               className="h-32 md:h-40 w-auto object-contain"
             />
