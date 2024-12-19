@@ -13,6 +13,7 @@ export interface Booking {
   id: number;
   guest_name: string;
   guest_email: string;
+  guest_phone?: string | null;
   booking_date: string;
   number_of_people: number;
   status: 'pending' | 'confirmed' | 'cancelled';
