@@ -7,7 +7,21 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-serve(async (req) => {
+const exchangeRates = {
+  HUF: 83.25, // 1 RON = 83.25 HUF
+  RON: 1,
+  EUR: 0.20 // 1 RON = 0.20 EUR
+};
+
+const convertPrice = (priceInRON: number, toCurrency: string) => {
+  const rate = exchangeRates[toCurrency as keyof typeof exchangeRates] || 1;
+  if (toCurrency === 'EUR') {
+    return Math.round(priceInRON * rate * 100) / 100; // Convert to EUR and round to 2 decimals
+  }
+  return Math.round(priceInRON * rate);
+};
+
+const handler = async (req: Request): Promise<Response> => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
@@ -15,7 +29,7 @@ serve(async (req) => {
   try {
     const { programId, price, currency, guestName, guestEmail } = await req.json()
     
-    console.log('Creating checkout session for program:', { programId, price, currency, guestName, guestEmail })
+    console.log("Creating checkout session for program:", { programId, price, currency, guestName, guestEmail })
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
@@ -62,15 +76,22 @@ serve(async (req) => {
       apiVersion: '2023-10-16',
     })
 
-    const unitAmount = Math.round(price * 100)
+    // Convert price to the selected currency
+    const convertedPrice = convertPrice(price, currency);
+    console.log(`Converting price from RON: ${price} to ${currency}: ${convertedPrice}`);
 
-    console.log('Creating payment session for program:', programTitle)
+    // For Stripe, amount needs to be in smallest currency unit (cents for EUR/USD, fillér for HUF)
+    const unitAmount = currency === 'HUF' 
+      ? Math.round(convertedPrice) // HUF doesn't use decimal places
+      : Math.round(convertedPrice * 100); // EUR uses cents
+
+    console.log('Creating payment session for program:', programTitle, 'Amount:', unitAmount, currency.toLowerCase())
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       mode: 'payment',
       customer_email: guestEmail,
       payment_intent_data: {
-        capture_method: 'manual', // This ensures the payment is only authorized, not captured
+        capture_method: 'manual',
         metadata: {
           programId: programId.toString(),
           guestName,
@@ -113,3 +134,5 @@ serve(async (req) => {
     )
   }
 })
+
+serve(handler)
