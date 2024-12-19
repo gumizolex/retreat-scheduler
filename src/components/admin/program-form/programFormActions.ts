@@ -47,6 +47,23 @@ export async function createNewProgram(values: FormValues) {
 export async function updateExistingProgram(values: FormValues, programId: number) {
   console.log('Updating program with values:', values);
   
+  // First check if the program exists
+  const { data: existingProgram, error: checkError } = await supabase
+    .from('programs')
+    .select()
+    .eq('id', programId)
+    .maybeSingle();
+
+  if (checkError) {
+    console.error('Error checking program:', checkError);
+    throw new Error('Failed to check program existence');
+  }
+
+  if (!existingProgram) {
+    console.error('No program found with id:', programId);
+    throw new Error('Program not found');
+  }
+
   const { data: program, error: programError } = await supabase
     .from('programs')
     .update({
@@ -64,8 +81,8 @@ export async function updateExistingProgram(values: FormValues, programId: numbe
   }
 
   if (!program) {
-    console.error('No program found with id:', programId);
-    throw new Error('Program not found');
+    console.error('No program data returned after update');
+    throw new Error('Program update failed - no data returned');
   }
 
   return program;
