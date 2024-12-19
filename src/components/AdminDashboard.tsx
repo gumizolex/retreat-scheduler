@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, Users, Activity } from "lucide-react";
+import { Calendar as CalendarIcon, Users, Activity } from "lucide-react";
 import { ProgramManagement } from "./admin/ProgramManagement";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,8 +30,9 @@ export function AdminDashboard() {
   }
 
   const totalBookings = bookings?.length || 0;
-  const activeGuests = bookings?.filter(b => b.status === 'confirmed')?.length || 0;
-  const utilizationRate = totalBookings > 0 ? Math.round((activeGuests / totalBookings) * 100) : 0;
+  const acceptedBookings = bookings?.filter(b => b.status === 'confirmed')?.length || 0;
+  const rejectedBookings = bookings?.filter(b => b.status === 'cancelled')?.length || 0;
+  const utilizationRate = totalBookings > 0 ? Math.round((acceptedBookings / totalBookings) * 100) : 0;
   
   const monthlyRevenue = bookings
     ?.filter(b => {
@@ -52,7 +53,7 @@ export function AdminDashboard() {
             <CardTitle className="text-sm font-medium">
               Összes foglalás
             </CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <CalendarIcon className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalBookings}</div>
@@ -62,24 +63,24 @@ export function AdminDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Aktív vendégek
+              Elfogadott foglalások
             </CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{activeGuests}</div>
+            <div className="text-2xl font-bold">{acceptedBookings}</div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Program kihasználtság
+              Elutasított foglalások
             </CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
+            <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{utilizationRate}%</div>
+            <div className="text-2xl font-bold">{rejectedBookings}</div>
           </CardContent>
         </Card>
 

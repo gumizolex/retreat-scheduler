@@ -32,3 +32,14 @@ export interface Translations {
   timesAvailable: string;
   programs: TranslatedProgram[];
 }
+
+export interface ProgramCardProps {
+  program: Program;
+  translatedProgram: TranslatedProgram;
+  timesAvailableText: string;
+  bookButtonText: string;
+  onBook: (programId: number) => void;
+  currency: Currency;
+  language: Language;
+  isCentered?: boolean;
+}
