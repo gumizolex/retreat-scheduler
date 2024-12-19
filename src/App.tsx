@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import Index from "./pages/Index";
 import Activities from "./pages/Activities";
 import Admin from "./pages/Admin";
 import Login from "./pages/Login";
@@ -49,8 +48,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <Router>
         <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/activities" element={<Activities />} />
+          <Route path="/" element={<Activities />} />
           <Route path="/login" element={<Login />} />
           <Route
             path="/admin"
