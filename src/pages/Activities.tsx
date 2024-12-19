@@ -17,19 +17,9 @@ const Activities = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <header className="bg-primary py-16 text-primary-foreground relative">
+      <header className="bg-primary py-16 text-primary-foreground">
         <div className="container mx-auto px-4">
-          <div className="absolute top-4 right-4 flex gap-4">
-            <CurrencySelector 
-              selectedCurrency={currency} 
-              onCurrencyChange={setCurrency} 
-            />
-            <LanguageSelector 
-              currentLanguage={language}
-              onLanguageChange={setLanguage}
-            />
-          </div>
-          <div className="flex flex-col items-center justify-center gap-8 pt-8">
+          <div className="flex flex-col items-center justify-center gap-8">
             <img 
               src="/lovable-uploads/abod-logo-white.png" 
               alt="Abod Retreat Logo" 
@@ -38,6 +28,9 @@ const Activities = () => {
             <h1 className="text-5xl font-display font-bold text-center">
               Abod Retreat
             </h1>
+            <p className="text-xl max-w-2xl mx-auto text-center">
+              Fedezze fel egyedülálló programjainkat és élményeinket Erdély szívében
+            </p>
           </div>
         </div>
       </header>
@@ -53,6 +46,6 @@ const Activities = () => {
       </footer>
     </div>
   );
-}
+};
 
 export default Activities;
