@@ -15,6 +15,8 @@ interface EmailRequest {
 }
 
 const handler = async (req: Request): Promise<Response> => {
+  console.log("Email notification function called");
+
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -22,7 +24,7 @@ const handler = async (req: Request): Promise<Response> => {
 
   try {
     const emailRequest: EmailRequest = await req.json();
-    console.log('Sending email with request:', emailRequest);
+    console.log("Sending email with request:", emailRequest);
 
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -31,29 +33,29 @@ const handler = async (req: Request): Promise<Response> => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "Abod Retreat <onboarding@resend.dev>", // Using Resend's testing domain
+        from: "Abod Retreat <onboarding@resend.dev>", // Using Resend's test domain
         to: emailRequest.to,
         subject: emailRequest.subject,
         html: emailRequest.html,
       }),
     });
 
+    const data = await res.json();
+    console.log("Resend API response:", data);
+
     if (res.ok) {
-      const data = await res.json();
-      console.log('Email sent successfully:', data);
       return new Response(JSON.stringify(data), {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     } else {
-      const error = await res.text();
-      console.error('Error sending email:', error);
-      return new Response(JSON.stringify({ error }), {
+      console.error("Error from Resend API:", data);
+      return new Response(JSON.stringify({ error: data }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error in send-booking-notification function:", error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
