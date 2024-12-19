@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, Users, Activity, DollarSign } from "lucide-react";
+import { Calendar, Users, Activity } from "lucide-react";
 import { BookingsTable, type BookingStatus } from "./admin/BookingsTable";
 import { ProgramManagement } from "./admin/ProgramManagement";
 import { useQuery } from "@tanstack/react-query";
@@ -97,7 +97,6 @@ export function AdminDashboard() {
             <CardTitle className="text-sm font-medium">
               Havi bevétel
             </CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{monthlyRevenue.toLocaleString()} RON</div>
