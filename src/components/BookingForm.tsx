@@ -305,6 +305,7 @@ export function BookingForm({
                       <BookingSummaryDetails
                         formData={{
                           name: form.watch("name"),
+                          email: form.watch("email"),
                           date: form.watch("date"),
                           time: form.watch("time"),
                           numberOfPeople: form.watch("numberOfPeople")
