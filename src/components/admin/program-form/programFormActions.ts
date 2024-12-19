@@ -69,29 +69,61 @@ export const updateExistingProgram = async (values: FormValues, programId: numbe
   try {
     console.log('Updating program with values:', values);
     
-    const { data: program, error: programError } = await supabase
+    // Először frissítjük a program alapadatait
+    const { error: programError } = await supabase
       .from('programs')
       .update({
         price: values.price,
         duration: values.duration,
         location: values.location,
       })
-      .eq('id', programId)
-      .select()
-      .maybeSingle();
+      .eq('id', programId);
 
     if (programError) {
       console.error('Error updating program:', programError);
       throw new Error('Failed to update program');
     }
 
-    if (!program) {
-      throw new Error('Program not found');
+    // Frissítjük a fordításokat nyelvenként
+    const languages = ['hu', 'en', 'ro'] as const;
+    for (const lang of languages) {
+      const { error: translationError } = await supabase
+        .from('program_translations')
+        .update({
+          title: values[`${lang}_title` as keyof FormValues],
+          description: values[`${lang}_description` as keyof FormValues],
+        })
+        .eq('program_id', programId)
+        .eq('language', lang);
+
+      if (translationError) {
+        console.error(`Error updating ${lang} translation:`, translationError);
+        throw new Error(`Failed to update ${lang} translation`);
+      }
     }
 
-    return program;
+    // Lekérjük a frissített programot az összes fordítással együtt
+    const { data: updatedProgram, error: fetchError } = await supabase
+      .from('programs')
+      .select(`
+        *,
+        program_translations (
+          language,
+          title,
+          description
+        )
+      `)
+      .eq('id', programId)
+      .maybeSingle();
+
+    if (fetchError || !updatedProgram) {
+      console.error('Error fetching updated program:', fetchError);
+      throw new Error('Failed to fetch updated program');
+    }
+
+    return updatedProgram;
   } catch (error: any) {
-    console.error('Error updating program:', error);
+    console.error('Error in updateExistingProgram:', error);
     throw error;
   }
 };
