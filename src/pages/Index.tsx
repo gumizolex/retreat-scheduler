@@ -56,7 +56,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
-      <header className="bg-primary py-16 text-primary-foreground relative">
+      <header className="bg-primary py-8">
         {isLoggedIn && (
           <div className="absolute top-4 right-4">
             <Button variant="secondary" onClick={handleLogout}>
@@ -65,14 +65,12 @@ const Index = () => {
           </div>
         )}
         <div className="container mx-auto px-4">
-          <div className="flex flex-col items-center justify-center gap-8">
-            <h1 className="text-5xl font-display font-bold text-center">
-              Abod Retreat
-            </h1>
-            <p className="text-xl max-w-2xl mx-auto text-center">
-              Fedezze fel egyedülálló programjainkat és élményeinket Erdély szívében
-            </p>
-          </div>
+          <h1 className="text-4xl font-display font-bold text-center text-primary-foreground">
+            Abod Retreat
+          </h1>
+          <p className="text-lg mt-4 text-center text-primary-foreground/90">
+            Fedezze fel egyedülálló programjainkat és élményeinket Erdély szívében
+          </p>
         </div>
       </header>
       <main>
