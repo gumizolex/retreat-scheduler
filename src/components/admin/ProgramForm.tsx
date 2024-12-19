@@ -63,8 +63,8 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
           const { error: translationError } = await supabase
             .from('program_translations')
             .update({
-              title: values[`${lang}_title` as keyof FormValues],
-              description: values[`${lang}_description` as keyof FormValues],
+              title: String(values[`${lang}_title` as keyof FormValues]),
+              description: String(values[`${lang}_description` as keyof FormValues]),
             })
             .eq('program_id', initialData.id)
             .eq('language', lang);
