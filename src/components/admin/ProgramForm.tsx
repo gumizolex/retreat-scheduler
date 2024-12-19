@@ -51,11 +51,15 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
           })
           .eq('id', initialData.id)
           .select()
-          .single();
+          .maybeSingle();
 
         if (programError) {
           console.error('Error updating program:', programError);
           throw programError;
+        }
+
+        if (!updatedProgram) {
+          throw new Error('Program not found or could not be updated');
         }
 
         console.log('Successfully updated program:', updatedProgram);
@@ -77,11 +81,15 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
               .eq('program_id', initialData.id)
               .eq('language', lang)
               .select()
-              .single();
+              .maybeSingle();
 
             if (translationError) {
               console.error(`Error updating ${lang} translation:`, translationError);
               throw translationError;
+            }
+
+            if (!updatedTranslation) {
+              throw new Error(`Translation for language ${lang} not found or could not be updated`);
             }
 
             console.log(`Successfully updated ${lang} translation:`, updatedTranslation);
@@ -96,11 +104,15 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
                 description: String(values[`${lang}_description` as keyof FormValues]),
               })
               .select()
-              .single();
+              .maybeSingle();
 
             if (translationError) {
               console.error(`Error creating ${lang} translation:`, translationError);
               throw translationError;
+            }
+
+            if (!newTranslation) {
+              throw new Error(`Could not create translation for language ${lang}`);
             }
 
             console.log(`Successfully created ${lang} translation:`, newTranslation);
@@ -117,11 +129,15 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
             location: values.location,
           })
           .select()
-          .single();
+          .maybeSingle();
 
         if (programError) {
           console.error('Error creating program:', programError);
           throw programError;
+        }
+
+        if (!newProgram) {
+          throw new Error('Could not create new program');
         }
 
         console.log('Created new program:', newProgram);
@@ -142,6 +158,10 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
         if (translationsError) {
           console.error('Error creating translations:', translationsError);
           throw translationsError;
+        }
+
+        if (!newTranslations || newTranslations.length === 0) {
+          throw new Error('Could not create translations');
         }
 
         console.log('Successfully created translations:', newTranslations);
