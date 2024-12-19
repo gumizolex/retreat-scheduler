@@ -47,30 +47,25 @@ export async function createNewProgram(values: FormValues) {
 export async function updateExistingProgram(values: FormValues, programId: number) {
   console.log('Updating program with values:', values);
   
-  const { error: programError } = await supabase
+  const { data: updatedProgram, error: programError } = await supabase
     .from('programs')
     .update({
-      price: values.price,
+      price: Number(values.price),
       duration: values.duration,
       location: values.location,
     })
-    .eq('id', programId);
+    .eq('id', programId)
+    .select()
+    .maybeSingle();
 
   if (programError) {
     console.error('Error updating program:', programError);
     throw new Error('Failed to update program');
   }
 
-  // Fetch the updated program to confirm the update
-  const { data: updatedProgram, error: fetchError } = await supabase
-    .from('programs')
-    .select()
-    .eq('id', programId)
-    .maybeSingle();
-
-  if (fetchError || !updatedProgram) {
-    console.error('Error fetching updated program:', fetchError);
-    throw new Error('Failed to verify program update');
+  if (!updatedProgram) {
+    console.error('No program data returned after update');
+    throw new Error('Program update failed - no data returned');
   }
 
   return updatedProgram;
