@@ -31,11 +31,11 @@ export function BookingsTable({ bookings, showProgramName = false }: BookingsTab
 
       if (error) throw error;
 
-      // Send email notification
+      // Send email notification to the guest's email address
       if (booking.guest_email) {
         const { error: emailError } = await supabase.functions.invoke('send-booking-notification', {
           body: {
-            to: [booking.guest_email],
+            to: [booking.guest_email], // Use the guest's email from the booking
             subject: newStatus === 'confirmed' 
               ? 'Foglalás visszaigazolva - Abod Retreat'
               : 'Foglalás elutasítva - Abod Retreat',
