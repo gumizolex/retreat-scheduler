@@ -11,11 +11,6 @@ const Activities = () => {
   return (
     <div className="min-h-screen">
       <section className="relative h-screen bg-primary flex flex-col items-center justify-center text-white px-4">
-        <img
-          src="/abod-logo-white.png"
-          alt="Abod Retreat Logo"
-          className="w-auto h-16 mb-12"
-        />
         <h1 className="text-6xl font-display mb-8 text-center">
           Abod Retreat
         </h1>
