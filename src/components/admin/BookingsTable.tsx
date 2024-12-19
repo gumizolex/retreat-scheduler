@@ -19,6 +19,7 @@ export interface Booking {
   number_of_people: number;
   status: 'pending' | 'confirmed' | 'cancelled';
   program_title?: string;
+  payment_intent_id?: string | null;
   programs?: {
     program_translations: Array<{
       language: string;

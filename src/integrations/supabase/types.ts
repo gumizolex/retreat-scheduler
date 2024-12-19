@@ -33,6 +33,7 @@ export type Database = {
           guest_phone: string | null
           id: number
           number_of_people: number
+          payment_intent_id: string | null
           program_id: number
           status: string
           user_id: string | null
@@ -45,6 +46,7 @@ export type Database = {
           guest_phone?: string | null
           id?: number
           number_of_people: number
+          payment_intent_id?: string | null
           program_id: number
           status?: string
           user_id?: string | null
@@ -57,6 +59,7 @@ export type Database = {
           guest_phone?: string | null
           id?: number
           number_of_people?: number
+          payment_intent_id?: string | null
           program_id?: number
           status?: string
           user_id?: string | null
