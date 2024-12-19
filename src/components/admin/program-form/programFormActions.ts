@@ -89,6 +89,7 @@ export const updateExistingProgram = async (values: FormValues, programId: numbe
       throw new Error('Program not found');
     }
 
+    // Update the program first
     const { error: programError } = await supabase
       .from('programs')
       .update({
@@ -103,6 +104,7 @@ export const updateExistingProgram = async (values: FormValues, programId: numbe
       throw new Error('Failed to update program');
     }
 
+    // Update translations
     const languages = ['hu', 'en', 'ro'] as const;
     
     for (const lang of languages) {
@@ -143,7 +145,26 @@ export const updateExistingProgram = async (values: FormValues, programId: numbe
       }
     }
 
-    return true;
+    // Invalidate the cache by refetching the updated program
+    const { data: updatedProgram, error: fetchError } = await supabase
+      .from('programs')
+      .select(`
+        *,
+        program_translations (
+          language,
+          title,
+          description
+        )
+      `)
+      .eq('id', programId)
+      .maybeSingle();
+
+    if (fetchError || !updatedProgram) {
+      console.error('Error fetching updated program:', fetchError);
+      throw new Error('Failed to fetch updated program');
+    }
+
+    return updatedProgram;
   } catch (error: any) {
     console.error('Error in updateExistingProgram:', error);
     throw error;
