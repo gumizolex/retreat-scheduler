@@ -16,7 +16,6 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
   const { data: programsData, isLoading } = useQuery({
     queryKey: ['programs'],
     queryFn: async () => {
-      console.log('Fetching programs for activities page...');
       const { data: programs, error } = await supabase
         .from('programs')
         .select(`
@@ -34,14 +33,13 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
         throw error;
       }
 
-      console.log('Fetched programs:', programs);
       return programs as Program[];
     },
+    staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
+    cacheTime: 1000 * 60 * 30, // Keep unused data in cache for 30 minutes
   });
 
   useEffect(() => {
-    console.log('Setting up real-time subscriptions...');
-    
     const channel = supabase
       .channel('program-changes')
       .on(
@@ -51,8 +49,7 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
           schema: 'public',
           table: 'programs'
         },
-        (payload) => {
-          console.log('Programs table changed:', payload);
+        () => {
           queryClient.invalidateQueries({ queryKey: ['programs'] });
         }
       )
@@ -63,17 +60,13 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
           schema: 'public',
           table: 'program_translations'
         },
-        (payload) => {
-          console.log('Program translations changed:', payload);
+        () => {
           queryClient.invalidateQueries({ queryKey: ['programs'] });
         }
       )
-      .subscribe((status) => {
-        console.log('Subscription status:', status);
-      });
+      .subscribe();
 
     return () => {
-      console.log('Cleaning up real-time subscriptions...');
       supabase.removeChannel(channel);
     };
   }, [queryClient]);
