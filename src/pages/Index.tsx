@@ -16,15 +16,6 @@ const Index = () => {
       
       if (session) {
         setIsLoggedIn(true);
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', session.user.id)
-          .single();
-
-        if (profile?.role === 'admin') {
-          navigate('/admin');
-        }
       } else {
         setIsLoggedIn(false);
       }
