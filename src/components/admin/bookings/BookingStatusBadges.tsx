@@ -8,7 +8,11 @@ interface BookingStatusBadgesProps {
 export function BookingStatusBadges({ booking }: BookingStatusBadgesProps) {
   const getPaymentStatusBadge = (booking: Booking) => {
     if (!booking.payment_intent_id) {
-      return null;
+      return (
+        <Badge variant="secondary">
+          Nincs fizetési információ
+        </Badge>
+      );
     }
 
     if (booking.status === 'confirmed') {
@@ -33,23 +37,30 @@ export function BookingStatusBadges({ booking }: BookingStatusBadgesProps) {
   };
 
   return (
-    <div className="flex flex-col gap-1.5">
-      <Badge
-        variant={
-          booking.status === 'confirmed'
-            ? 'default'
+    <div className="space-y-2">
+      <div>
+        <p className="text-sm font-medium mb-1">Foglalás státusza</p>
+        <Badge
+          variant={
+            booking.status === 'confirmed'
+              ? 'default'
+              : booking.status === 'cancelled'
+              ? 'destructive'
+              : 'secondary'
+          }
+        >
+          {booking.status === 'confirmed'
+            ? 'Elfogadva'
             : booking.status === 'cancelled'
-            ? 'destructive'
-            : 'secondary'
-        }
-      >
-        {booking.status === 'confirmed'
-          ? 'Elfogadva'
-          : booking.status === 'cancelled'
-          ? 'Elutasítva'
-          : 'Függőben'}
-      </Badge>
-      {getPaymentStatusBadge(booking)}
+            ? 'Elutasítva'
+            : 'Függőben'}
+        </Badge>
+      </div>
+      
+      <div>
+        <p className="text-sm font-medium mb-1">Fizetés státusza</p>
+        {getPaymentStatusBadge(booking)}
+      </div>
     </div>
   );
 }
