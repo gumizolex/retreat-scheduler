@@ -1,16 +1,15 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { DateTimePicker } from "@/components/DateTimePicker";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Language, Currency } from "@/types/program";
+import { BookingPersonalInfo } from "./booking/BookingPersonalInfo";
+import { BookingDateTime } from "./booking/BookingDateTime";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -19,7 +18,9 @@ const formSchema = z.object({
   email: z.string().email({
     message: "Érvénytelen email cím.",
   }),
-  phone: z.string().optional(),
+  phone: z.string().min(6, {
+    message: "A telefonszám kötelező és legalább 6 karakter hosszú kell legyen.",
+  }),
   date: z.date({
     required_error: "Kérjük válassz egy dátumot.",
   }),
@@ -39,7 +40,7 @@ interface BookingFormProps {
   language: Language;
 }
 
-export function BookingForm({ isOpen, onClose, programId = 1, language, currency }: BookingFormProps) {
+export function BookingForm({ isOpen, onClose, programId = 1, language }: BookingFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -53,30 +54,56 @@ export function BookingForm({ isOpen, onClose, programId = 1, language, currency
     },
   });
 
+  const translations = {
+    hu: {
+      title: "Foglalás",
+      name: "Név",
+      email: "Email",
+      phone: "Telefonszám",
+      date: "Dátum",
+      time: "Időpont",
+      people: "Létszám",
+      cancel: "Mégsem",
+      submit: "Foglalás véglegesítése",
+      processing: "Feldolgozás...",
+    },
+    en: {
+      title: "Booking",
+      name: "Name",
+      email: "Email",
+      phone: "Phone",
+      date: "Date",
+      time: "Time",
+      people: "Number of people",
+      cancel: "Cancel",
+      submit: "Confirm Booking",
+      processing: "Processing...",
+    },
+    ro: {
+      title: "Rezervare",
+      name: "Nume",
+      email: "Email",
+      phone: "Telefon",
+      date: "Data",
+      time: "Ora",
+      people: "Număr de persoane",
+      cancel: "Anulare",
+      submit: "Confirmă Rezervarea",
+      processing: "Se procesează...",
+    }
+  };
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       setIsSubmitting(true);
       
-      // Create a new date object for the booking date
       const bookingDate = new Date(values.date);
-      
-      // Parse the time string (expected format: "HH:mm")
       const [hours, minutes] = values.time.split(':').map(Number);
       
-      // Set the time on the booking date
       bookingDate.setHours(hours || 0);
       bookingDate.setMinutes(minutes || 0);
       bookingDate.setSeconds(0);
       bookingDate.setMilliseconds(0);
-
-      console.log('Submitting booking with data:', {
-        guest_name: values.name,
-        guest_email: values.email,
-        guest_phone: values.phone,
-        booking_date: bookingDate.toISOString(),
-        number_of_people: values.numberOfPeople,
-        program_id: programId,
-      });
 
       const { error } = await supabase
         .from('bookings')
@@ -89,10 +116,7 @@ export function BookingForm({ isOpen, onClose, programId = 1, language, currency
           program_id: programId,
         });
 
-      if (error) {
-        console.error('Error inserting booking:', error);
-        throw error;
-      }
+      if (error) throw error;
 
       toast.success('Foglalás sikeresen elmentve!');
       onClose();
@@ -104,119 +128,25 @@ export function BookingForm({ isOpen, onClose, programId = 1, language, currency
     }
   }
 
-  const translations = {
-    hu: {
-      title: "Foglalás",
-      name: "Név",
-      email: "Email",
-      phone: "Telefonszám (opcionális)",
-      date: "Dátum",
-      time: "Időpont",
-      people: "Létszám",
-      cancel: "Mégsem",
-      submit: "Foglalás véglegesítése",
-      processing: "Feldolgozás...",
-    },
-    en: {
-      title: "Booking",
-      name: "Name",
-      email: "Email",
-      phone: "Phone (optional)",
-      date: "Date",
-      time: "Time",
-      people: "Number of people",
-      cancel: "Cancel",
-      submit: "Confirm Booking",
-      processing: "Processing...",
-    },
-    ro: {
-      title: "Rezervare",
-      name: "Nume",
-      email: "Email",
-      phone: "Telefon (opțional)",
-      date: "Data",
-      time: "Ora",
-      people: "Număr de persoane",
-      cancel: "Anulare",
-      submit: "Confirmă Rezervarea",
-      processing: "Se procesează...",
-    }
-  };
-
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{translations[language].title}</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{translations[language].name}</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Teljes név" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{translations[language].email}</FormLabel>
-                  <FormControl>
-                    <Input type="email" placeholder="pelda@email.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{translations[language].phone}</FormLabel>
-                  <FormControl>
-                    <Input placeholder="+36 XX XXX XXXX" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <DateTimePicker
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <BookingPersonalInfo 
               form={form}
               language={language}
               translations={translations}
             />
-
-            <FormField
-              control={form.control}
-              name="numberOfPeople"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{translations[language].people}</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      min={1}
-                      {...field}
-                      onChange={(e) => field.onChange(parseInt(e.target.value))}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+            
+            <BookingDateTime
+              form={form}
+              language={language}
+              translations={translations}
             />
 
             <div className="flex justify-end space-x-4 pt-4">
