@@ -81,6 +81,68 @@ export type Database = {
         }
         Relationships: []
       }
+      program_translations: {
+        Row: {
+          created_at: string
+          description: string
+          id: number
+          language: string
+          program_id: number | null
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: number
+          language: string
+          program_id?: number | null
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: number
+          language?: string
+          program_id?: number | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "program_translations_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      programs: {
+        Row: {
+          created_at: string
+          duration: string
+          id: number
+          image: string
+          location: string
+          price: number
+        }
+        Insert: {
+          created_at?: string
+          duration: string
+          id?: number
+          image?: string
+          location: string
+          price: number
+        }
+        Update: {
+          created_at?: string
+          duration?: string
+          id?: number
+          image?: string
+          location?: string
+          price?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

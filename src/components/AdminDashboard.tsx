@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Users, Activity, DollarSign } from "lucide-react";
 import { BookingsTable, type BookingStatus } from "./admin/BookingsTable";
+import { ProgramManagement } from "./admin/ProgramManagement";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -99,7 +100,10 @@ export function AdminDashboard() {
         </Card>
       </div>
 
-      <BookingsTable bookings={bookings || []} />
+      <div className="space-y-8">
+        <ProgramManagement />
+        <BookingsTable bookings={bookings || []} />
+      </div>
     </div>
   );
 }
