@@ -25,6 +25,12 @@ interface ProgramCardProps {
   isCentered?: boolean;
 }
 
+const perPersonText = {
+  hu: "/fő",
+  en: "/person",
+  ro: "/persoană"
+};
+
 export function ProgramCard({
   program,
   translatedProgram,
@@ -161,7 +167,7 @@ export function ProgramCard({
             </CardContent>
             <CardFooter className="p-4 sm:p-6 flex flex-col items-center gap-2 sm:gap-3 border-t border-gray-100">
               <span className="text-base sm:text-lg font-semibold text-primary">
-                {formatCurrency(program.price, currency)}/fő
+                {formatCurrency(program.price, currency)}{perPersonText[language]}
               </span>
               <Button 
                 variant="default"
