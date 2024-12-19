@@ -36,7 +36,7 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
       return programs as Program[];
     },
     staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
-    cacheTime: 1000 * 60 * 30, // Keep unused data in cache for 30 minutes
+    gcTime: 1000 * 60 * 30, // Keep unused data in cache for 30 minutes
   });
 
   useEffect(() => {
