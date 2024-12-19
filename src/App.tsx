@@ -41,6 +41,9 @@ function App() {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Add a console log to help debug authentication state
+  console.log('Admin status:', isAdmin);
+
   if (isAdmin === null) {
     return null; // or a loading spinner
   }
@@ -53,7 +56,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/booking-success" element={<BookingSuccess />} />
           <Route
-            path="/admin"
+            path="/admin/*"
             element={isAdmin ? <Admin /> : <Navigate to="/login" replace />}
           />
         </Routes>
