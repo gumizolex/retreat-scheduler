@@ -13,22 +13,13 @@ const Index = () => {
   useEffect(() => {
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      
-      if (session) {
-        setIsLoggedIn(true);
-      } else {
-        setIsLoggedIn(false);
-      }
+      setIsLoggedIn(!!session);
     };
 
     checkSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) {
-        setIsLoggedIn(true);
-      } else {
-        setIsLoggedIn(false);
-      }
+      setIsLoggedIn(!!session);
     });
 
     return () => subscription.unsubscribe();
@@ -57,15 +48,13 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       {isLoggedIn && (
-        <div className="absolute top-4 right-4">
+        <div className="absolute top-4 right-4 z-50">
           <Button variant="secondary" onClick={handleLogout}>
             Kijelentkezés
           </Button>
         </div>
       )}
-      <main>
-        <ProgramList />
-      </main>
+      <ProgramList />
     </div>
   );
 };
