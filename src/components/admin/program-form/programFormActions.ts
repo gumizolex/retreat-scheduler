@@ -53,7 +53,6 @@ export const createNewProgram = async (values: FormValues) => {
 
     if (translationsError) {
       console.error('Error creating translations:', translationsError);
-      // Ha a fordítások létrehozása sikertelen, töröljük a programot is
       await supabase.from('programs').delete().eq('id', program.id);
       throw new Error('Failed to create program translations');
     }
@@ -70,15 +69,11 @@ export const updateExistingProgram = async (values: FormValues, programId: numbe
     console.log('Updating program with values:', values);
     console.log('Program ID:', programId);
     
-    // Convert price to number and log it
-    const price = Number(values.price);
-    console.log('Price to be updated:', price, 'Type:', typeof price);
-    
     // First update the program's basic data
     const { data: updatedProgram, error: programError } = await supabase
       .from('programs')
       .update({
-        price: price,
+        price: Number(values.price),
         duration: values.duration,
         location: values.location,
       })
