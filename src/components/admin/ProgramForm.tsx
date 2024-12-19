@@ -1,34 +1,14 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Form } from "@/components/ui/form";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { Program } from "@/types/program";
-
-const formSchema = z.object({
-  price: z.string().min(1, "Az ár megadása kötelező"),
-  duration: z.string().min(1, "Az időtartam megadása kötelező"),
-  location: z.string().min(1, "A helyszín megadása kötelező"),
-  hu_title: z.string().min(1, "A magyar cím megadása kötelező"),
-  hu_description: z.string().min(1, "A magyar leírás megadása kötelező"),
-  en_title: z.string().min(1, "Az angol cím megadása kötelező"),
-  en_description: z.string().min(1, "Az angol leírás megadása kötelező"),
-  ro_title: z.string().min(1, "A román cím megadása kötelező"),
-  ro_description: z.string().min(1, "A román leírás megadása kötelező"),
-});
-
-type FormValues = z.infer<typeof formSchema>;
+import { BasicDetails } from "./program-form/BasicDetails";
+import { LanguageSection } from "./program-form/LanguageSection";
+import { formSchema, type FormValues } from "./program-form/types";
+import { exchangeRates } from "@/utils/currency";
 
 interface ProgramFormProps {
   program?: Program | null;
@@ -41,7 +21,8 @@ export function ProgramForm({ program, onClose }: ProgramFormProps) {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      price: program?.price?.toString() || "",
+      // Convert RON to HUF for the form if program exists
+      price: program ? (Math.round(program.price / exchangeRates.RON)).toString() : "",
       duration: program?.duration || "",
       location: program?.location || "",
       hu_title: program?.program_translations?.find(t => t.language === "hu")?.title || "",
@@ -55,12 +36,15 @@ export function ProgramForm({ program, onClose }: ProgramFormProps) {
 
   const onSubmit = async (values: FormValues) => {
     try {
+      // Convert RON to HUF for storage
+      const priceInHUF = Math.round(parseFloat(values.price) / exchangeRates.RON);
+
       if (program) {
         // Update existing program
         const { error: programError } = await supabase
           .from('programs')
           .update({
-            price: parseInt(values.price),
+            price: priceInHUF,
             duration: values.duration,
             location: values.location,
           })
@@ -92,7 +76,7 @@ export function ProgramForm({ program, onClose }: ProgramFormProps) {
         const { data: newProgram, error: programError } = await supabase
           .from('programs')
           .insert({
-            price: parseInt(values.price),
+            price: priceInHUF,
             duration: values.duration,
             location: values.location,
           })
@@ -137,138 +121,31 @@ export function ProgramForm({ program, onClose }: ProgramFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="price"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Ár (Ft)</FormLabel>
-                <FormControl>
-                  <Input type="number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="duration"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Időtartam</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        <FormField
-          control={form.control}
-          name="location"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Helyszín</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+        <BasicDetails form={form} />
+        
+        <LanguageSection
+          form={form}
+          language="hu"
+          title="Magyar"
+          titleLabel="Cím"
+          descriptionLabel="Leírás"
         />
 
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Magyar</h3>
-          <FormField
-            control={form.control}
-            name="hu_title"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Cím</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="hu_description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Leírás</FormLabel>
-                <FormControl>
-                  <Textarea {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+        <LanguageSection
+          form={form}
+          language="en"
+          title="English"
+          titleLabel="Title"
+          descriptionLabel="Description"
+        />
 
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">English</h3>
-          <FormField
-            control={form.control}
-            name="en_title"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Title</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="en_description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Description</FormLabel>
-                <FormControl>
-                  <Textarea {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Română</h3>
-          <FormField
-            control={form.control}
-            name="ro_title"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Titlu</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="ro_description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Descriere</FormLabel>
-                <FormControl>
-                  <Textarea {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+        <LanguageSection
+          form={form}
+          language="ro"
+          title="Română"
+          titleLabel="Titlu"
+          descriptionLabel="Descriere"
+        />
 
         <div className="flex justify-end gap-4">
           <Button type="button" variant="outline" onClick={onClose}>
