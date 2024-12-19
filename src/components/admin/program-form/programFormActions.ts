@@ -53,9 +53,12 @@ export const createNewProgram = async (values: FormValues) => {
 
     if (translationsError) {
       console.error('Error creating translations:', translationsError);
+      // Ha a fordítások létrehozása sikertelen, töröljük a programot is
+      await supabase.from('programs').delete().eq('id', program.id);
       throw new Error('Failed to create program translations');
     }
 
+    return program;
   } catch (error: any) {
     console.error('Error in createNewProgram:', error);
     throw error;

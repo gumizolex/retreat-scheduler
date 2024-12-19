@@ -39,9 +39,10 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
       console.log('Starting form submission with values:', values);
 
       if (initialData?.id) {
+        // Először frissítjük a program alapadatait
         await updateExistingProgram(values, initialData.id);
 
-        // Update translations one by one
+        // Majd frissítjük a fordításokat nyelvenként
         const languages = ['hu', 'en', 'ro'] as const;
         for (const lang of languages) {
           const existingTranslation = initialData.program_translations.find(t => t.language === lang);
@@ -53,19 +54,24 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
             !existingTranslation
           );
         }
+
+        toast({
+          title: "Siker!",
+          description: "A program sikeresen frissítve.",
+        });
       } else {
+        // Új program létrehozása
         await createNewProgram(values);
+        
+        toast({
+          title: "Siker!",
+          description: "Az új program sikeresen létrehozva.",
+        });
       }
 
-      // Force refetch the data
+      // Frissítjük a cache-t
       await queryClient.invalidateQueries({ queryKey: ['programs'] });
-      await queryClient.refetchQueries({ queryKey: ['programs'] });
       
-      toast({
-        title: "Siker!",
-        description: initialData ? "A program sikeresen frissítve." : "Az új program sikeresen létrehozva.",
-      });
-
       if (onSuccess) {
         onSuccess();
       }
