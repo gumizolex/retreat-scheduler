@@ -47,7 +47,6 @@ export async function createNewProgram(values: FormValues) {
 export async function updateExistingProgram(values: FormValues, programId: number) {
   console.log('Updating program with values:', values);
   
-  // First, update the program
   const { error: programError } = await supabase
     .from('programs')
     .update({
