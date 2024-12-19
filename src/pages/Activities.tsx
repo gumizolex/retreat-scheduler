@@ -1,12 +1,9 @@
 import { useState } from "react";
 import { Language, Currency } from "@/types/program";
-import { LanguageSelector } from "@/components/LanguageSelector";
-import { CurrencySelector } from "@/components/CurrencySelector";
 import { ProgramList } from "@/components/ProgramList";
 
 const Activities = () => {
   const [language, setLanguage] = useState<Language>("hu");
-  const [currency, setCurrency] = useState<Currency>("HUF");
 
   const heroTranslations = {
     hu: {
@@ -36,16 +33,6 @@ const Activities = () => {
 
       <div className="py-8">
         <div className="container mx-auto">
-          <div className="flex justify-center gap-4 mb-8">
-            <LanguageSelector
-              currentLanguage={language}
-              onLanguageChange={setLanguage}
-            />
-            <CurrencySelector
-              selectedCurrency={currency}
-              onCurrencyChange={setCurrency}
-            />
-          </div>
           <ProgramList onLanguageChange={setLanguage} />
         </div>
       </div>
