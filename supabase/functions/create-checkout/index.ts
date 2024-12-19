@@ -23,6 +23,11 @@ serve(async (req) => {
       throw new Error('Stripe secret key is not configured')
     }
 
+    if (stripeSecretKey.startsWith('http')) {
+      console.error('Invalid Stripe secret key format - appears to be a URL')
+      throw new Error('Invalid Stripe secret key format')
+    }
+
     const stripe = new Stripe(stripeSecretKey, {
       apiVersion: '2023-10-16',
     })
