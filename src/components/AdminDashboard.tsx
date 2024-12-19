@@ -90,7 +90,7 @@ export function AdminDashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{monthlyRevenue} RON</div>
+            <div className="text-2xl font-bold">{monthlyRevenue.toLocaleString()} RON</div>
           </CardContent>
         </Card>
       </div>
