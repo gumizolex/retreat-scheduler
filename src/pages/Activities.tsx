@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Language, Currency } from "@/types/program";
+import { Language } from "@/types/program";
 import { ProgramList } from "@/components/ProgramList";
 
 const Activities = () => {

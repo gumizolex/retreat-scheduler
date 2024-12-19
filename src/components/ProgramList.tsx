@@ -39,7 +39,6 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
     },
   });
 
-  // Subscribe to real-time changes for both programs and translations
   useEffect(() => {
     console.log('Setting up real-time subscriptions...');
     
@@ -103,7 +102,7 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
     en: {
       pageTitle: "Programs and Experiences",
       bookButton: "Book Now",
-      timesAvailable: "Times Available",
+      timesAvailable: "Available Times",
       programs: programsData?.map(program => ({
         id: program.id,
         title: program.program_translations.find(t => t.language === "en")?.title || '',
