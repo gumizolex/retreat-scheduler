@@ -69,24 +69,31 @@ export const updateExistingProgram = async (values: FormValues, programId: numbe
   try {
     console.log('Updating program with values:', values);
     console.log('Program ID:', programId);
-    console.log('Price value:', values.price, 'Type:', typeof values.price);
     
-    // Először frissítjük a program alapadatait
-    const { error: programError } = await supabase
+    // Convert price to number and log it
+    const price = Number(values.price);
+    console.log('Price to be updated:', price, 'Type:', typeof price);
+    
+    // First update the program's basic data
+    const { data: updatedProgram, error: programError } = await supabase
       .from('programs')
       .update({
-        price: Number(values.price),
+        price: price,
         duration: values.duration,
         location: values.location,
       })
-      .eq('id', programId);
+      .eq('id', programId)
+      .select()
+      .single();
 
     if (programError) {
       console.error('Error updating program:', programError);
       throw new Error('Failed to update program');
     }
 
-    // Frissítjük a fordításokat nyelvenként
+    console.log('Program update response:', updatedProgram);
+
+    // Update translations for each language
     const languages = ['hu', 'en', 'ro'] as const;
     for (const lang of languages) {
       const titleKey = `${lang}_title` as keyof FormValues;
@@ -105,25 +112,6 @@ export const updateExistingProgram = async (values: FormValues, programId: numbe
         console.error(`Error updating ${lang} translation:`, translationError);
         throw new Error(`Failed to update ${lang} translation`);
       }
-    }
-
-    // Lekérjük a frissített programot az összes fordítással együtt
-    const { data: updatedProgram, error: fetchError } = await supabase
-      .from('programs')
-      .select(`
-        *,
-        program_translations (
-          language,
-          title,
-          description
-        )
-      `)
-      .eq('id', programId)
-      .maybeSingle();
-
-    if (fetchError || !updatedProgram) {
-      console.error('Error fetching updated program:', fetchError);
-      throw new Error('Failed to fetch updated program');
     }
 
     return updatedProgram;
