@@ -24,48 +24,27 @@ interface BookingActionsProps {
 export function BookingActions({ booking, onStatusUpdate }: BookingActionsProps) {
   const queryClient = useQueryClient();
 
-  const handlePaymentAction = async (action: 'capture' | 'cancel') => {
+  const handleStatusUpdate = async (newStatus: 'confirmed' | 'cancelled') => {
     try {
-      if (!booking.payment_intent_id) {
-        console.log('No payment intent found, updating booking status directly');
-        await onStatusUpdate(booking.id, action === 'capture' ? 'confirmed' : 'cancelled', booking);
-        return;
+      console.log(`Updating booking status to ${newStatus}`);
+      await onStatusUpdate(booking.id, newStatus, booking);
+      
+      // Show a message about manual Stripe handling if there's a payment
+      if (booking.payment_intent_id) {
+        toast.info(
+          `Ne felejtsd el ${newStatus === 'confirmed' ? 'elfogadni' : 'visszautalni'} a fizetést a Stripe-ban is! Payment ID: ${booking.payment_intent_id}`,
+          { duration: 10000 }
+        );
       }
-
-      console.log(`Handling payment action: ${action} for intent: ${booking.payment_intent_id}`);
-      
-      // Call the handle-booking-payment function to process the payment action
-      const { data: paymentResult, error: paymentError } = await supabase.functions.invoke('handle-booking-payment', {
-        body: {
-          paymentIntentId: booking.payment_intent_id,
-          action: action
-        },
-      });
-
-      if (paymentError) {
-        console.error(`Error ${action}ing payment:`, paymentError);
-        throw paymentError;
-      }
-
-      console.log(`Payment ${action}ed:`, paymentResult);
-      
-      // Update the booking status
-      await onStatusUpdate(booking.id, action === 'capture' ? 'confirmed' : 'cancelled', booking);
-      
     } catch (error) {
-      console.error(`Error ${action}ing payment:`, error);
-      toast.error(`Hiba történt a fizetés ${action === 'capture' ? 'elfogadása' : 'elutasítása'} során`);
+      console.error(`Error updating booking status:`, error);
+      toast.error(`Hiba történt a foglalás ${newStatus === 'confirmed' ? 'elfogadása' : 'elutasítása'} során`);
     }
   };
 
   const handleDelete = async () => {
     try {
       console.log('Deleting booking:', booking.id);
-      
-      // First, cancel and refund the payment if it exists and is not already cancelled
-      if (booking.payment_intent_id && booking.status !== 'cancelled') {
-        await handlePaymentAction('cancel');
-      }
       
       // Only send deletion email if the booking wasn't already cancelled
       if (booking.status !== 'cancelled') {
@@ -94,7 +73,7 @@ export function BookingActions({ booking, onStatusUpdate }: BookingActionsProps)
         }
       }
 
-      // Then delete the booking
+      // Delete the booking
       const { error } = await supabase
         .from('bookings')
         .delete()
@@ -110,6 +89,14 @@ export function BookingActions({ booking, onStatusUpdate }: BookingActionsProps)
       queryClient.invalidateQueries({ queryKey: ['all-bookings'] });
       
       toast.success('Foglalás sikeresen törölve');
+
+      // Show reminder about Stripe if there's a payment
+      if (booking.payment_intent_id) {
+        toast.info(
+          `Ne felejtsd el kezelni a fizetést a Stripe-ban is! Payment ID: ${booking.payment_intent_id}`,
+          { duration: 10000 }
+        );
+      }
     } catch (error) {
       console.error('Hiba történt a foglalás törlése közben:', error);
       toast.error('Hiba történt a törlés során');
@@ -122,7 +109,7 @@ export function BookingActions({ booking, onStatusUpdate }: BookingActionsProps)
         <>
           <Button
             size="sm"
-            onClick={() => handlePaymentAction('capture')}
+            onClick={() => handleStatusUpdate('confirmed')}
             className="bg-green-600 hover:bg-green-700"
           >
             <Check className="h-4 w-4" />
@@ -130,7 +117,7 @@ export function BookingActions({ booking, onStatusUpdate }: BookingActionsProps)
           <Button
             size="sm"
             variant="destructive"
-            onClick={() => handlePaymentAction('cancel')}
+            onClick={() => handleStatusUpdate('cancelled')}
           >
             <X className="h-4 w-4" />
           </Button>
