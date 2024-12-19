@@ -21,6 +21,22 @@ const convertPrice = (priceInRON: number, toCurrency: string) => {
   return Math.round(priceInRON * rate);
 };
 
+const getTranslatedText = (language: string) => {
+  const translations = {
+    hu: {
+      booking: "Foglalás",
+    },
+    en: {
+      booking: "Booking",
+    },
+    ro: {
+      booking: "Rezervare",
+    }
+  };
+
+  return translations[language as keyof typeof translations] || translations.en;
+};
+
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
@@ -86,6 +102,8 @@ const handler = async (req: Request): Promise<Response> => {
       ? Math.round(convertedPrice) // HUF doesn't use decimal places
       : Math.round(convertedPrice * 100); // EUR uses cents
 
+    const t = getTranslatedText(language);
+
     console.log('Creating payment session for program:', programTitle, 'Amount:', unitAmount, currency.toLowerCase())
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -105,7 +123,7 @@ const handler = async (req: Request): Promise<Response> => {
             currency: currency.toLowerCase(),
             product_data: {
               name: programTitle,
-              description: `Rezervare: ${guestName}`,
+              description: `${t.booking}: ${guestName}`,
             },
             unit_amount: unitAmount,
           },
