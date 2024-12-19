@@ -89,30 +89,36 @@ export function ProgramImageManager({ program }: ProgramImageManagerProps) {
   return (
     <div className="space-y-4">
       <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-gray-100">
-        <img
-          src={program.image}
-          alt="Program előnézet"
-          className="w-full h-full object-cover"
-        />
+        {program.image && (
+          <img
+            src={program.image}
+            alt="Program előnézet"
+            className="w-full h-full object-cover"
+          />
+        )}
       </div>
       <div className="flex items-center justify-center w-full">
-        <label htmlFor={`image-upload-${program.id}`} className="w-full">
+        <label htmlFor={`image-upload-${program.id}`} className="w-full cursor-pointer">
           <Button
             variant="outline"
             className="w-full"
             disabled={isUploading}
+            type="button"
+            asChild
           >
-            {isUploading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Feltöltés...
-              </>
-            ) : (
-              <>
-                <Upload className="mr-2 h-4 w-4" />
-                Kép módosítása
-              </>
-            )}
+            <div>
+              {isUploading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Feltöltés...
+                </>
+              ) : (
+                <>
+                  <Upload className="mr-2 h-4 w-4" />
+                  Kép módosítása
+                </>
+              )}
+            </div>
           </Button>
           <input
             id={`image-upload-${program.id}`}
