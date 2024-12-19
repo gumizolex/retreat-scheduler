@@ -1,7 +1,9 @@
 import * as z from "zod";
 
 export const formSchema = z.object({
-  price: z.string().min(1, "Az ár megadása kötelező"),
+  price: z.string().min(1, "Az ár megadása kötelező").refine((val) => !isNaN(parseInt(val)), {
+    message: "Az árnak számnak kell lennie"
+  }),
   duration: z.string().min(1, "Az időtartam megadása kötelező"),
   location: z.string().min(1, "A helyszín megadása kötelező"),
   hu_title: z.string().min(1, "A magyar cím megadása kötelező"),

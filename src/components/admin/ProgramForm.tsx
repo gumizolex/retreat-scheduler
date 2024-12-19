@@ -36,13 +36,18 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
   const onSubmit = async (values: FormValues) => {
     try {
       console.log('Submitting form with values:', values);
+      const price = parseInt(values.price);
       
+      if (isNaN(price)) {
+        throw new Error("Invalid price value");
+      }
+
       if (initialData?.id) {
         // Update existing program
         const { error: programError } = await supabase
           .from('programs')
           .update({
-            price: parseInt(values.price),
+            price: price,
             duration: values.duration,
             location: values.location,
           })
@@ -71,7 +76,7 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
         const { data: program, error: programError } = await supabase
           .from('programs')
           .insert({
-            price: parseInt(values.price),
+            price: price,
             duration: values.duration,
             location: values.location,
           })
