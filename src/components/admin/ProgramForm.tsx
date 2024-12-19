@@ -36,27 +36,29 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
 
   const onSubmit = async (values: FormValues) => {
     try {
-      console.log('Submitting form values:', values);
+      console.log('Starting form submission with values:', values);
 
       if (initialData?.id) {
         console.log('Updating existing program with ID:', initialData.id);
         
         // Update program details
-        const { error: programError } = await supabase
+        const { data: updatedProgram, error: programError } = await supabase
           .from('programs')
           .update({
             price: values.price,
             duration: values.duration,
             location: values.location,
           })
-          .eq('id', initialData.id);
+          .eq('id', initialData.id)
+          .select()
+          .single();
 
         if (programError) {
           console.error('Error updating program:', programError);
           throw programError;
         }
 
-        console.log('Successfully updated program');
+        console.log('Successfully updated program:', updatedProgram);
 
         // Update translations one by one
         const languages = ['hu', 'en', 'ro'] as const;
@@ -66,38 +68,44 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
           const existingTranslation = initialData.program_translations.find(t => t.language === lang);
           
           if (existingTranslation) {
-            const { error: translationError } = await supabase
+            const { data: updatedTranslation, error: translationError } = await supabase
               .from('program_translations')
               .update({
                 title: String(values[`${lang}_title` as keyof FormValues]),
                 description: String(values[`${lang}_description` as keyof FormValues]),
               })
               .eq('program_id', initialData.id)
-              .eq('language', lang);
+              .eq('language', lang)
+              .select()
+              .single();
 
             if (translationError) {
               console.error(`Error updating ${lang} translation:`, translationError);
               throw translationError;
             }
+
+            console.log(`Successfully updated ${lang} translation:`, updatedTranslation);
           } else {
             // If translation doesn't exist, create it
-            const { error: translationError } = await supabase
+            const { data: newTranslation, error: translationError } = await supabase
               .from('program_translations')
               .insert({
                 program_id: initialData.id,
                 language: lang,
                 title: String(values[`${lang}_title` as keyof FormValues]),
                 description: String(values[`${lang}_description` as keyof FormValues]),
-              });
+              })
+              .select()
+              .single();
 
             if (translationError) {
               console.error(`Error creating ${lang} translation:`, translationError);
               throw translationError;
             }
+
+            console.log(`Successfully created ${lang} translation:`, newTranslation);
           }
         }
-
-        console.log('Successfully updated translations');
       } else {
         console.log('Creating new program');
         // Create new program
@@ -126,23 +134,22 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
           description: String(values[`${lang}_description` as keyof FormValues]),
         }));
 
-        const { error: translationsError } = await supabase
+        const { data: newTranslations, error: translationsError } = await supabase
           .from('program_translations')
-          .insert(translations);
+          .insert(translations)
+          .select();
 
         if (translationsError) {
           console.error('Error creating translations:', translationsError);
           throw translationsError;
         }
 
-        console.log('Successfully created translations');
+        console.log('Successfully created translations:', newTranslations);
       }
 
       // Force refetch the data
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ['programs'] }),
-        queryClient.refetchQueries({ queryKey: ['programs'] })
-      ]);
+      await queryClient.invalidateQueries({ queryKey: ['programs'] });
+      await queryClient.refetchQueries({ queryKey: ['programs'] });
       
       toast({
         title: "Siker!",

@@ -6,6 +6,8 @@ export const usePrograms = () => {
   const queryClient = useQueryClient();
 
   useEffect(() => {
+    console.log('Setting up real-time subscription for programs');
+    
     const channel = supabase
       .channel('program-changes')
       .on(
@@ -15,8 +17,8 @@ export const usePrograms = () => {
           schema: 'public',
           table: 'programs'
         },
-        () => {
-          console.log('Programs table changed, invalidating query...');
+        (payload) => {
+          console.log('Programs table changed:', payload);
           queryClient.invalidateQueries({ queryKey: ['programs'] });
         }
       )
@@ -27,14 +29,17 @@ export const usePrograms = () => {
           schema: 'public',
           table: 'program_translations'
         },
-        () => {
-          console.log('Program translations changed, invalidating query...');
+        (payload) => {
+          console.log('Program translations changed:', payload);
           queryClient.invalidateQueries({ queryKey: ['programs'] });
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('Subscription status:', status);
+      });
 
     return () => {
+      console.log('Cleaning up real-time subscription');
       supabase.removeChannel(channel);
     };
   }, [queryClient]);
