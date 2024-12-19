@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts"
 import Stripe from 'https://esm.sh/stripe@14.21.0'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -16,6 +17,39 @@ serve(async (req) => {
     const { programId, price, currency, guestName, guestEmail } = await req.json()
     
     console.log('Creating checkout session for program:', { programId, price, currency, guestName, guestEmail })
+
+    // Initialize Supabase client
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+    
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error('Missing Supabase environment variables')
+    }
+    
+    const supabase = createClient(supabaseUrl, supabaseKey)
+
+    // Fetch program details
+    const { data: program, error: programError } = await supabase
+      .from('programs')
+      .select(`
+        *,
+        program_translations (
+          language,
+          title
+        )
+      `)
+      .eq('id', programId)
+      .single()
+
+    if (programError || !program) {
+      console.error('Error fetching program:', programError)
+      throw new Error('Program not found')
+    }
+
+    // Get the Hungarian title (or fallback to English)
+    const huTitle = program.program_translations.find((t: any) => t.language === 'hu')?.title
+    const enTitle = program.program_translations.find((t: any) => t.language === 'en')?.title
+    const programTitle = huTitle || enTitle || `Program #${programId}`
 
     const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY')
     if (!stripeSecretKey) {
@@ -35,7 +69,7 @@ serve(async (req) => {
     // Convert price to cents/bani
     const unitAmount = Math.round(price * 100)
 
-    console.log('Creating payment session...')
+    console.log('Creating payment session for program:', programTitle)
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
@@ -43,8 +77,8 @@ serve(async (req) => {
           price_data: {
             currency: currency.toLowerCase(),
             product_data: {
-              name: `Program Booking #${programId}`,
-              description: `Booking for guest: ${guestName}`,
+              name: programTitle,
+              description: `Foglalás: ${guestName}`,
             },
             unit_amount: unitAmount,
           },
