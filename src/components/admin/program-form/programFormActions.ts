@@ -25,20 +25,20 @@ export async function createNewProgram(values: FormValues) {
   }
 
   const languages = ['hu', 'en', 'ro'] as const;
-  for (const lang of languages) {
-    const { error: translationError } = await supabase
-      .from('program_translations')
-      .insert({
-        program_id: program.id,
-        language: lang,
-        title: values[`${lang}_title` as keyof FormValues],
-        description: values[`${lang}_description` as keyof FormValues],
-      });
+  const translations = languages.map(lang => ({
+    program_id: program.id,
+    language: lang,
+    title: values[`${lang}_title` as keyof FormValues],
+    description: values[`${lang}_description` as keyof FormValues],
+  }));
 
-    if (translationError) {
-      console.error(`Error creating ${lang} translation:`, translationError);
-      throw new Error(`Failed to create ${lang} translation`);
-    }
+  const { error: translationError } = await supabase
+    .from('program_translations')
+    .insert(translations);
+
+  if (translationError) {
+    console.error('Error creating translations:', translationError);
+    throw new Error('Failed to create translations');
   }
 
   return program;
@@ -83,12 +83,12 @@ export async function updateProgramTranslation(
   if (isNew) {
     const { error } = await supabase
       .from('program_translations')
-      .insert({
+      .insert([{
         program_id: programId,
         language,
         title,
         description,
-      });
+      }]);
 
     if (error) {
       console.error('Error creating translation:', error);
