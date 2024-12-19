@@ -20,6 +20,7 @@ export interface Booking {
   program_title?: string;
   payment_intent_id?: string | null;
   programs?: {
+    price: number;
     program_translations: Array<{
       language: string;
       title: string;
