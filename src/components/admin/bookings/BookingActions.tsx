@@ -38,8 +38,7 @@ export function BookingActions({ booking, onStatusUpdate }: BookingActionsProps)
       const { data: paymentResult, error: paymentError } = await supabase.functions.invoke('handle-booking-payment', {
         body: {
           paymentIntentId: booking.payment_intent_id,
-          action: action,
-          refund: action === 'cancel' // Add refund parameter for cancellations
+          action: action
         },
       });
 
@@ -48,7 +47,7 @@ export function BookingActions({ booking, onStatusUpdate }: BookingActionsProps)
         throw paymentError;
       }
 
-      console.log(`Payment ${action}d:`, paymentResult);
+      console.log(`Payment ${action}ed:`, paymentResult);
       
       // Update the booking status
       await onStatusUpdate(booking.id, action === 'capture' ? 'confirmed' : 'cancelled', booking);

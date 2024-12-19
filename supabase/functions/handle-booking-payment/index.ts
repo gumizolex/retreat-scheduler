@@ -26,12 +26,13 @@ serve(async (req) => {
       console.log("Capturing payment intent:", paymentIntentId);
       // Capture the authorized payment
       result = await stripe.paymentIntents.capture(paymentIntentId);
-      console.log("Payment captured successfully");
+      console.log("Payment captured successfully:", result);
     } else if (action === "cancel") {
       console.log("Canceling payment intent:", paymentIntentId);
       
       // Get the payment intent to check its status
       const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+      console.log("Payment intent status:", paymentIntent.status);
       
       if (paymentIntent.status === 'requires_capture') {
         // If payment is only authorized, just cancel it
