@@ -12,7 +12,12 @@ export function AdminDashboard() {
       console.log('Fetching bookings...');
       const { data, error } = await supabase
         .from('bookings')
-        .select('*')
+        .select(`
+          *,
+          programs (
+            price
+          )
+        `)
         .order('created_at', { ascending: false });
       
       if (error) {
@@ -39,9 +44,13 @@ export function AdminDashboard() {
       const bookingDate = new Date(b.created_at);
       const currentDate = new Date();
       return bookingDate.getMonth() === currentDate.getMonth() &&
-             bookingDate.getFullYear() === currentDate.getFullYear();
+             bookingDate.getFullYear() === currentDate.getFullYear() &&
+             b.status === 'confirmed';
     })
-    ?.reduce((acc, booking) => acc + 15000, 0) || 0;
+    ?.reduce((acc, booking) => {
+      const programPrice = booking.programs?.price || 0;
+      return acc + (programPrice * booking.number_of_people);
+    }, 0) || 0;
 
   const upcomingBookings = bookings
     ?.filter(b => new Date(b.booking_date) > new Date())
