@@ -15,7 +15,11 @@ export function AdminDashboard() {
         .select(`
           *,
           programs (
-            price
+            price,
+            program_translations (
+              title,
+              language
+            )
           )
         `)
         .order('created_at', { ascending: false });
@@ -55,7 +59,7 @@ export function AdminDashboard() {
   const upcomingBookings = bookings
     ?.filter(b => new Date(b.booking_date) > new Date())
     ?.sort((a, b) => new Date(a.booking_date).getTime() - new Date(b.booking_date).getTime())
-    ?.slice(0, 5) || [];
+    ?.slice(0, 6) || [];
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -122,29 +126,39 @@ export function AdminDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2 sm:space-y-3">
-                {upcomingBookings.map((booking) => (
-                  <div 
-                    key={booking.id}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between p-2 sm:p-3 bg-muted rounded-lg gap-1 sm:gap-2 text-sm"
-                  >
-                    <div>
-                      <p className="font-medium">{booking.guest_name}</p>
-                      <p className="text-muted-foreground text-xs sm:text-sm">
-                        {new Date(booking.booking_date).toLocaleDateString('hu-HU', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
-                      </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {upcomingBookings.map((booking) => {
+                  const programTitle = booking.programs?.program_translations?.find(
+                    (t: any) => t.language === 'hu'
+                  )?.title || 'Ismeretlen program';
+
+                  return (
+                    <div
+                      key={booking.id}
+                      className="bg-secondary/50 rounded-lg p-3 hover:bg-secondary/70 transition-colors"
+                    >
+                      <div className="flex flex-col gap-1">
+                        <div className="font-medium text-sm truncate">
+                          {booking.guest_name}
+                        </div>
+                        <div className="text-xs text-muted-foreground truncate">
+                          {programTitle}
+                        </div>
+                        <div className="text-xs text-primary font-medium mt-1">
+                          {new Date(booking.booking_date).toLocaleDateString('hu-HU', {
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </div>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          {booking.number_of_people} fő
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-xs sm:text-sm text-muted-foreground">
-                      {booking.number_of_people} fő
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
