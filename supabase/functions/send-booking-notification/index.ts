@@ -26,6 +26,9 @@ const handler = async (req: Request): Promise<Response> => {
     const emailRequest: EmailRequest = await req.json();
     console.log("Sending email with request:", emailRequest);
 
+    // During testing, always send to the verified email
+    const testEmail = "gumizolex@gmail.com";
+    
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -33,10 +36,10 @@ const handler = async (req: Request): Promise<Response> => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "Abod Retreat <onboarding@resend.dev>", // Using Resend's test domain
-        to: emailRequest.to,
+        from: "Abod Retreat <onboarding@resend.dev>",
+        to: [testEmail], // Override the recipient with the verified email
         subject: emailRequest.subject,
-        html: emailRequest.html,
+        html: `[TEST MODE] Original recipient(s): ${emailRequest.to.join(", ")}<br><br>${emailRequest.html}`,
       }),
     });
 
