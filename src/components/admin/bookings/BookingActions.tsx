@@ -26,12 +26,16 @@ export function BookingActions({ booking, onStatusUpdate }: BookingActionsProps)
 
   const handleDelete = async () => {
     try {
+      console.log('Deleting booking:', booking.id);
       const { error } = await supabase
         .from('bookings')
         .delete()
         .eq('id', booking.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error deleting booking:', error);
+        throw error;
+      }
 
       // Invalidate both queries to ensure all views are updated
       queryClient.invalidateQueries({ queryKey: ['bookings'] });
