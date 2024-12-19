@@ -1,7 +1,7 @@
 export const exchangeRates = {
   HUF: 83.33, // 1 RON = 83.33 HUF
   RON: 1,
-  EUR: 4.55 // 1 RON = 0.2 EUR (approximate)
+  EUR: 5 // 1 RON = 0.20 EUR (1/0.20 = 5)
 };
 
 export const formatCurrency = (amount: number, currency: "HUF" | "RON" | "EUR") => {
