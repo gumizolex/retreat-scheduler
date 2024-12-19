@@ -56,15 +56,22 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
-      <header className="bg-accent py-4 px-6 flex justify-between items-center">
-        <h1 className="text-2xl font-display text-accent-foreground">
-          Abod Retreat
-        </h1>
-        {isLoggedIn && (
-          <Button variant="secondary" onClick={handleLogout}>
-            Kijelentkezés
-          </Button>
-        )}
+      <header className="bg-primary py-16 text-primary-foreground">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col items-center justify-center gap-8">
+            <img 
+              src="/lovable-uploads/abod-logo-white.png" 
+              alt="Abod Retreat Logo" 
+              className="h-32 md:h-40 w-auto"
+            />
+            <h1 className="text-5xl font-display font-bold text-center">
+              Abod Retreat
+            </h1>
+            <p className="text-xl max-w-2xl mx-auto text-center">
+              Fedezze fel egyedülálló programjainkat és élményeinket Erdély szívében
+            </p>
+          </div>
+        </div>
       </header>
       <main>
         <ProgramList />
