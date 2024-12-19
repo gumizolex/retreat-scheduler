@@ -47,7 +47,6 @@ export async function createNewProgram(values: FormValues) {
 export async function updateExistingProgram(values: FormValues, programId: number) {
   console.log('Updating program with values:', values);
   
-  // First check if the program exists
   const { data: existingProgram, error: checkError } = await supabase
     .from('programs')
     .select()
