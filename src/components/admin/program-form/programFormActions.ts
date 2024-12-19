@@ -17,13 +17,9 @@ export const createNewProgram = async (values: FormValues) => {
       .select()
       .maybeSingle();
 
-    if (programError) {
+    if (programError || !program) {
       console.error('Error creating program:', programError);
       throw new Error('Failed to create program');
-    }
-
-    if (!program) {
-      throw new Error('Program was not created');
     }
 
     const translations = [
@@ -79,11 +75,16 @@ export const updateExistingProgram = async (values: FormValues, programId: numbe
       })
       .eq('id', programId)
       .select()
-      .single();
+      .maybeSingle();
 
     if (programError) {
       console.error('Error updating program:', programError);
       throw new Error('Failed to update program');
+    }
+
+    if (!updatedProgram) {
+      console.error('No program found with ID:', programId);
+      throw new Error('Program not found');
     }
 
     console.log('Program update response:', updatedProgram);
