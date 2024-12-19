@@ -3,14 +3,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { DatePicker } from "@/components/DateTimePicker";
-import { format } from "date-fns";
+import { DateTimePicker } from "@/components/DateTimePicker";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Language, Currency } from "@/types/program";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -35,9 +35,11 @@ interface BookingFormProps {
   isOpen: boolean;
   onClose: () => void;
   programId?: number;
+  currency: Currency;
+  language: Language;
 }
 
-export function BookingForm({ isOpen, onClose, programId = 1 }: BookingFormProps) {
+export function BookingForm({ isOpen, onClose, programId = 1, language, currency }: BookingFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -102,11 +104,50 @@ export function BookingForm({ isOpen, onClose, programId = 1 }: BookingFormProps
     }
   }
 
+  const translations = {
+    hu: {
+      title: "Foglalás",
+      name: "Név",
+      email: "Email",
+      phone: "Telefonszám (opcionális)",
+      date: "Dátum",
+      time: "Időpont",
+      people: "Létszám",
+      cancel: "Mégsem",
+      submit: "Foglalás véglegesítése",
+      processing: "Feldolgozás...",
+    },
+    en: {
+      title: "Booking",
+      name: "Name",
+      email: "Email",
+      phone: "Phone (optional)",
+      date: "Date",
+      time: "Time",
+      people: "Number of people",
+      cancel: "Cancel",
+      submit: "Confirm Booking",
+      processing: "Processing...",
+    },
+    ro: {
+      title: "Rezervare",
+      name: "Nume",
+      email: "Email",
+      phone: "Telefon (opțional)",
+      date: "Data",
+      time: "Ora",
+      people: "Număr de persoane",
+      cancel: "Anulare",
+      submit: "Confirmă Rezervarea",
+      processing: "Se procesează...",
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Foglalás</DialogTitle>
+          <DialogTitle>{translations[language].title}</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
@@ -116,7 +157,7 @@ export function BookingForm({ isOpen, onClose, programId = 1 }: BookingFormProps
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Név</FormLabel>
+                  <FormLabel>{translations[language].name}</FormLabel>
                   <FormControl>
                     <Input placeholder="Teljes név" {...field} />
                   </FormControl>
@@ -130,7 +171,7 @@ export function BookingForm({ isOpen, onClose, programId = 1 }: BookingFormProps
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>{translations[language].email}</FormLabel>
                   <FormControl>
                     <Input type="email" placeholder="pelda@email.com" {...field} />
                   </FormControl>
@@ -144,7 +185,7 @@ export function BookingForm({ isOpen, onClose, programId = 1 }: BookingFormProps
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Telefonszám (opcionális)</FormLabel>
+                  <FormLabel>{translations[language].phone}</FormLabel>
                   <FormControl>
                     <Input placeholder="+36 XX XXX XXXX" {...field} />
                   </FormControl>
@@ -153,39 +194,10 @@ export function BookingForm({ isOpen, onClose, programId = 1 }: BookingFormProps
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="date"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Dátum</FormLabel>
-                  <DatePicker
-                    date={field.value}
-                    onChange={field.onChange}
-                  />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="time"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Időpont</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="time"
-                      step="900"
-                      min="10:00"
-                      max="18:00"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+            <DateTimePicker
+              form={form}
+              language={language}
+              translations={translations}
             />
 
             <FormField
@@ -193,7 +205,7 @@ export function BookingForm({ isOpen, onClose, programId = 1 }: BookingFormProps
               name="numberOfPeople"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Létszám</FormLabel>
+                  <FormLabel>{translations[language].people}</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -214,10 +226,10 @@ export function BookingForm({ isOpen, onClose, programId = 1 }: BookingFormProps
                 onClick={onClose}
                 disabled={isSubmitting}
               >
-                Mégsem
+                {translations[language].cancel}
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Feldolgozás..." : "Foglalás véglegesítése"}
+                {isSubmitting ? translations[language].processing : translations[language].submit}
               </Button>
             </div>
           </form>

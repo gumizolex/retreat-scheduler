@@ -150,14 +150,7 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
           <BookingForm
             isOpen={selectedProgram !== null}
             onClose={() => setSelectedProgram(null)}
-            programTitle={
-              translations[language].programs.find(
-                (p) => p.id === selectedProgram
-              )?.title || ""
-            }
-            pricePerPerson={
-              programsData?.find((p) => p.id === selectedProgram)?.price || 0
-            }
+            programId={selectedProgram}
             currency={currency}
             language={language}
           />
