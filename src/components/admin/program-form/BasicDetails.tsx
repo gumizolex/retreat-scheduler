@@ -17,7 +17,11 @@ export function BasicDetails({ form }: BasicDetailsProps) {
           <FormItem>
             <FormLabel>Ár (RON)</FormLabel>
             <FormControl>
-              <Input type="number" {...field} />
+              <Input 
+                type="number" 
+                {...field}
+                onChange={(e) => field.onChange(Number(e.target.value))}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>

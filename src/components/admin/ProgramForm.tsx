@@ -1,6 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { BasicDetails } from "./program-form/BasicDetails";
@@ -9,20 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 import { Program } from "@/types/program";
-
-const formSchema = z.object({
-  price: z.coerce.number().min(0),
-  duration: z.string().min(1),
-  location: z.string().min(1),
-  hu_title: z.string().min(1),
-  hu_description: z.string().min(1),
-  en_title: z.string().min(1),
-  en_description: z.string().min(1),
-  ro_title: z.string().min(1),
-  ro_description: z.string().min(1),
-});
-
-type FormValues = z.infer<typeof formSchema>;
+import { formSchema, FormValues } from "./program-form/types";
 
 interface ProgramFormProps {
   initialData?: Program;
@@ -114,8 +100,8 @@ export function ProgramForm({ initialData, onSuccess }: ProgramFormProps) {
         const translations = ['hu', 'en', 'ro'].map(lang => ({
           program_id: newProgram.id,
           language: lang,
-          title: values[`${lang}_title` as keyof FormValues],
-          description: values[`${lang}_description` as keyof FormValues],
+          title: String(values[`${lang}_title` as keyof FormValues]),
+          description: String(values[`${lang}_description` as keyof FormValues]),
         }));
 
         const { error: translationsError } = await supabase
