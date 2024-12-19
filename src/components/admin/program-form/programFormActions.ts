@@ -28,8 +28,8 @@ export async function createNewProgram(values: FormValues) {
   const translations = languages.map(lang => ({
     program_id: program.id,
     language: lang,
-    title: values[`${lang}_title` as keyof FormValues],
-    description: values[`${lang}_description` as keyof FormValues],
+    title: String(values[`${lang}_title` as keyof FormValues]),
+    description: String(values[`${lang}_description` as keyof FormValues]),
   }));
 
   const { error: translationError } = await supabase
@@ -74,21 +74,23 @@ export async function updateExistingProgram(values: FormValues, programId: numbe
 export async function updateProgramTranslation(
   programId: number,
   language: string,
-  title: string,
-  description: string,
+  title: string | number,
+  description: string | number,
   isNew: boolean
 ) {
   console.log('Updating translation:', { programId, language, title, description, isNew });
 
+  const translationData = {
+    program_id: programId,
+    language,
+    title: String(title),
+    description: String(description),
+  };
+
   if (isNew) {
     const { error } = await supabase
       .from('program_translations')
-      .insert([{
-        program_id: programId,
-        language,
-        title,
-        description,
-      }]);
+      .insert([translationData]);
 
     if (error) {
       console.error('Error creating translation:', error);
@@ -97,7 +99,7 @@ export async function updateProgramTranslation(
   } else {
     const { error } = await supabase
       .from('program_translations')
-      .update({ title, description })
+      .update({ title: String(title), description: String(description) })
       .eq('program_id', programId)
       .eq('language', language);
 
