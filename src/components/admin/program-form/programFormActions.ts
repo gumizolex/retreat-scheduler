@@ -101,6 +101,8 @@ export const updateProgramTranslation = async (
   isNew: boolean
 ) => {
   try {
+    console.log('Updating translation:', { programId, language, title, description, isNew });
+    
     if (isNew) {
       const { error } = await supabase
         .from('program_translations')
@@ -113,7 +115,10 @@ export const updateProgramTranslation = async (
           },
         ]);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error inserting translation:', error);
+        throw error;
+      }
     } else {
       const { error } = await supabase
         .from('program_translations')
@@ -124,7 +129,10 @@ export const updateProgramTranslation = async (
         .eq('program_id', programId)
         .eq('language', language);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error updating translation:', error);
+        throw error;
+      }
     }
   } catch (error: any) {
     console.error('Error updating translation:', error);

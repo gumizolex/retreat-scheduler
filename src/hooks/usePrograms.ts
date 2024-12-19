@@ -20,7 +20,6 @@ export const usePrograms = () => {
         (payload) => {
           console.log('Programs table changed:', payload);
           queryClient.invalidateQueries({ queryKey: ['programs'] });
-          queryClient.refetchQueries({ queryKey: ['programs'] });
         }
       )
       .on(
@@ -33,7 +32,6 @@ export const usePrograms = () => {
         (payload) => {
           console.log('Program translations changed:', payload);
           queryClient.invalidateQueries({ queryKey: ['programs'] });
-          queryClient.refetchQueries({ queryKey: ['programs'] });
         }
       )
       .subscribe((status) => {
