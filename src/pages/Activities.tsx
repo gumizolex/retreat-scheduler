@@ -14,11 +14,11 @@ const Activities = () => {
         <div className="container mx-auto px-4 py-8">
           <div className="flex justify-end gap-4 mb-8">
             <LanguageSelector
-              language={language}
+              currentLanguage={language}
               onLanguageChange={setLanguage}
             />
             <CurrencySelector
-              currency={currency}
+              selectedCurrency={currency}
               onCurrencyChange={setCurrency}
             />
           </div>
