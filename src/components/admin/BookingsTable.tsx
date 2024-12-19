@@ -31,59 +31,13 @@ export function BookingsTable({ bookings, showProgramName = false }: BookingsTab
 
       if (error) throw error;
 
-      // Send email notification if booking is confirmed
-      if (newStatus === 'confirmed' && booking.guest_email) {
-        const { error: emailError } = await supabase.functions.invoke('send-booking-notification', {
-          body: {
-            to: [booking.guest_email],
-            subject: 'Foglalás visszaigazolva - Abod Retreat',
-            html: `
-              <h1>Kedves ${booking.guest_name}!</h1>
-              <p>Örömmel értesítjük, hogy foglalását visszaigazoltuk.</p>
-              <p>Foglalás részletei:</p>
-              <ul>
-                <li>Időpont: ${format(new Date(booking.booking_date), 'yyyy. MM. dd. HH:mm')}</li>
-                <li>Létszám: ${booking.number_of_people} fő</li>
-                ${showProgramName && booking.program_title ? `<li>Program: ${booking.program_title}</li>` : ''}
-              </ul>
-              <p>Várjuk szeretettel!</p>
-              <p>Üdvözlettel,<br>Abod Retreat csapata</p>
-            `,
-          },
-        });
-
-        if (emailError) {
-          console.error('Error sending email:', emailError);
-          toast.error('Hiba történt az email küldése közben');
-        }
-      } else if (newStatus === 'cancelled' && booking.guest_email) {
-        // Send cancellation email
-        const { error: emailError } = await supabase.functions.invoke('send-booking-notification', {
-          body: {
-            to: [booking.guest_email],
-            subject: 'Foglalás elutasítva - Abod Retreat',
-            html: `
-              <h1>Kedves ${booking.guest_name}!</h1>
-              <p>Sajnálattal értesítjük, hogy foglalását nem tudjuk visszaigazolni.</p>
-              <p>Foglalás részletei:</p>
-              <ul>
-                <li>Időpont: ${format(new Date(booking.booking_date), 'yyyy. MM. dd. HH:mm')}</li>
-                <li>Létszám: ${booking.number_of_people} fő</li>
-                ${showProgramName && booking.program_title ? `<li>Program: ${booking.program_title}</li>` : ''}
-              </ul>
-              <p>Elnézést kérünk az esetleges kellemetlenségért.</p>
-              <p>Üdvözlettel,<br>Abod Retreat csapata</p>
-            `,
-          },
-        });
-
-        if (emailError) {
-          console.error('Error sending email:', emailError);
-          toast.error('Hiba történt az email küldése közben');
-        }
+      // Show toast notification instead of sending email
+      if (newStatus === 'confirmed') {
+        toast.success(`Foglalás elfogadva: ${booking.guest_name}`);
+      } else if (newStatus === 'cancelled') {
+        toast.success(`Foglalás elutasítva: ${booking.guest_name}`);
       }
 
-      toast.success(`Foglalás ${newStatus === 'confirmed' ? 'elfogadva' : 'elutasítva'}`);
     } catch (error) {
       console.error('Error updating booking:', error);
       toast.error('Hiba történt a művelet során');
