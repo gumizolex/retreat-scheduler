@@ -34,26 +34,24 @@ export function BookingActions({ booking, onStatusUpdate }: BookingActionsProps)
 
       console.log(`Handling payment action: ${action} for intent: ${booking.payment_intent_id}`);
       
-      const { data: session, error: sessionError } = await supabase.functions.invoke('handle-booking-payment', {
+      // Call the handle-booking-payment function to process the payment action
+      const { data: paymentResult, error: paymentError } = await supabase.functions.invoke('handle-booking-payment', {
         body: {
           paymentIntentId: booking.payment_intent_id,
-          action: action
+          action: action,
+          refund: action === 'cancel' // Add refund parameter for cancellations
         },
       });
 
-      if (sessionError) {
-        console.error(`Error ${action}ing payment:`, sessionError);
-        throw sessionError;
+      if (paymentError) {
+        console.error(`Error ${action}ing payment:`, paymentError);
+        throw paymentError;
       }
 
-      console.log(`Payment ${action}d:`, session);
+      console.log(`Payment ${action}d:`, paymentResult);
       
-      // Now update the booking status
-      if (action === 'capture') {
-        await onStatusUpdate(booking.id, 'confirmed', booking);
-      } else {
-        await onStatusUpdate(booking.id, 'cancelled', booking);
-      }
+      // Update the booking status
+      await onStatusUpdate(booking.id, action === 'capture' ? 'confirmed' : 'cancelled', booking);
       
     } catch (error) {
       console.error(`Error ${action}ing payment:`, error);
@@ -65,8 +63,8 @@ export function BookingActions({ booking, onStatusUpdate }: BookingActionsProps)
     try {
       console.log('Deleting booking:', booking.id);
       
-      // First, cancel the payment if it exists and is not already captured
-      if (booking.payment_intent_id && booking.status !== 'confirmed') {
+      // First, cancel and refund the payment if it exists and is not already cancelled
+      if (booking.payment_intent_id && booking.status !== 'cancelled') {
         await handlePaymentAction('cancel');
       }
       

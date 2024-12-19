@@ -1,66 +1,59 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts"
-import Stripe from 'https://esm.sh/stripe@14.21.0'
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import Stripe from "https://esm.sh/stripe@14.21.0";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
 
 serve(async (req) => {
   // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { paymentIntentId, action } = await req.json()
-    
-    console.log('Handling payment:', { paymentIntentId, action })
+    const { paymentIntentId, action, refund } = await req.json();
+    console.log(`Processing payment action: ${action} for intent: ${paymentIntentId}, refund: ${refund}`);
 
-    const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY')
-    if (!stripeSecretKey) {
-      throw new Error('Stripe secret key is not configured')
+    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
+      apiVersion: "2023-10-16",
+    });
+
+    let result;
+
+    if (action === "capture") {
+      console.log("Capturing payment intent:", paymentIntentId);
+      result = await stripe.paymentIntents.capture(paymentIntentId);
+    } else if (action === "cancel") {
+      console.log("Canceling payment intent:", paymentIntentId);
+      
+      // First cancel the payment intent
+      const paymentIntent = await stripe.paymentIntents.cancel(paymentIntentId);
+      
+      // If refund is requested and the payment was already captured, create a refund
+      if (refund && paymentIntent.status === "succeeded") {
+        console.log("Creating refund for payment intent:", paymentIntentId);
+        result = await stripe.refunds.create({
+          payment_intent: paymentIntentId,
+        });
+      } else {
+        result = paymentIntent;
+      }
     }
 
-    const stripe = new Stripe(stripeSecretKey, {
-      apiVersion: '2023-10-16',
-    })
-
-    if (action === 'capture') {
-      // Capture the authorized payment
-      const paymentIntent = await stripe.paymentIntents.capture(paymentIntentId)
-      console.log('Payment captured:', paymentIntent.id)
-      
-      return new Response(
-        JSON.stringify({ success: true, paymentIntent }),
-        { 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 200,
-        }
-      )
-    } else if (action === 'cancel') {
-      // Cancel the authorized payment
-      const paymentIntent = await stripe.paymentIntents.cancel(paymentIntentId)
-      console.log('Payment cancelled:', paymentIntent.id)
-      
-      return new Response(
-        JSON.stringify({ success: true, paymentIntent }),
-        { 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 200,
-        }
-      )
-    } else {
-      throw new Error('Invalid action')
-    }
+    return new Response(JSON.stringify(result), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   } catch (error) {
-    console.error('Error handling payment:', error)
+    console.error("Error processing payment action:", error);
     return new Response(
       JSON.stringify({ error: error.message }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500,
+      {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
-    )
+    );
   }
-})
+});
