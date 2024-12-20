@@ -7,6 +7,7 @@ import Login from "./pages/Login";
 import BookingSuccess from "./pages/BookingSuccess";
 import { Toaster } from "@/components/ui/toaster";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { toast } from "@/components/ui/use-toast";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -18,9 +19,17 @@ function App() {
   useEffect(() => {
     const checkAdmin = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        console.log('Current session:', session);
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
+        if (sessionError) {
+          console.error('Session error:', sessionError);
+          // Clear any invalid tokens
+          await supabase.auth.signOut();
+          setIsAdmin(false);
+          setIsLoading(false);
+          return;
+        }
+
         if (!session) {
           console.log('No session found');
           setIsAdmin(false);
@@ -28,24 +37,25 @@ function App() {
           return;
         }
 
-        const { data: profile, error } = await supabase
+        const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('role')
           .eq('id', session.user.id)
           .single();
 
-        if (error) {
-          console.error('Error fetching profile:', error);
+        if (profileError) {
+          console.error('Error fetching profile:', profileError);
           setIsAdmin(false);
           setIsLoading(false);
           return;
         }
 
-        console.log('Profile data:', profile);
         setIsAdmin(profile?.role === 'admin');
         setIsLoading(false);
       } catch (error) {
         console.error('Error in checkAdmin:', error);
+        // Clear any invalid tokens on error
+        await supabase.auth.signOut();
         setIsAdmin(false);
         setIsLoading(false);
       }
@@ -53,11 +63,38 @@ function App() {
 
     checkAdmin();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-      checkAdmin();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session);
+      
+      if (event === 'TOKEN_REFRESHED') {
+        console.log('Token refreshed successfully');
+      }
+      
+      if (event === 'SIGNED_OUT') {
+        setIsAdmin(false);
+        queryClient.clear(); // Clear query cache on sign out
+      }
+
+      if (event === 'SIGNED_IN') {
+        checkAdmin();
+      }
+
+      // Handle token refresh errors
+      if (event === 'TOKEN_REFRESHED' && !session) {
+        console.error('Token refresh failed');
+        toast({
+          title: "Session expired",
+          description: "Please sign in again",
+          variant: "destructive",
+        });
+        await supabase.auth.signOut();
+        setIsAdmin(false);
+      }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   // Add loading state
