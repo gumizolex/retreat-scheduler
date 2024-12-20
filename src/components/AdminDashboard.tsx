@@ -4,8 +4,18 @@ import { ProgramManagement } from "./admin/ProgramManagement";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { BookingsOverview } from "./admin/BookingsOverview";
+import { Button } from "./ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { useState } from "react";
 
 export function AdminDashboard() {
+  const [isProgramDialogOpen, setIsProgramDialogOpen] = useState(false);
   const { data: bookings, isError } = useQuery({
     queryKey: ['bookings'],
     queryFn: async () => {
@@ -165,14 +175,20 @@ export function AdminDashboard() {
           </Card>
         )}
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Program kezelés</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ProgramManagement />
-          </CardContent>
-        </Card>
+        <Dialog open={isProgramDialogOpen} onOpenChange={setIsProgramDialogOpen}>
+          <DialogTrigger asChild>
+            <Button variant="outline" className="w-full gap-2">
+              <Settings className="h-4 w-4" />
+              Program kezelés
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Program kezelés</DialogTitle>
+            </DialogHeader>
+            <ProgramManagement onSuccess={() => setIsProgramDialogOpen(false)} />
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
