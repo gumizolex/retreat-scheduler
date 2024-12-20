@@ -1,13 +1,13 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { ProgramForm } from "./ProgramForm";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Program } from "@/types/program";
-import { useToast } from "@/hooks/use-toast";
-import { Trash2, Image } from "lucide-react";
-import { ProgramImageManager } from "./program-form/ProgramImageManager";
+import { Button } from "@/components/ui/button";
+import { ProgramForm } from "./ProgramForm";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Pencil, Trash2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,10 +19,14 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-export function ProgramManagement() {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+interface ProgramManagementProps {
+  onSuccess?: () => void;
+}
+
+export function ProgramManagement({ onSuccess }: ProgramManagementProps) {
+  const [isNewProgramDialogOpen, setIsNewProgramDialogOpen] = useState(false);
+  const [programToEdit, setProgramToEdit] = useState<Program | null>(null);
   const [programToDelete, setProgramToDelete] = useState<Program | null>(null);
-  const [programToEditImage, setProgramToEditImage] = useState<Program | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -46,10 +50,6 @@ export function ProgramManagement() {
     },
   });
 
-  const handleSuccess = () => {
-    setIsDialogOpen(false);
-  };
-
   const handleDeleteProgram = async () => {
     if (!programToDelete) return;
 
@@ -67,6 +67,8 @@ export function ProgramManagement() {
       });
 
       queryClient.invalidateQueries({ queryKey: ['programs'] });
+      setProgramToDelete(null);
+      if (onSuccess) onSuccess();
     } catch (error: any) {
       console.error('Error deleting program:', error);
       toast({
@@ -74,8 +76,6 @@ export function ProgramManagement() {
         title: "Hiba!",
         description: "A program törlése sikertelen.",
       });
-    } finally {
-      setProgramToDelete(null);
     }
   };
 
@@ -84,64 +84,86 @@ export function ProgramManagement() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Programok kezelése</h2>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+    <div className="space-y-4">
+      <div className="flex justify-end">
+        <Dialog open={isNewProgramDialogOpen} onOpenChange={setIsNewProgramDialogOpen}>
           <DialogTrigger asChild>
-            <Button>
-              Új program
-            </Button>
+            <Button>Új program</Button>
           </DialogTrigger>
           <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>
-                Új program létrehozása
-              </DialogTitle>
+              <DialogTitle>Új program létrehozása</DialogTitle>
             </DialogHeader>
-            <ProgramForm
-              onSuccess={handleSuccess}
-            />
+            <ProgramForm onSuccess={() => {
+              setIsNewProgramDialogOpen(false);
+              if (onSuccess) onSuccess();
+            }} />
           </DialogContent>
         </Dialog>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {programs?.map((program) => {
           const huTitle = program.program_translations.find(t => t.language === "hu")?.title || 
                          program.program_translations[0]?.title || 
                          "Program nem található";
           
           return (
-            <div 
-              key={program.id}
-              className="bg-card rounded-lg p-4 shadow-sm border space-y-4"
-            >
-              <div className="flex justify-between items-start">
-                <h3 className="font-medium truncate flex-1">{huTitle}</h3>
-                <div className="flex gap-2">
+            <Card key={program.id} className="flex flex-col">
+              <CardHeader className="flex-grow-0">
+                <div className="aspect-video relative rounded-md overflow-hidden bg-muted">
+                  <img
+                    src={program.image}
+                    alt={huTitle}
+                    className="object-cover w-full h-full"
+                  />
+                </div>
+              </CardHeader>
+              <CardContent className="flex-grow flex flex-col justify-between gap-4">
+                <div>
+                  <h3 className="font-medium text-lg mb-2">{huTitle}</h3>
+                  <div className="text-sm text-muted-foreground">
+                    <p>{program.duration}</p>
+                    <p>{program.location}</p>
+                    <p className="font-medium text-primary">{program.price} RON</p>
+                  </div>
+                </div>
+                <div className="flex gap-2 flex-wrap sm:flex-nowrap mt-2">
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button 
+                        variant="outline" 
+                        className="flex-1 gap-2"
+                        onClick={() => setProgramToEdit(program)}
+                      >
+                        <Pencil className="h-4 w-4" />
+                        <span className="hidden sm:inline">Szerkesztés</span>
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle>Program szerkesztése</DialogTitle>
+                      </DialogHeader>
+                      <ProgramForm 
+                        initialData={program}
+                        onSuccess={() => {
+                          setProgramToEdit(null);
+                          if (onSuccess) onSuccess();
+                        }}
+                      />
+                    </DialogContent>
+                  </Dialog>
                   <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-primary hover:text-primary/90"
-                    onClick={() => setProgramToEditImage(program)}
-                  >
-                    <Image className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-destructive hover:text-destructive/90"
+                    variant="destructive"
+                    className="flex-1 gap-2"
                     onClick={() => setProgramToDelete(program)}
                   >
                     <Trash2 className="h-4 w-4" />
+                    <span className="hidden sm:inline">Törlés</span>
                   </Button>
                 </div>
-              </div>
-              <div className="text-sm text-muted-foreground">
-                {program.duration}
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           );
         })}
       </div>
@@ -165,17 +187,6 @@ export function ProgramManagement() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
-      <Dialog open={!!programToEditImage} onOpenChange={(open) => !open && setProgramToEditImage(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Kép módosítása</DialogTitle>
-          </DialogHeader>
-          {programToEditImage && (
-            <ProgramImageManager program={programToEditImage} />
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
