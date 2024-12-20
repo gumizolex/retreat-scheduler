@@ -33,13 +33,6 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
           return Promise.resolve()
         }
       },
-    },
-    cookieOptions: {
-      domain: window.location.hostname.includes('lovable.app') 
-        ? 'lovable.app' 
-        : 'netlify.app',
-      sameSite: 'lax',
-      secure: true
     }
   }
 })
