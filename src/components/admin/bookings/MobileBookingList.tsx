@@ -4,6 +4,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { Booking } from "../BookingsTable";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
+import { BookingActions } from "./BookingActions";
 
 interface MobileBookingListProps {
   bookings: Booking[];
@@ -108,6 +109,11 @@ export function MobileBookingList({ bookings, onViewDetails }: MobileBookingList
                           ? 'Elutasítva'
                           : 'Függőben'}
                       </Badge>
+                    </div>
+
+                    <div className="pt-2 border-t">
+                      <p className="text-sm font-medium mb-2">Műveletek</p>
+                      <BookingActions booking={booking} onStatusUpdate={async () => {}} />
                     </div>
                   </>
                 )}

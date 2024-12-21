@@ -96,6 +96,7 @@ export function BookingsTable({ bookings, showProgramName = false }: BookingsTab
       <MobileBookingList 
         bookings={bookings}
         onViewDetails={setSelectedBooking}
+        onStatusUpdate={handleStatusUpdate}
       />
 
       <Dialog open={!!selectedBooking} onOpenChange={() => setSelectedBooking(null)}>
