@@ -5,6 +5,7 @@ import { Language } from "@/types/program";
 import { UseFormReturn } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface DateTimePickerProps {
   form: UseFormReturn<any>;
@@ -65,15 +66,17 @@ export function DateTimePicker({ form, language, translations }: DateTimePickerP
                 </SelectTrigger>
               </FormControl>
               <SelectContent className="bg-white dark:bg-gray-800 shadow-app-lg border-gray-200">
-                {timeSlots.map((time) => (
-                  <SelectItem 
-                    key={time} 
-                    value={time}
-                    className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-                  >
-                    {time}
-                  </SelectItem>
-                ))}
+                <ScrollArea className="h-[200px] w-full">
+                  {timeSlots.map((time) => (
+                    <SelectItem 
+                      key={time} 
+                      value={time}
+                      className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer py-2"
+                    >
+                      {time}
+                    </SelectItem>
+                  ))}
+                </ScrollArea>
               </SelectContent>
             </Select>
             <FormMessage className="text-destructive text-sm" />
