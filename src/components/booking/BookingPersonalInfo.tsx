@@ -49,7 +49,7 @@ export function BookingPersonalInfo({ form, language, translations }: BookingPer
           <FormItem>
             <FormLabel>{t.phone}</FormLabel>
             <FormControl>
-              <Input placeholder="+36 XX XXX XXXX" {...field} />
+              <Input placeholder="+ XX XXX XXXX" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
