@@ -9,9 +9,10 @@ import { BookingActions } from "./BookingActions";
 interface MobileBookingListProps {
   bookings: Booking[];
   onViewDetails: (booking: Booking) => void;
+  onStatusUpdate: (bookingId: number, newStatus: 'confirmed' | 'cancelled', booking: Booking) => Promise<void>;
 }
 
-export function MobileBookingList({ bookings, onViewDetails }: MobileBookingListProps) {
+export function MobileBookingList({ bookings, onViewDetails, onStatusUpdate }: MobileBookingListProps) {
   const [expandedBooking, setExpandedBooking] = useState<number | null>(null);
 
   const toggleBookingDetails = (bookingId: number) => {
@@ -113,7 +114,7 @@ export function MobileBookingList({ bookings, onViewDetails }: MobileBookingList
 
                     <div className="pt-2 border-t">
                       <p className="text-sm font-medium mb-2">Műveletek</p>
-                      <BookingActions booking={booking} onStatusUpdate={async () => {}} />
+                      <BookingActions booking={booking} onStatusUpdate={onStatusUpdate} />
                     </div>
                   </>
                 )}
