@@ -4,38 +4,36 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    --background: 60 33% 99%;
-    --foreground: 222 47% 11%;
+:root {
+  --background: 60 33% 99%;
+  --foreground: 222 47% 11%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
 
-    --primary: 142 20% 63%;
-    --primary-foreground: 355.7 100% 97.3%;
+  --primary: 142 20% 63%;
+  --primary-foreground: 355.7 100% 97.3%;
 
-    --secondary: 60 33% 96%;
-    --secondary-foreground: 24 9.8% 10%;
+  --secondary: 60 33% 96%;
+  --secondary-foreground: 24 9.8% 10%;
 
-    --muted: 60 4.8% 95.9%;
-    --muted-foreground: 25 5.3% 44.7%;
+  --muted: 60 4.8% 95.9%;
+  --muted-foreground: 25 5.3% 44.7%;
 
-    --accent: 222 47% 11%;
-    --accent-foreground: 60 9.1% 97.8%;
+  --accent: 222 47% 11%;
+  --accent-foreground: 60 9.1% 97.8%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 60 9.1% 97.8%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 60 9.1% 97.8%;
 
-    --border: 20 5.9% 90%;
-    --input: 20 5.9% 90%;
-    --ring: 222 47% 11%;
+  --border: 20 5.9% 90%;
+  --input: 20 5.9% 90%;
+  --ring: 222 47% 11%;
 
-    --radius: 1rem;
-  }
+  --radius: 1rem;
 }
 
 @layer base {
@@ -155,4 +153,107 @@ html {
 
 .swipe-hint {
   animation: swipeHint 2s ease-in-out infinite;
+}
+
+/* Enhanced Mobile Styles */
+@media (max-width: 768px) {
+  .program-card {
+    @apply shadow-lg border-0;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.95), rgba(255,255,255,0.98));
+    backdrop-filter: blur(8px);
+  }
+
+  .program-card img {
+    @apply rounded-t-2xl shadow-inner;
+  }
+
+  .program-card:active {
+    transform: scale(0.98);
+    transition: transform 0.2s ease;
+  }
+
+  /* Enhanced form inputs for mobile */
+  input, select, textarea {
+    @apply text-lg py-3;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Better touch targets */
+  button, 
+  [role="button"] {
+    @apply min-h-[44px] text-base;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Improved spacing for mobile content */
+  .card-content {
+    @apply p-5 space-y-4;
+  }
+
+  /* Enhanced mobile typography */
+  h1 {
+    @apply text-3xl mb-6 leading-tight;
+  }
+
+  h2 {
+    @apply text-2xl mb-4 leading-tight;
+  }
+
+  p {
+    @apply text-base leading-relaxed;
+  }
+
+  /* Better mobile scrolling */
+  .scroll-container {
+    @apply overflow-auto overscroll-contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Enhanced mobile dialog */
+  [role="dialog"] {
+    @apply p-4 rounded-t-3xl;
+    touch-action: pan-x pan-y;
+  }
+
+  /* Mobile-optimized select dropdowns */
+  select {
+    @apply appearance-none bg-right pr-10;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+  }
+}
+
+/* Enhanced mobile animations */
+@media (max-width: 768px) {
+  .program-card {
+    @apply transition-all duration-200;
+  }
+
+  .program-card:active img {
+    @apply scale-[1.02] transition-transform duration-200;
+  }
+
+  /* Mobile-optimized form elements */
+  .form-input:focus,
+  .form-select:focus,
+  .form-textarea:focus {
+    @apply ring-2 ring-primary/30 ring-offset-2 ring-offset-white;
+    outline: none;
+  }
+
+  /* Enhanced mobile buttons */
+  .button-mobile {
+    @apply relative overflow-hidden;
+  }
+
+  .button-mobile::after {
+    content: '';
+    @apply absolute inset-0 bg-white/20 opacity-0 transition-opacity duration-200;
+  }
+
+  .button-mobile:active::after {
+    @apply opacity-100;
+  }
 }
