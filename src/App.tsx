@@ -95,8 +95,8 @@ function App() {
       }
 
       // Handle session errors
-      if (event === 'TOKEN_REFRESH_FAILED') {
-        console.error('Token refresh failed');
+      if (!session) {
+        console.log('No session available');
         toast({
           title: "Session expired",
           description: "Please sign in again",
