@@ -19,18 +19,17 @@ function App() {
   useEffect(() => {
     const checkAdmin = async () => {
       try {
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError) {
-          console.error('Session error:', sessionError);
-          // Clear any invalid tokens
+        // Clear any potentially corrupted session data
+        const currentSession = await supabase.auth.getSession();
+        if (currentSession.error) {
+          console.error('Session error:', currentSession.error);
           await supabase.auth.signOut();
           setIsAdmin(false);
           setIsLoading(false);
           return;
         }
 
-        if (!session) {
+        if (!currentSession.data.session) {
           console.log('No session found');
           setIsAdmin(false);
           setIsLoading(false);
@@ -40,7 +39,7 @@ function App() {
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('role')
-          .eq('id', session.user.id)
+          .eq('id', currentSession.data.session.user.id)
           .single();
 
         if (profileError) {
@@ -54,33 +53,49 @@ function App() {
         setIsLoading(false);
       } catch (error) {
         console.error('Error in checkAdmin:', error);
-        // Clear any invalid tokens on error
         await supabase.auth.signOut();
         setIsAdmin(false);
         setIsLoading(false);
       }
     };
 
+    // Initial check
     checkAdmin();
 
+    // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event, session);
-      
-      if (event === 'TOKEN_REFRESHED') {
-        console.log('Token refreshed successfully');
-      }
+      console.log('Auth state changed:', event);
       
       if (event === 'SIGNED_OUT') {
+        console.log('User signed out');
         setIsAdmin(false);
-        queryClient.clear(); // Clear query cache on sign out
+        queryClient.clear();
+        // Clear any stored session data
+        localStorage.removeItem('supabase.auth.token');
+        return;
       }
 
-      if (event === 'SIGNED_IN') {
-        checkAdmin();
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        console.log('User signed in or token refreshed');
+        if (session) {
+          try {
+            const { data: profile, error: profileError } = await supabase
+              .from('profiles')
+              .select('role')
+              .eq('id', session.user.id)
+              .single();
+
+            if (profileError) throw profileError;
+            setIsAdmin(profile?.role === 'admin');
+          } catch (error) {
+            console.error('Error checking admin status:', error);
+            setIsAdmin(false);
+          }
+        }
       }
 
-      // Handle token refresh errors
-      if (event === 'TOKEN_REFRESHED' && !session) {
+      // Handle session errors
+      if (event === 'TOKEN_REFRESH_FAILED') {
         console.error('Token refresh failed');
         toast({
           title: "Session expired",
@@ -97,7 +112,6 @@ function App() {
     };
   }, []);
 
-  // Add loading state
   if (isLoading) {
     return <div className="min-h-screen flex items-center justify-center">
       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
