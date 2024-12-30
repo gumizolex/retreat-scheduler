@@ -17,20 +17,27 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
+
     const checkAdmin = async () => {
       try {
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
           console.error('Session error:', sessionError);
-          await handleSignOut();
+          if (mounted) {
+            setIsAdmin(false);
+            setIsLoading(false);
+          }
           return;
         }
 
         if (!session) {
           console.log('No session found');
-          setIsAdmin(false);
-          setIsLoading(false);
+          if (mounted) {
+            setIsAdmin(false);
+            setIsLoading(false);
+          }
           return;
         }
 
@@ -42,27 +49,35 @@ function App() {
 
         if (profileError) {
           console.error('Error fetching profile:', profileError);
-          setIsAdmin(false);
-          setIsLoading(false);
+          if (mounted) {
+            setIsAdmin(false);
+            setIsLoading(false);
+          }
           return;
         }
 
-        setIsAdmin(profile?.role === 'admin');
-        setIsLoading(false);
+        if (mounted) {
+          setIsAdmin(profile?.role === 'admin');
+          setIsLoading(false);
+        }
       } catch (error) {
         console.error('Error in checkAdmin:', error);
-        setIsLoading(false);
-        await handleSignOut();
+        if (mounted) {
+          setIsAdmin(false);
+          setIsLoading(false);
+        }
       }
     };
 
     const handleSignOut = async () => {
       try {
         await supabase.auth.signOut();
-        setIsAdmin(false);
-        setIsLoading(false);
+        if (mounted) {
+          setIsAdmin(false);
+          setIsLoading(false);
+        }
         queryClient.clear();
-        localStorage.removeItem('supabase.auth.token');
+        localStorage.clear(); // Clear all localStorage in Safari
         
         toast({
           variant: "destructive",
@@ -72,7 +87,9 @@ function App() {
         });
       } catch (error) {
         console.error('Error signing out:', error);
-        setIsLoading(false);
+        if (mounted) {
+          setIsLoading(false);
+        }
       }
     };
 
@@ -85,7 +102,10 @@ function App() {
       
       if (event === 'SIGNED_OUT') {
         console.log('User signed out');
-        await handleSignOut();
+        if (mounted) {
+          setIsAdmin(false);
+          setIsLoading(false);
+        }
         return;
       }
 
@@ -100,18 +120,25 @@ function App() {
               .single();
 
             if (profileError) throw profileError;
-            setIsAdmin(profile?.role === 'admin');
-            setIsLoading(false);
+            
+            if (mounted) {
+              setIsAdmin(profile?.role === 'admin');
+              setIsLoading(false);
+            }
           } catch (error) {
             console.error('Error checking admin status:', error);
-            setIsAdmin(false);
-            setIsLoading(false);
+            if (mounted) {
+              setIsAdmin(false);
+              setIsLoading(false);
+            }
           }
         }
       }
     });
 
+    // Cleanup function
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
   }, []);
