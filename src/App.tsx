@@ -119,9 +119,17 @@ function App() {
   }, []);
 
   if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-    </div>;
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-white via-gray-50 to-secondary/20">
+        <div className="text-4xl md:text-5xl font-display mb-8 text-primary">
+          Abod Retreat
+        </div>
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <p className="text-muted-foreground animate-pulse">Loading...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -135,7 +143,9 @@ function App() {
             path="/admin/*"
             element={
               isAdmin === null ? (
-                <div>Loading...</div>
+                <div className="min-h-screen flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
               ) : isAdmin ? (
                 <Admin />
               ) : (
