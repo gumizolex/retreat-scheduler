@@ -19,17 +19,15 @@ function App() {
   useEffect(() => {
     const checkAdmin = async () => {
       try {
-        // Clear any potentially corrupted session data
-        const currentSession = await supabase.auth.getSession();
-        if (currentSession.error) {
-          console.error('Session error:', currentSession.error);
-          await supabase.auth.signOut();
-          setIsAdmin(false);
-          setIsLoading(false);
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error('Session error:', sessionError);
+          await handleSignOut();
           return;
         }
 
-        if (!currentSession.data.session) {
+        if (!session) {
           console.log('No session found');
           setIsAdmin(false);
           setIsLoading(false);
@@ -39,7 +37,7 @@ function App() {
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('role')
-          .eq('id', currentSession.data.session.user.id)
+          .eq('id', session.user.id)
           .single();
 
         if (profileError) {
@@ -53,9 +51,26 @@ function App() {
         setIsLoading(false);
       } catch (error) {
         console.error('Error in checkAdmin:', error);
+        await handleSignOut();
+      }
+    };
+
+    const handleSignOut = async () => {
+      try {
         await supabase.auth.signOut();
         setIsAdmin(false);
         setIsLoading(false);
+        queryClient.clear();
+        localStorage.removeItem('supabase.auth.token');
+        
+        toast({
+          variant: "destructive",
+          title: "Session expired",
+          description: "Please sign in again",
+          duration: 5000,
+        });
+      } catch (error) {
+        console.error('Error signing out:', error);
       }
     };
 
@@ -68,10 +83,7 @@ function App() {
       
       if (event === 'SIGNED_OUT') {
         console.log('User signed out');
-        setIsAdmin(false);
-        queryClient.clear();
-        // Clear any stored session data
-        localStorage.removeItem('supabase.auth.token');
+        await handleSignOut();
         return;
       }
 
@@ -97,13 +109,7 @@ function App() {
       // Handle session errors
       if (!session) {
         console.log('No session available');
-        toast({
-          title: "Session expired",
-          description: "Please sign in again",
-          variant: "destructive",
-        });
-        await supabase.auth.signOut();
-        setIsAdmin(false);
+        await handleSignOut();
       }
     });
 
