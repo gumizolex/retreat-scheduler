@@ -51,6 +51,7 @@ function App() {
         setIsLoading(false);
       } catch (error) {
         console.error('Error in checkAdmin:', error);
+        setIsLoading(false);
         await handleSignOut();
       }
     };
@@ -71,6 +72,7 @@ function App() {
         });
       } catch (error) {
         console.error('Error signing out:', error);
+        setIsLoading(false);
       }
     };
 
@@ -99,17 +101,13 @@ function App() {
 
             if (profileError) throw profileError;
             setIsAdmin(profile?.role === 'admin');
+            setIsLoading(false);
           } catch (error) {
             console.error('Error checking admin status:', error);
             setIsAdmin(false);
+            setIsLoading(false);
           }
         }
-      }
-
-      // Handle session errors
-      if (!session) {
-        console.log('No session available');
-        await handleSignOut();
       }
     });
 
