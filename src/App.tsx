@@ -9,7 +9,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { toast } from "@/components/ui/use-toast";
 
-// Create a client
 const queryClient = new QueryClient();
 
 function App() {
@@ -19,124 +18,56 @@ function App() {
   useEffect(() => {
     let mounted = true;
 
-    const checkAdmin = async () => {
+    const checkAdminStatus = async (userId: string) => {
       try {
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError) {
-          console.error('Session error:', sessionError);
-          if (mounted) {
-            setIsAdmin(false);
-            setIsLoading(false);
-          }
-          return;
-        }
-
-        if (!session) {
-          console.log('No session found');
-          if (mounted) {
-            setIsAdmin(false);
-            setIsLoading(false);
-          }
-          return;
-        }
-
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('role')
-          .eq('id', session.user.id)
+          .eq('id', userId)
           .single();
 
-        if (profileError) {
-          console.error('Error fetching profile:', profileError);
-          if (mounted) {
-            setIsAdmin(false);
-            setIsLoading(false);
-          }
-          return;
-        }
-
-        if (mounted) {
-          setIsAdmin(profile?.role === 'admin');
-          setIsLoading(false);
-        }
+        if (profileError) throw profileError;
+        return profile?.role === 'admin';
       } catch (error) {
-        console.error('Error in checkAdmin:', error);
-        if (mounted) {
-          setIsAdmin(false);
-          setIsLoading(false);
-        }
+        console.error('Error checking admin status:', error);
+        return false;
       }
     };
 
-    const handleSignOut = async () => {
-      try {
-        await supabase.auth.signOut();
-        if (mounted) {
-          setIsAdmin(false);
-          setIsLoading(false);
-        }
+    const handleAuthChange = async (event: string, session: any) => {
+      if (!mounted) return;
+
+      if (event === 'SIGNED_OUT' || !session) {
+        setIsAdmin(false);
+        setIsLoading(false);
         queryClient.clear();
         localStorage.clear(); // Clear all localStorage in Safari
-        
-        toast({
-          variant: "destructive",
-          title: "Session expired",
-          description: "Please sign in again",
-          duration: 5000,
-        });
-      } catch (error) {
-        console.error('Error signing out:', error);
-        if (mounted) {
-          setIsLoading(false);
-        }
+        return;
+      }
+
+      const isAdminUser = await checkAdminStatus(session.user.id);
+      if (mounted) {
+        setIsAdmin(isAdminUser);
+        setIsLoading(false);
       }
     };
 
-    // Initial check
-    checkAdmin();
-
-    // Set up auth state change listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event);
-      
-      if (event === 'SIGNED_OUT') {
-        console.log('User signed out');
+    // Initial session check
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        console.error('Session error:', error);
         if (mounted) {
           setIsAdmin(false);
           setIsLoading(false);
         }
         return;
       }
-
-      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        console.log('User signed in or token refreshed');
-        if (session) {
-          try {
-            const { data: profile, error: profileError } = await supabase
-              .from('profiles')
-              .select('role')
-              .eq('id', session.user.id)
-              .single();
-
-            if (profileError) throw profileError;
-            
-            if (mounted) {
-              setIsAdmin(profile?.role === 'admin');
-              setIsLoading(false);
-            }
-          } catch (error) {
-            console.error('Error checking admin status:', error);
-            if (mounted) {
-              setIsAdmin(false);
-              setIsLoading(false);
-            }
-          }
-        }
-      }
+      handleAuthChange('INITIAL', session);
     });
 
-    // Cleanup function
+    // Subscribe to auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(handleAuthChange);
+
     return () => {
       mounted = false;
       subscription.unsubscribe();
