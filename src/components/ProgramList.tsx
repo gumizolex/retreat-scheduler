@@ -3,73 +3,16 @@ import { BookingForm } from "./BookingForm";
 import { Language, Currency, Program } from "@/types/program";
 import { ProgramHeader } from "./programs/ProgramHeader";
 import { ProgramGrid } from "./programs/ProgramGrid";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { usePrograms } from "@/hooks/usePrograms";
+import { Loader } from "lucide-react";
 
 export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: Language) => void }) {
   const [language, setLanguage] = useState<Language>("hu");
   const [selectedProgram, setSelectedProgram] = useState<number | null>(null);
   const [selectedPrice, setSelectedPrice] = useState<number>(0);
   const [currency, setCurrency] = useState<Currency>("RON");
-  const queryClient = useQueryClient();
-
-  const { data: programsData, isLoading } = useQuery({
-    queryKey: ['programs'],
-    queryFn: async () => {
-      const { data: programs, error } = await supabase
-        .from('programs')
-        .select(`
-          *,
-          program_translations (
-            language,
-            title,
-            description
-          )
-        `)
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error fetching programs:', error);
-        throw error;
-      }
-
-      return programs as Program[];
-    },
-    staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
-    gcTime: 1000 * 60 * 30, // Keep unused data in cache for 30 minutes
-  });
-
-  useEffect(() => {
-    const channel = supabase
-      .channel('program-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'programs'
-        },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['programs'] });
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'program_translations'
-        },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['programs'] });
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [queryClient]);
+  
+  const { data: programsData, isLoading, error } = usePrograms();
 
   const handleLanguageChange = (newLanguage: Language) => {
     setLanguage(newLanguage);
@@ -82,6 +25,8 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
     timesAvailable: string;
     duration: string;
     location: string;
+    loading: string;
+    error: string;
     programs: { id: number; title: string; description: string; }[];
   }> = {
     hu: {
@@ -90,6 +35,8 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
       timesAvailable: "Elérhető időpontok",
       duration: "Időtartam",
       location: "Helyszín",
+      loading: "Betöltés...",
+      error: "Hiba történt a programok betöltése közben",
       programs: programsData?.map(program => ({
         id: program.id,
         title: program.program_translations.find(t => t.language === "hu")?.title || '',
@@ -102,6 +49,8 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
       timesAvailable: "Available Times",
       duration: "Duration",
       location: "Location",
+      loading: "Loading...",
+      error: "Error loading programs",
       programs: programsData?.map(program => ({
         id: program.id,
         title: program.program_translations.find(t => t.language === "en")?.title || '',
@@ -114,6 +63,8 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
       timesAvailable: "Ore disponibile",
       duration: "Durată",
       location: "Locație",
+      loading: "Se încarcă...",
+      error: "Eroare la încărcarea programelor",
       programs: programsData?.map(program => ({
         id: program.id,
         title: program.program_translations.find(t => t.language === "ro")?.title || '',
@@ -123,7 +74,24 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
   };
 
   if (isLoading) {
-    return <div className="flex justify-center items-center min-h-[400px]">Loading...</div>;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-secondary/20 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <Loader className="w-8 h-8 animate-spin text-primary mx-auto" />
+          <p className="text-lg text-gray-600">{translations[language].loading}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-secondary/20 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <p className="text-lg text-red-600">{translations[language].error}</p>
+        </div>
+      </div>
+    );
   }
 
   return (
