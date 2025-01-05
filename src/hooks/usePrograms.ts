@@ -65,8 +65,13 @@ export const usePrograms = () => {
         throw error;
       }
       
+      if (!data) {
+        console.log('No programs found');
+        return [];
+      }
+      
       console.log('Fetched programs:', data);
-      return data || [];
+      return data;
     },
   });
 };
