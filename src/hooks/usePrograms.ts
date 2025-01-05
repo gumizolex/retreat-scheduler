@@ -47,31 +47,39 @@ export const usePrograms = () => {
   return useQuery({
     queryKey: ['programs'],
     queryFn: async () => {
-      console.log('Fetching programs...');
-      const { data, error } = await supabase
-        .from('programs')
-        .select(`
-          *,
-          program_translations (
-            language,
-            title,
-            description
-          )
-        `)
-        .order('created_at', { ascending: false });
+      console.log('Starting to fetch programs...');
       
-      if (error) {
-        console.error('Error fetching programs:', error);
+      try {
+        const { data, error } = await supabase
+          .from('programs')
+          .select(`
+            *,
+            program_translations (
+              language,
+              title,
+              description
+            )
+          `)
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.error('Error fetching programs:', error);
+          throw error;
+        }
+
+        if (!data || data.length === 0) {
+          console.log('No programs found in database');
+          return [];
+        }
+
+        console.log('Successfully fetched programs:', data);
+        return data;
+      } catch (error) {
+        console.error('Failed to fetch programs:', error);
         throw error;
       }
-      
-      if (!data) {
-        console.log('No programs found');
-        return [];
-      }
-      
-      console.log('Fetched programs:', data);
-      return data;
     },
+    retry: 2,
+    staleTime: 1000 * 60, // 1 minute
   });
 };
