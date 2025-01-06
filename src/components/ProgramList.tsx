@@ -15,6 +15,8 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
   
   const { data: programsData, error, isLoading } = usePrograms();
 
+  console.log('ProgramList render:', { programsData, error, isLoading });
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">

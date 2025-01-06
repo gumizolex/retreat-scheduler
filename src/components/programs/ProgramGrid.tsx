@@ -27,6 +27,8 @@ export function ProgramGrid({
   const isMobile = useIsMobile();
   const [centerIndex, setCenterIndex] = useState(0);
 
+  console.log('ProgramGrid render:', { programs, language, currency });
+
   const handleScroll = (element: HTMLElement) => {
     const cards = Array.from(element.querySelectorAll('.embla__slide'));
     const containerRect = element.getBoundingClientRect();

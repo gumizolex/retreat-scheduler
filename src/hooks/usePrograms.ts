@@ -6,6 +6,7 @@ export const usePrograms = () => {
   return useQuery({
     queryKey: ['programs'],
     queryFn: async () => {
+      console.log('Fetching programs...');
       const { data, error } = await supabase
         .from('programs')
         .select(`
@@ -23,10 +24,7 @@ export const usePrograms = () => {
         throw error;
       }
 
-      if (!data) {
-        return [];
-      }
-
+      console.log('Programs fetched:', data);
       return data as Program[];
     }
   });
