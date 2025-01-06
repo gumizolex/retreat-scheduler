@@ -19,7 +19,6 @@ function App() {
   useEffect(() => {
     const checkAdmin = async () => {
       try {
-        // Clear any potentially corrupted session data
         const currentSession = await supabase.auth.getSession();
         if (currentSession.error) {
           console.error('Session error:', currentSession.error);
@@ -70,8 +69,6 @@ function App() {
         console.log('User signed out');
         setIsAdmin(false);
         queryClient.clear();
-        // Clear any stored session data
-        localStorage.removeItem('supabase.auth.token');
         return;
       }
 

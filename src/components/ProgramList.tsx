@@ -13,9 +13,10 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
   const [currency, setCurrency] = useState<Currency>("RON");
   const queryClient = useQueryClient();
 
-  const { data: programsData, isLoading } = useQuery({
+  const { data: programsData, isLoading, error } = useQuery({
     queryKey: ['programs'],
     queryFn: async () => {
+      console.log('Fetching programs...');
       const { data: programs, error } = await supabase
         .from('programs')
         .select(`
@@ -33,10 +34,9 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
         throw error;
       }
 
+      console.log('Fetched programs:', programs);
       return programs as Program[];
     },
-    staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
-    gcTime: 1000 * 60 * 30, // Keep unused data in cache for 30 minutes
   });
 
   useEffect(() => {
@@ -122,8 +122,20 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
     }
   };
 
+  if (error) {
+    console.error('Error loading programs:', error);
+    return <div className="flex justify-center items-center min-h-[400px]">Error loading programs</div>;
+  }
+
   if (isLoading) {
-    return <div className="flex justify-center items-center min-h-[400px]">Loading...</div>;
+    return <div className="flex justify-center items-center min-h-[400px]">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+    </div>;
+  }
+
+  if (!programsData || programsData.length === 0) {
+    console.log('No programs found');
+    return <div className="flex justify-center items-center min-h-[400px]">No programs available</div>;
   }
 
   return (
@@ -139,7 +151,7 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
 
         <div className="mt-6 md:mt-12">
           <ProgramGrid
-            programs={programsData || []}
+            programs={programsData}
             translations={translations}
             language={language}
             currency={currency}
