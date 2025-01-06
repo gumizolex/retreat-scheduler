@@ -42,8 +42,8 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
     );
   }
 
-  if (!programsData) {
-    console.info('Programs data is undefined');
+  if (!programsData || programsData.length === 0) {
+    console.info('No programs found');
     return (
       <div className="flex items-center justify-center min-h-[400px] text-gray-500">
         Nincsenek elérhető programok

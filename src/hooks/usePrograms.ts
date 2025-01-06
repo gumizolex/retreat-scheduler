@@ -32,7 +32,9 @@ export const usePrograms = () => {
       
       console.info('Programs fetched successfully:', data);
       console.info('Number of programs:', data.length);
-      console.info('First program:', data[0]);
+      if (data.length > 0) {
+        console.info('First program:', data[0]);
+      }
       
       return data;
     },
