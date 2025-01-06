@@ -18,7 +18,15 @@ export const usePrograms = () => {
         `)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching programs:', error);
+        throw error;
+      }
+
+      if (!data) {
+        return [];
+      }
+
       return data as Program[];
     }
   });

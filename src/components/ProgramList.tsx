@@ -24,6 +24,7 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
   }
 
   if (error) {
+    console.error('Error fetching programs:', error);
     toast({
       variant: "destructive",
       title: "Hiba történt",
