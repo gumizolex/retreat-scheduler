@@ -23,10 +23,11 @@ export const usePrograms = () => {
         throw error;
       }
       
-      return data || [];
+      console.info('Programs fetched:', data);
+      return data;
     },
-    staleTime: 0,
     gcTime: 1000 * 60 * 5, // Cache for 5 minutes
+    staleTime: 1000 * 60 * 1, // Consider data stale after 1 minute
     refetchOnMount: true,
     refetchOnWindowFocus: true,
   });

@@ -13,7 +13,16 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
   const [currency, setCurrency] = useState<Currency>("RON");
   const { toast } = useToast();
   
-  const { data: programsData, error } = usePrograms();
+  const { data: programsData, error, isLoading } = usePrograms();
+
+  if (isLoading) {
+    console.info('Loading programs...');
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   if (error) {
     console.error('Programs fetch error:', error);
@@ -22,6 +31,20 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
       title: "Hiba történt",
       description: "Nem sikerült betölteni a programokat",
     });
+    return (
+      <div className="flex items-center justify-center min-h-[400px] text-red-500">
+        Hiba történt a programok betöltése közben
+      </div>
+    );
+  }
+
+  if (!programsData || programsData.length === 0) {
+    console.info('No programs found');
+    return (
+      <div className="flex items-center justify-center min-h-[400px] text-gray-500">
+        Nincsenek elérhető programok
+      </div>
+    );
   }
 
   const handleLanguageChange = (newLanguage: Language) => {
