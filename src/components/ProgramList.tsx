@@ -5,6 +5,7 @@ import { ProgramHeader } from "./programs/ProgramHeader";
 import { ProgramGrid } from "./programs/ProgramGrid";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/components/ui/use-toast";
 
 export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: Language) => void }) {
   const [language, setLanguage] = useState<Language>("hu");
@@ -12,6 +13,8 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
   const [selectedPrice, setSelectedPrice] = useState<number>(0);
   const [currency, setCurrency] = useState<Currency>("RON");
   const queryClient = useQueryClient();
+
+  console.log('ProgramList rendering, current language:', language);
 
   const { data: programsData, isLoading, error } = useQuery({
     queryKey: ['programs'],
@@ -31,6 +34,11 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
 
       if (error) {
         console.error('Error fetching programs:', error);
+        toast({
+          title: "Error loading programs",
+          description: error.message,
+          variant: "destructive",
+        });
         throw error;
       }
 
@@ -40,6 +48,7 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
   });
 
   useEffect(() => {
+    console.log('Setting up realtime subscription');
     const channel = supabase
       .channel('program-changes')
       .on(
@@ -49,7 +58,8 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
           schema: 'public',
           table: 'programs'
         },
-        () => {
+        (payload) => {
+          console.log('Programs table changed:', payload);
           queryClient.invalidateQueries({ queryKey: ['programs'] });
         }
       )
@@ -60,18 +70,21 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
           schema: 'public',
           table: 'program_translations'
         },
-        () => {
+        (payload) => {
+          console.log('Program translations changed:', payload);
           queryClient.invalidateQueries({ queryKey: ['programs'] });
         }
       )
       .subscribe();
 
     return () => {
+      console.log('Cleaning up realtime subscription');
       supabase.removeChannel(channel);
     };
   }, [queryClient]);
 
   const handleLanguageChange = (newLanguage: Language) => {
+    console.log('Language changed to:', newLanguage);
     setLanguage(newLanguage);
     onLanguageChange?.(newLanguage);
   };
@@ -124,18 +137,34 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
 
   if (error) {
     console.error('Error loading programs:', error);
-    return <div className="flex justify-center items-center min-h-[400px]">Error loading programs</div>;
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] p-4">
+        <p className="text-red-500 mb-4">Error loading programs</p>
+        <button 
+          onClick={() => queryClient.invalidateQueries({ queryKey: ['programs'] })}
+          className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
+        >
+          Retry
+        </button>
+      </div>
+    );
   }
 
   if (isLoading) {
-    return <div className="flex justify-center items-center min-h-[400px]">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-    </div>;
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
   }
 
   if (!programsData || programsData.length === 0) {
     console.log('No programs found');
-    return <div className="flex justify-center items-center min-h-[400px]">No programs available</div>;
+    return (
+      <div className="flex justify-center items-center min-h-[400px] p-4 text-center">
+        <p className="text-gray-500">No programs available at the moment</p>
+      </div>
+    );
   }
 
   return (

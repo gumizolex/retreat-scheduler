@@ -10,7 +10,14 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { toast } from "@/components/ui/use-toast";
 
 // Create a client
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      staleTime: 1000 * 60 * 5, // 5 minutes
+    },
+  },
+});
 
 function App() {
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
@@ -19,6 +26,7 @@ function App() {
   useEffect(() => {
     const checkAdmin = async () => {
       try {
+        console.log('Checking admin status...');
         const currentSession = await supabase.auth.getSession();
         if (currentSession.error) {
           console.error('Session error:', currentSession.error);
@@ -48,6 +56,7 @@ function App() {
           return;
         }
 
+        console.log('Profile role:', profile?.role);
         setIsAdmin(profile?.role === 'admin');
         setIsLoading(false);
       } catch (error) {
@@ -90,18 +99,6 @@ function App() {
           }
         }
       }
-
-      // Handle session errors
-      if (!session) {
-        console.log('No session available');
-        toast({
-          title: "Session expired",
-          description: "Please sign in again",
-          variant: "destructive",
-        });
-        await supabase.auth.signOut();
-        setIsAdmin(false);
-      }
     });
 
     return () => {
@@ -110,9 +107,11 @@ function App() {
   }, []);
 
   if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-    </div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
   }
 
   return (
