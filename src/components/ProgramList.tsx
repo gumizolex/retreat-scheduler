@@ -1,18 +1,28 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { BookingForm } from "./BookingForm";
 import { Language, Currency, Program } from "@/types/program";
 import { ProgramHeader } from "./programs/ProgramHeader";
 import { ProgramGrid } from "./programs/ProgramGrid";
 import { usePrograms } from "@/hooks/usePrograms";
-import { Loader } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: Language) => void }) {
   const [language, setLanguage] = useState<Language>("hu");
   const [selectedProgram, setSelectedProgram] = useState<number | null>(null);
   const [selectedPrice, setSelectedPrice] = useState<number>(0);
   const [currency, setCurrency] = useState<Currency>("RON");
+  const { toast } = useToast();
   
-  const { data: programsData, isLoading, error } = usePrograms();
+  const { data: programsData, error } = usePrograms();
+
+  if (error) {
+    toast({
+      variant: "destructive",
+      title: "Hiba történt",
+      description: "Nem sikerült betölteni a programokat",
+    });
+    return null;
+  }
 
   const handleLanguageChange = (newLanguage: Language) => {
     setLanguage(newLanguage);
@@ -73,27 +83,6 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-secondary/20 flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <Loader className="w-8 h-8 animate-spin text-primary mx-auto" />
-          <p className="text-lg text-gray-600">{translations[language].loading}</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-secondary/20 flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <p className="text-lg text-red-600">{translations[language].error}</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-secondary/20">
       <div className="container mx-auto py-6 md:py-12 px-4 sm:px-6 lg:px-8">
@@ -106,16 +95,18 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
         />
 
         <div className="mt-6 md:mt-12">
-          <ProgramGrid
-            programs={programsData || []}
-            translations={translations}
-            language={language}
-            currency={currency}
-            onBookProgram={(programId: number, price: number) => {
-              setSelectedProgram(programId);
-              setSelectedPrice(price);
-            }}
-          />
+          {programsData && (
+            <ProgramGrid
+              programs={programsData}
+              translations={translations}
+              language={language}
+              currency={currency}
+              onBookProgram={(programId: number, price: number) => {
+                setSelectedProgram(programId);
+                setSelectedPrice(price);
+              }}
+            />
+          )}
         </div>
 
         {selectedProgram && (

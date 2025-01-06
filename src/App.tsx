@@ -7,13 +7,18 @@ import Login from "./pages/Login";
 import BookingSuccess from "./pages/BookingSuccess";
 import { Toaster } from "@/components/ui/toaster";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { toast } from "@/components/ui/use-toast";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 function App() {
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     let mounted = true;
@@ -39,33 +44,28 @@ function App() {
 
       if (event === 'SIGNED_OUT' || !session) {
         setIsAdmin(false);
-        setIsLoading(false);
         queryClient.clear();
-        localStorage.clear(); // Clear all localStorage in Safari
+        localStorage.clear();
         return;
       }
 
       const isAdminUser = await checkAdminStatus(session.user.id);
       if (mounted) {
         setIsAdmin(isAdminUser);
-        setIsLoading(false);
       }
     };
 
-    // Initial session check
     supabase.auth.getSession().then(({ data: { session }, error }) => {
       if (error) {
         console.error('Session error:', error);
         if (mounted) {
           setIsAdmin(false);
-          setIsLoading(false);
         }
         return;
       }
       handleAuthChange('INITIAL', session);
     });
 
-    // Subscribe to auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(handleAuthChange);
 
     return () => {
@@ -73,20 +73,6 @@ function App() {
       subscription.unsubscribe();
     };
   }, []);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-white via-gray-50 to-secondary/20">
-        <div className="text-4xl md:text-5xl font-display mb-8 text-primary">
-          Abod Retreat
-        </div>
-        <div className="flex flex-col items-center gap-4">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          <p className="text-muted-foreground animate-pulse">Loading...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -99,9 +85,7 @@ function App() {
             path="/admin/*"
             element={
               isAdmin === null ? (
-                <div className="min-h-screen flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                </div>
+                <Navigate to="/" replace />
               ) : isAdmin ? (
                 <Admin />
               ) : (
