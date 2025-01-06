@@ -15,12 +15,7 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
   
   const { data: programsData, error, isLoading } = usePrograms();
 
-  console.log('ProgramList render - programsData:', programsData);
-  console.log('ProgramList render - isLoading:', isLoading);
-  console.log('ProgramList render - error:', error);
-
   if (isLoading) {
-    console.info('Loading programs...');
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -29,7 +24,6 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
   }
 
   if (error) {
-    console.error('Programs fetch error:', error);
     toast({
       variant: "destructive",
       title: "Hiba történt",
@@ -43,15 +37,12 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
   }
 
   if (!programsData || programsData.length === 0) {
-    console.info('No programs found');
     return (
       <div className="flex items-center justify-center min-h-[400px] text-gray-500">
         Nincsenek elérhető programok
       </div>
     );
   }
-
-  console.log('Programs data before translations:', programsData);
 
   const translations: Record<Language, {
     pageTitle: string;
@@ -112,8 +103,6 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
     onLanguageChange?.(newLanguage);
   };
 
-  console.log('Translations prepared:', translations[language].programs);
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-secondary/20">
       <div className="container mx-auto py-6 md:py-12 px-4 sm:px-6 lg:px-8">
@@ -126,22 +115,16 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
         />
 
         <div className="mt-6 md:mt-12">
-          {programsData && programsData.length > 0 ? (
-            <ProgramGrid
-              programs={programsData}
-              translations={translations}
-              language={language}
-              currency={currency}
-              onBookProgram={(programId: number, price: number) => {
-                setSelectedProgram(programId);
-                setSelectedPrice(price);
-              }}
-            />
-          ) : (
-            <div className="text-center text-gray-500">
-              Nincsenek elérhető programok
-            </div>
-          )}
+          <ProgramGrid
+            programs={programsData}
+            translations={translations}
+            language={language}
+            currency={currency}
+            onBookProgram={(programId: number, price: number) => {
+              setSelectedProgram(programId);
+              setSelectedPrice(price);
+            }}
+          />
         </div>
 
         {selectedProgram && (
