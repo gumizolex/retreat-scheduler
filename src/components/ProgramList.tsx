@@ -5,6 +5,7 @@ import { ProgramHeader } from "./programs/ProgramHeader";
 import { ProgramGrid } from "./programs/ProgramGrid";
 import { usePrograms } from "@/hooks/usePrograms";
 import { getTranslations } from "./programs/TranslationsProvider";
+import { toast } from "@/components/ui/use-toast";
 
 export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: Language) => void }) {
   const [language, setLanguage] = useState<Language>("hu");
@@ -16,19 +17,22 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
 
   const { data: programsData, isLoading, error } = usePrograms();
 
-  const translations = getTranslations(programsData || []);
-
-  const handleLanguageChange = (newLanguage: Language) => {
-    console.log('Language changed to:', newLanguage);
-    setLanguage(newLanguage);
-    onLanguageChange?.(newLanguage);
-  };
-
   if (error) {
     console.error('Error loading programs:', error);
+    toast({
+      title: "Error",
+      description: "Failed to load programs. Please try again.",
+      variant: "destructive",
+    });
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] p-4">
         <p className="text-red-500 mb-4">Error loading programs</p>
+        <button 
+          onClick={() => window.location.reload()}
+          className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
+        >
+          Retry
+        </button>
       </div>
     );
   }
@@ -49,6 +53,14 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
       </div>
     );
   }
+
+  const translations = getTranslations(programsData);
+
+  const handleLanguageChange = (newLanguage: Language) => {
+    console.log('Language changed to:', newLanguage);
+    setLanguage(newLanguage);
+    onLanguageChange?.(newLanguage);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-secondary/20">
