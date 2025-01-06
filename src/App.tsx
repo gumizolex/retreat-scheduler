@@ -25,13 +25,18 @@ function App() {
 
     const checkAdminStatus = async (userId: string) => {
       try {
+        console.log('Checking admin status for user:', userId);
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('role')
           .eq('id', userId)
           .single();
 
-        if (profileError) throw profileError;
+        if (profileError) {
+          console.error('Profile error:', profileError);
+          throw profileError;
+        }
+        console.log('Profile data:', profile);
         return profile?.role === 'admin';
       } catch (error) {
         console.error('Error checking admin status:', error);
@@ -43,14 +48,16 @@ function App() {
       if (!mounted) return;
 
       if (event === 'SIGNED_OUT' || !session) {
+        console.log('User signed out or no session');
         setIsAdmin(false);
         queryClient.clear();
-        localStorage.clear();
         return;
       }
 
+      console.log('Auth state changed:', event, 'Session:', session);
       const isAdminUser = await checkAdminStatus(session.user.id);
       if (mounted) {
+        console.log('Setting admin status:', isAdminUser);
         setIsAdmin(isAdminUser);
       }
     };
