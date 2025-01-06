@@ -22,21 +22,7 @@ export const usePrograms = () => {
           queryClient.invalidateQueries({ queryKey: ['programs'] });
         }
       )
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'program_translations'
-        },
-        (payload) => {
-          console.log('Program translations changed:', payload);
-          queryClient.invalidateQueries({ queryKey: ['programs'] });
-        }
-      )
-      .subscribe((status) => {
-        console.log('Subscription status:', status);
-      });
+      .subscribe();
 
     return () => {
       console.log('Cleaning up real-time subscription');
@@ -49,37 +35,33 @@ export const usePrograms = () => {
     queryFn: async () => {
       console.log('Starting to fetch programs...');
       
-      try {
-        const { data, error } = await supabase
-          .from('programs')
-          .select(`
-            *,
-            program_translations (
-              language,
-              title,
-              description
-            )
-          `)
-          .order('created_at', { ascending: false });
+      const { data: programsData, error: programsError } = await supabase
+        .from('programs')
+        .select(`
+          id,
+          price,
+          duration,
+          location,
+          image,
+          created_at,
+          program_translations (
+            id,
+            language,
+            title,
+            description
+          )
+        `)
+        .order('created_at', { ascending: false });
 
-        if (error) {
-          console.error('Error fetching programs:', error);
-          throw error;
-        }
-
-        if (!data || data.length === 0) {
-          console.log('No programs found in database');
-          return [];
-        }
-
-        console.log('Successfully fetched programs:', data);
-        return data;
-      } catch (error) {
-        console.error('Failed to fetch programs:', error);
-        throw error;
+      if (programsError) {
+        console.error('Error fetching programs:', programsError);
+        throw programsError;
       }
+
+      console.log('Programs data received:', programsData);
+      return programsData || [];
     },
-    retry: 2,
-    staleTime: 1000 * 60, // 1 minute
+    retry: 1,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };

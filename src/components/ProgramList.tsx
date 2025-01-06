@@ -5,6 +5,7 @@ import { ProgramHeader } from "./programs/ProgramHeader";
 import { ProgramGrid } from "./programs/ProgramGrid";
 import { usePrograms } from "@/hooks/usePrograms";
 import { Loader } from "lucide-react";
+import { toast } from "@/components/ui/use-toast";
 
 export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: Language) => void }) {
   const [language, setLanguage] = useState<Language>("hu");
@@ -13,6 +14,17 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
   const [currency, setCurrency] = useState<Currency>("RON");
   
   const { data: programsData, isLoading, error } = usePrograms();
+
+  useEffect(() => {
+    if (error) {
+      console.error('Error loading programs:', error);
+      toast({
+        variant: "destructive",
+        title: "Error loading programs",
+        description: "Please try again later",
+      });
+    }
+  }, [error]);
 
   const handleLanguageChange = (newLanguage: Language) => {
     setLanguage(newLanguage);
