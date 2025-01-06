@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Language } from "@/types/program";
 import { ProgramList } from "@/components/ProgramList";
+import { useToast } from "@/components/ui/use-toast";
 
 const Activities = () => {
   const [language, setLanguage] = useState<Language>("hu");
+  const { toast } = useToast();
 
   const heroTranslations = {
     hu: {
