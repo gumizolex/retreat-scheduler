@@ -15,6 +15,10 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
   
   const { data: programsData, error, isLoading } = usePrograms();
 
+  console.log('ProgramList render - programsData:', programsData);
+  console.log('ProgramList render - isLoading:', isLoading);
+  console.log('ProgramList render - error:', error);
+
   if (isLoading) {
     console.info('Loading programs...');
     return (
@@ -38,8 +42,8 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
     );
   }
 
-  if (!programsData || programsData.length === 0) {
-    console.info('No programs found');
+  if (!programsData) {
+    console.info('Programs data is undefined');
     return (
       <div className="flex items-center justify-center min-h-[400px] text-gray-500">
         Nincsenek elérhető programok
@@ -47,10 +51,7 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
     );
   }
 
-  const handleLanguageChange = (newLanguage: Language) => {
-    setLanguage(newLanguage);
-    onLanguageChange?.(newLanguage);
-  };
+  console.log('Programs data before translations:', programsData);
 
   const translations: Record<Language, {
     pageTitle: string;
@@ -70,11 +71,11 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
       location: "Helyszín",
       loading: "Betöltés...",
       error: "Hiba történt a programok betöltése közben",
-      programs: programsData?.map(program => ({
+      programs: programsData.map(program => ({
         id: program.id,
         title: program.program_translations.find(t => t.language === "hu")?.title || '',
         description: program.program_translations.find(t => t.language === "hu")?.description || '',
-      })) || []
+      }))
     },
     en: {
       pageTitle: "Programs and Experiences",
@@ -84,11 +85,11 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
       location: "Location",
       loading: "Loading...",
       error: "Error loading programs",
-      programs: programsData?.map(program => ({
+      programs: programsData.map(program => ({
         id: program.id,
         title: program.program_translations.find(t => t.language === "en")?.title || '',
         description: program.program_translations.find(t => t.language === "en")?.description || '',
-      })) || []
+      }))
     },
     ro: {
       pageTitle: "Programe și Experiențe",
@@ -98,13 +99,20 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
       location: "Locație",
       loading: "Se încarcă...",
       error: "Eroare la încărcarea programelor",
-      programs: programsData?.map(program => ({
+      programs: programsData.map(program => ({
         id: program.id,
         title: program.program_translations.find(t => t.language === "ro")?.title || '',
         description: program.program_translations.find(t => t.language === "ro")?.description || '',
-      })) || []
+      }))
     }
   };
+
+  const handleLanguageChange = (newLanguage: Language) => {
+    setLanguage(newLanguage);
+    onLanguageChange?.(newLanguage);
+  };
+
+  console.log('Translations prepared:', translations[language].programs);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-secondary/20">
@@ -118,7 +126,7 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
         />
 
         <div className="mt-6 md:mt-12">
-          {programsData && (
+          {programsData && programsData.length > 0 ? (
             <ProgramGrid
               programs={programsData}
               translations={translations}
@@ -129,6 +137,10 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
                 setSelectedPrice(price);
               }}
             />
+          ) : (
+            <div className="text-center text-gray-500">
+              Nincsenek elérhető programok
+            </div>
           )}
         </div>
 

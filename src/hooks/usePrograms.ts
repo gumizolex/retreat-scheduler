@@ -23,7 +23,11 @@ export const usePrograms = () => {
         throw error;
       }
       
-      console.info('Programs fetched:', data);
+      console.info('Programs fetched successfully:', data);
+      if (!data || data.length === 0) {
+        console.info('No programs found in the database');
+      }
+      
       return data;
     },
     gcTime: 1000 * 60 * 5, // Cache for 5 minutes
