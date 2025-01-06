@@ -16,12 +16,12 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
   const { data: programsData, error } = usePrograms();
 
   if (error) {
+    console.error('Programs fetch error:', error);
     toast({
       variant: "destructive",
       title: "Hiba történt",
       description: "Nem sikerült betölteni a programokat",
     });
-    return null;
   }
 
   const handleLanguageChange = (newLanguage: Language) => {
