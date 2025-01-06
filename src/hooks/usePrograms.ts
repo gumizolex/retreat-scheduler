@@ -1,11 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Program } from "@/types/program";
 
 export const usePrograms = () => {
   return useQuery({
     queryKey: ['programs'],
-    queryFn: async () => {
-      console.info('Fetching programs...');
+    queryFn: async (): Promise<Program[]> => {
+      console.info('Starting to fetch programs...');
+      
       const { data, error } = await supabase
         .from('programs')
         .select(`
@@ -23,10 +25,14 @@ export const usePrograms = () => {
         throw error;
       }
       
-      console.info('Programs fetched successfully:', data);
-      if (!data || data.length === 0) {
+      if (!data) {
         console.info('No programs found in the database');
+        return [];
       }
+      
+      console.info('Programs fetched successfully:', data);
+      console.info('Number of programs:', data.length);
+      console.info('First program:', data[0]);
       
       return data;
     },
@@ -34,5 +40,9 @@ export const usePrograms = () => {
     staleTime: 1000 * 60 * 1, // Consider data stale after 1 minute
     refetchOnMount: true,
     refetchOnWindowFocus: true,
+    retry: 2,
+    meta: {
+      errorMessage: "Failed to fetch programs"
+    }
   });
 };
