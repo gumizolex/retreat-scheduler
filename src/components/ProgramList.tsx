@@ -15,8 +15,16 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
   
   const { data: programsData, error, isLoading } = usePrograms();
 
+  console.log('ProgramList render state:', { 
+    programsData, 
+    error, 
+    isLoading,
+    language,
+    currency 
+  });
+
   if (error) {
-    console.error('Error fetching programs:', error);
+    console.error('Error in ProgramList:', error);
     toast({
       variant: "destructive",
       title: "Hiba történt",
@@ -30,6 +38,7 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
   }
 
   if (isLoading) {
+    console.log('ProgramList is loading...');
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -38,6 +47,7 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
   }
 
   if (!programsData || programsData.length === 0) {
+    console.log('No programs data available');
     return (
       <div className="flex items-center justify-center min-h-[400px] text-gray-500">
         Nincsenek elérhető programok
@@ -98,6 +108,8 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
       }))
     }
   };
+
+  console.log('Translations prepared:', translations[language].programs);
 
   const handleLanguageChange = (newLanguage: Language) => {
     setLanguage(newLanguage);
