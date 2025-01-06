@@ -15,16 +15,6 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
   
   const { data: programsData, error, isLoading } = usePrograms();
 
-  console.log('ProgramList render:', { programsData, error, isLoading });
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
   if (error) {
     console.error('Error fetching programs:', error);
     toast({
@@ -35,6 +25,14 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
     return (
       <div className="flex items-center justify-center min-h-[400px] text-red-500">
         Hiba történt a programok betöltése közben
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
