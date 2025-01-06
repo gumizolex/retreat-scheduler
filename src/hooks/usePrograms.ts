@@ -22,7 +22,11 @@ export const usePrograms = () => {
         throw error;
       }
       
-      return data;
+      return data || [];
     },
+    staleTime: 0,
+    cacheTime: 1000 * 60 * 5, // Cache for 5 minutes
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
 };
