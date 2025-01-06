@@ -5,9 +5,11 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
 } from "@/components/ui/carousel";
 import { SwipeIndicator } from "./SwipeIndicator";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface ProgramGridProps {
   programs: Program[];
@@ -108,6 +110,8 @@ export function ProgramGrid({
                 );
               })}
             </CarouselContent>
+            <CarouselPrevious className="hidden" />
+            <CarouselNext className="hidden" />
           </Carousel>
           {isMobile && <SwipeIndicator language={language} />}
         </div>

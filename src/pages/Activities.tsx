@@ -34,9 +34,11 @@ const Activities = () => {
         </p>
       </section>
 
-      <main className="flex-grow">
-        <ProgramList onLanguageChange={setLanguage} />
-      </main>
+      <div className="py-8 flex-grow">
+        <div className="container mx-auto">
+          <ProgramList onLanguageChange={setLanguage} />
+        </div>
+      </div>
 
       <footer className="py-4 text-center text-sm text-muted-foreground">
         © 2024 Abod Retreat - {heroTranslations[language].copyright}
