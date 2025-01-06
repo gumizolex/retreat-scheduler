@@ -22,7 +22,21 @@ export const usePrograms = () => {
           queryClient.invalidateQueries({ queryKey: ['programs'] });
         }
       )
-      .subscribe();
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'program_translations'
+        },
+        (payload) => {
+          console.log('Program translations changed:', payload);
+          queryClient.invalidateQueries({ queryKey: ['programs'] });
+        }
+      )
+      .subscribe((status) => {
+        console.log('Subscription status:', status);
+      });
 
     return () => {
       console.log('Cleaning up real-time subscription');
@@ -33,35 +47,26 @@ export const usePrograms = () => {
   return useQuery({
     queryKey: ['programs'],
     queryFn: async () => {
-      console.log('Starting to fetch programs...');
-      
-      const { data: programsData, error: programsError } = await supabase
+      console.log('Fetching programs...');
+      const { data, error } = await supabase
         .from('programs')
         .select(`
-          id,
-          price,
-          duration,
-          location,
-          image,
-          created_at,
+          *,
           program_translations (
-            id,
             language,
             title,
             description
           )
         `)
         .order('created_at', { ascending: false });
-
-      if (programsError) {
-        console.error('Error fetching programs:', programsError);
-        throw programsError;
+      
+      if (error) {
+        console.error('Error fetching programs:', error);
+        throw error;
       }
-
-      console.log('Programs data received:', programsData);
-      return programsData || [];
+      
+      console.log('Fetched programs:', data);
+      return data || [];
     },
-    retry: 1,
-    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };
