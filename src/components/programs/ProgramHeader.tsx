@@ -14,15 +14,15 @@ interface ProgramHeaderProps {
 const translations = {
   hu: {
     title: "Abod Retreat",
-    subtitle: "Fedezze fel programjainkat és élje át a nyugalom pillanatait Erdély szívében"
+    subtitle: "Fedezze fel programjainkat és élje át a nyugalom pillanatait"
   },
   en: {
     title: "Abod Retreat",
-    subtitle: "Discover our programs and experience moments of tranquility in the heart of Transylvania"
+    subtitle: "Discover our programs and experience moments of tranquility"
   },
   ro: {
     title: "Abod Retreat",
-    subtitle: "Descoperiți programele noastre și trăiți momente de liniște în inima Transilvaniei"
+    subtitle: "Descoperiți programele noastre și trăiți momente de liniște"
   }
 };
 
@@ -38,12 +38,12 @@ export function ProgramHeader({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="text-center mb-12 px-4"
+        className="text-center mb-16 px-4 py-32 bg-primary/20"
       >
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-accent mb-4 tracking-tight">
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-medium text-accent mb-8 tracking-tight">
           {translations[language].title}
         </h1>
-        <p className="text-lg md:text-xl lg:text-2xl text-accent/80 font-display max-w-3xl mx-auto leading-relaxed">
+        <p className="text-xl md:text-2xl lg:text-3xl text-accent/90 font-display max-w-4xl mx-auto leading-relaxed">
           {translations[language].subtitle}
         </p>
       </motion.div>
