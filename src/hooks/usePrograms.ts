@@ -33,5 +33,7 @@ export const usePrograms = () => {
       console.log('Fetched programs:', programs);
       return programs as Program[];
     },
+    retry: 1,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };
