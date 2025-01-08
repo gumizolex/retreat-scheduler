@@ -15,25 +15,25 @@ const getHeroContent = (language: Language) => {
     case "hu":
       return {
         title: "Abod Retreat",
-        subtitle: "Varázslatos pihenés Erdély szívében",
+        subtitle: "Fedezze fel programjainkat és élje át a nyugalom pillanatait",
         description: "Fedezze fel a nyugalom és harmónia szigetét Erdély festői tájain"
       };
     case "en":
       return {
         title: "Abod Retreat",
-        subtitle: "Magical Rest in the Heart of Transylvania",
+        subtitle: "Discover our programs and experience moments of tranquility",
         description: "Discover an oasis of peace and harmony in the picturesque landscapes of Transylvania"
       };
     case "ro":
       return {
         title: "Abod Retreat",
-        subtitle: "Odihnă magică în inima Transilvaniei",
+        subtitle: "Descoperiți programele noastre și trăiți momente de liniște",
         description: "Descoperă o oază de pace și armonie în peisajele pitorești ale Transilvaniei"
       };
     default:
       return {
         title: "Abod Retreat",
-        subtitle: "Varázslatos pihenés Erdély szívében",
+        subtitle: "Fedezze fel programjainkat és élje át a nyugalom pillanatait",
         description: "Fedezze fel a nyugalom és harmónia szigetét Erdély festői tájain"
       };
   }
