@@ -9,7 +9,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: true,
     detectSessionInUrl: true,
     storageKey: 'abod-retreat-auth',
-    storage: window.localStorage
+    storage: typeof window !== 'undefined' ? window.localStorage : undefined
   }
 })
 
@@ -18,6 +18,8 @@ supabase.auth.onAuthStateChange((event, session) => {
   console.log('Auth state changed:', event)
   if (event === 'SIGNED_OUT') {
     // Clear any cached data if needed
-    localStorage.removeItem('abod-retreat-auth')
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('abod-retreat-auth')
+    }
   }
 })
