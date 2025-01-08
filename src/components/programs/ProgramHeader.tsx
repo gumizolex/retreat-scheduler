@@ -51,12 +51,12 @@ export function ProgramHeader({
     <div className="relative">
       <div className="absolute top-4 right-4 flex gap-2 z-10">
         <LanguageSelector
-          value={language}
-          onValueChange={onLanguageChange}
+          currentLanguage={language}
+          onLanguageChange={onLanguageChange}
         />
         <CurrencySelector
-          value={currency}
-          onValueChange={onCurrencyChange}
+          selectedCurrency={currency}
+          onCurrencyChange={onCurrencyChange}
         />
       </div>
       
