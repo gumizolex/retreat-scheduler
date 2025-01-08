@@ -1,11 +1,18 @@
 import { ProgramList } from "@/components/ProgramList";
+import { motion } from "framer-motion";
 
 const Activities = () => {
   console.log('Activities page rendering');
   return (
     <div className="min-h-screen bg-background">
-      <section className="bg-primary py-16 md:py-24">
-        <div className="container mx-auto px-4">
+      <motion.section 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="bg-primary/90 py-16 md:py-24 relative overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-[url('/lovable-uploads/2d6426e9-465a-4ee5-a26b-9d0b14d941bd.png')] bg-cover bg-center opacity-20" />
+        <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
             <img 
               src="/abod-logo-white.png" 
@@ -17,7 +24,7 @@ const Activities = () => {
             </h2>
           </div>
         </div>
-      </section>
+      </motion.section>
       <ProgramList />
     </div>
   );
