@@ -7,6 +7,17 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
-    detectSessionInUrl: true
+    detectSessionInUrl: true,
+    storageKey: 'abod-retreat-auth',
+    storage: window.localStorage
+  }
+})
+
+// Add error handling for auth state changes
+supabase.auth.onAuthStateChange((event, session) => {
+  console.log('Auth state changed:', event)
+  if (event === 'SIGNED_OUT') {
+    // Clear any cached data if needed
+    localStorage.removeItem('abod-retreat-auth')
   }
 })
