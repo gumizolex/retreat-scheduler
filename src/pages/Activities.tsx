@@ -2,19 +2,21 @@ import { useState } from "react";
 import { ProgramList } from "@/components/ProgramList";
 import { Language, Currency } from "@/types/program";
 import { motion } from "framer-motion";
+import { LanguageSelector } from "@/components/LanguageSelector";
+import { CurrencySelector } from "@/components/CurrencySelector";
 
 const translations = {
   hu: {
-    title: "Abod Retreat",
-    subtitle: "Fedezze fel programjainkat és élje át a nyugalom pillanatait Erdélyben"
+    title: "Programok és Élmények",
+    subtitle: "Fedezze fel egyedülálló programjainkat és élményeinket"
   },
   en: {
-    title: "Abod Retreat",
-    subtitle: "Discover our programs and experience moments of tranquility in Transylvania"
+    title: "Programs and Experiences",
+    subtitle: "Discover our unique programs and experiences"
   },
   ro: {
-    title: "Abod Retreat",
-    subtitle: "Descoperiți programele noastre și trăiți momente de liniște în Transilvania"
+    title: "Programe și Experiențe",
+    subtitle: "Descoperiți programele și experiențele noastre unice"
   }
 };
 
@@ -50,12 +52,23 @@ export default function Activities() {
             >
               {translations[language].subtitle}
             </motion.p>
+
+            <div className="flex justify-center gap-4 pt-8">
+              <LanguageSelector
+                value={language}
+                onValueChange={setLanguage}
+              />
+              <CurrencySelector
+                value={currency}
+                onValueChange={setCurrency}
+              />
+            </div>
           </motion.div>
         </div>
       </div>
 
       {/* Program List */}
-      <ProgramList onLanguageChange={setLanguage} />
+      <ProgramList />
     </div>
   );
 }
