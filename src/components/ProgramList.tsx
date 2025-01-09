@@ -14,23 +14,18 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
 
   console.log('ProgramList rendering, current language:', language);
 
-  const { data: programsData, isLoading, error } = usePrograms();
+  const { data: programsData, isLoading, error, refetch } = usePrograms();
 
   if (error) {
     console.error('Error loading programs:', error);
-    toast({
-      title: "Error",
-      description: "Failed to load programs. Please try again.",
-      variant: "destructive",
-    });
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] p-4">
-        <p className="text-red-500 mb-4">Error loading programs</p>
+        <p className="text-red-500 mb-4">Hiba történt a programok betöltése közben</p>
         <button 
-          onClick={() => window.location.reload()}
+          onClick={() => refetch()}
           className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
         >
-          Retry
+          Újrapróbálkozás
         </button>
       </div>
     );
@@ -39,7 +34,7 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
       </div>
     );
   }
@@ -48,7 +43,7 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
     console.log('No programs found');
     return (
       <div className="flex justify-center items-center min-h-[400px] p-4 text-center">
-        <p className="text-gray-500">No programs available at the moment</p>
+        <p className="text-gray-500">Jelenleg nincsenek elérhető programok</p>
       </div>
     );
   }
