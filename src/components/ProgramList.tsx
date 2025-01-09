@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { BookingForm } from "./BookingForm";
 import { Language, Currency } from "@/types/program";
-import { ProgramHeader } from "./programs/ProgramHeader";
 import { ProgramGrid } from "./programs/ProgramGrid";
 import { usePrograms } from "@/hooks/usePrograms";
 import { getTranslations } from "./programs/TranslationsProvider";
@@ -65,14 +64,6 @@ export function ProgramList({ onLanguageChange }: { onLanguageChange?: (lang: La
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-secondary/20">
       <div className="container mx-auto py-6 md:py-12 px-4 sm:px-6 lg:px-8">
-        <ProgramHeader
-          pageTitle={translations[language].pageTitle}
-          language={language}
-          currency={currency}
-          onLanguageChange={handleLanguageChange}
-          onCurrencyChange={setCurrency}
-        />
-
         <div className="mt-6 md:mt-12">
           <ProgramGrid
             programs={programsData}
