@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { ProgramList } from "@/components/ProgramList";
 import { Language, Currency } from "@/types/program";
 import { motion } from "framer-motion";
@@ -55,12 +54,12 @@ export default function Activities() {
 
             <div className="flex justify-center gap-4 pt-8">
               <LanguageSelector
-                value={language}
-                onValueChange={setLanguage}
+                currentLanguage={language}
+                onLanguageChange={setLanguage}
               />
               <CurrencySelector
-                value={currency}
-                onValueChange={setCurrency}
+                selectedCurrency={currency}
+                onCurrencyChange={setCurrency}
               />
             </div>
           </motion.div>
